@@ -270,6 +270,9 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button class="tab" id="utab-accessory" onclick="switchUnlockTab('accessory')">装飾品</button>
     <button class="tab" id="utab-skill" onclick="switchUnlockTab('skill')">スキル</button>
   </div>
+  <div style="font-size:12px;color:#888780;margin-bottom:8px">
+    所持: <strong id="unlock-souls-disp" style="color:#e0ddd8">0</strong> 魂の欠片 &nbsp;／&nbsp; 総レベル: <strong id="totallv-unlock" style="color:#AFA9EC">0</strong>
+  </div>
   <div id="unlock-list"></div>
   <hr class="divider">
   <button class="btn" onclick="goTo('s-title')">戻る</button>
@@ -617,6 +620,7 @@ const UNIQUE_SKILLS={
 const ACHIEVEMENTS=[
   {id:'ach_w_floor3',   title:'戦士の試練',     cond:{kind:'floorClear', val:3, charId:'warrior'}, reward:{type:'uniqueSkill', id:'warrior_fortress'}, icon:'⚔', desc:'戦士で3階クリア'},
   {id:'ach_w_boss5',    title:'戦士の覚醒',     cond:{kind:'bossKill', val:5, charId:'warrior'}, reward:{type:'uniqueSkill', id:'warrior_counter'}, icon:'⚔', desc:'戦士でボス5回撃破'},
+  {id:'ach_w_boss10',   title:'戦士の極意',     cond:{kind:'bossKill', val:10, charId:'warrior'}, reward:{type:'unlockItem', id:'未定'}, icon:'⚔', desc:'戦士でボス10回撃破'},
   {id:'ach_m_floor3',   title:'魔術師の試練',   cond:{kind:'floorClear', val:3, charId:'mage'}, reward:{type:'uniqueSkill', id:'mage_insight'}, icon:'✦', desc:'魔術師で3階クリア'},
   {id:'ach_m_skill100', title:'魔術師の道',     cond:{kind:'skillUse', val:100, charId:'mage'}, reward:{type:'uniqueSkill', id:'mage_chain'}, icon:'✦', desc:'魔術師でスキル100回'},
   {id:'ach_r_floor3',   title:'盗賊の試練',     cond:{kind:'floorClear', val:3, charId:'rogue'}, reward:{type:'uniqueSkill', id:'rogue_phantom'}, icon:'◆', desc:'盗賊で3階クリア'},
@@ -830,15 +834,31 @@ function renderChars(){
   // 前回設定の表示
   const lastContainer = document.getElementById('last-run-container');
   lastContainer.innerHTML = '';
+  
   if (GS.lastRun && GS.lastRun.config) {
     const lr = GS.lastRun.config;
     const res = GS.lastRun.result || {};
-    // アンロック確認
-    const valid = isUnlocked(lr.charId) && isUnlocked(lr.weaponId) && isUnlocked(lr.armorId);
-    if (valid) {
+    
+    // 現在アンロックされているかチェック（配列がある前提で length > 0 なら includes が機能する）
+    // Array.isArray チェックで安全にフォールバック
+    const accs = Array.isArray(lr.accessories) ? lr.accessories : [];
+    const aSkills = Array.isArray(lr.activeSkills) ? lr.activeSkills : [];
+    const pSkills = Array.isArray(lr.passiveSkills) ? lr.passiveSkills : [];
+
+    const charValid = isUnlocked(lr.charId);
+    const weaponValid = isUnlocked(lr.weaponId);
+    const armorValid = isUnlocked(lr.armorId);
+    
+    // 全てアンロック済みの場合のみ表示
+    if (charValid && weaponValid && armorValid) {
       const c = CHARS[lr.charId];
       const w = WEAPONS[lr.weaponId];
       const a = ARMORS[lr.armorId];
+      
+      const skillIcons = [...aSkills, ...pSkills]
+        .map(id => (ACTIVE_SKILLS[id] || PASSIVE_SKILLS[id])?.icon || '')
+        .join('');
+
       lastContainer.innerHTML = `
         <div class="sub">前回と同じ設定で挑む</div>
         <div class="card last-run-card" onclick="quickStartRun()">
@@ -847,8 +867,8 @@ function renderChars(){
             <div style="flex:1">
               <div class="card-title">${c.name} — クイック再挑戦</div>
               <div class="card-sub">
-                ${w.name} / ${a.name} / 💍${lr.accessories.length}個<br>
-                スキル: ${(lr.activeSkills.concat(lr.passiveSkills)).map(id => (ACTIVE_SKILLS[id] || PASSIVE_SKILLS[id]).icon).join('')}
+                ${w.name} / ${a.name} / 💍${accs.length}個<br>
+                スキル: ${skillIcons || 'なし'}
               </div>
               <div style="font-size:10px; color:#534AB7; margin-top:4px;">
                 前回: ${res.icon||''} 撃破:${res.kills||0} 魂:${res.souls||0} EXP:${res.exp||0}
@@ -875,16 +895,25 @@ function renderChars(){
       </div></div>`;
   });
 }
-function selectChar(id){GS.run.charId=id;GS.run.activeSkills=[];GS.run.passiveSkills=[];GS.run.accessories=[];renderChars();document.getElementById('btn-to-equip').disabled=false;}
+
+function selectChar(id){
+  GS.run.charId=id;
+  GS.run.activeSkills=[];
+  GS.run.passiveSkills=[];
+  GS.run.accessories=[];
+  renderChars();
+  document.getElementById('btn-to-equip').disabled=false;
+}
 
 function quickStartRun() {
   const lr = GS.lastRun.config;
   GS.run.charId = lr.charId;
   GS.run.weaponId = lr.weaponId;
   GS.run.armorId = lr.armorId;
-  GS.run.accessories = [...lr.accessories];
-  GS.run.activeSkills = [...lr.activeSkills];
-  GS.run.passiveSkills = [...lr.passiveSkills];
+  // 配列が確実にコピーされるようフォールバック
+  GS.run.accessories = Array.isArray(lr.accessories) ? [...lr.accessories] : [];
+  GS.run.activeSkills = Array.isArray(lr.activeSkills) ? [...lr.activeSkills] : [];
+  GS.run.passiveSkills = Array.isArray(lr.passiveSkills) ? [...lr.passiveSkills] : [];
   startRun();
 }
 
@@ -908,7 +937,7 @@ function renderEquip(){
     </div>`;
   });
   Object.values(ACCESSORIES).forEach(acc=>{
-    const ok=isUnlocked(acc.id), sel=GS.run.accessories.includes(acc.id);
+    const ok=isUnlocked(acc.id), sel=(GS.run.accessories||[]).includes(acc.id);
     acl.innerHTML+=`<div class="card ${sel?'selected':''} ${ok?'':'locked'}" onclick="${ok?`toggleAcc('${acc.id}',${slots})`:''}">
       <div class="card-title">${acc.icon} ${acc.name}</div>
       ${ok?'':`<span class="badge badge-red">未解放</span>`}
@@ -917,6 +946,7 @@ function renderEquip(){
   document.getElementById('btn-to-skill').disabled=!(GS.run.weaponId&&GS.run.armorId);
 }
 function toggleAcc(id,slots){
+  GS.run.accessories = GS.run.accessories || [];
   const idx=GS.run.accessories.indexOf(id);
   if(idx>=0) GS.run.accessories.splice(idx,1);
   else if(GS.run.accessories.length<slots) GS.run.accessories.push(id);
@@ -925,6 +955,9 @@ function toggleAcc(id,slots){
 
 function renderSkills(){
   const slots=CHARS[GS.run.charId]?.activeSlots||3;
+  GS.run.activeSkills = GS.run.activeSkills || [];
+  GS.run.passiveSkills = GS.run.passiveSkills || [];
+
   const ael=document.getElementById('active-skill-list');ael.innerHTML='';
   Object.values(ACTIVE_SKILLS).forEach(s=>{
     const ok=isUnlocked(s.id), sel=GS.run.activeSkills.includes(s.id);
@@ -964,7 +997,7 @@ function startRun(){
   const c=CHARS[GS.run.charId], w=WEAPONS[GS.run.weaponId], a=ARMORS[GS.run.armorId];
   const lb=GS.lvBonus;
   
-  // 前回設定保存
+  // 前回設定保存 (配列は必ずコピー)
   GS.lastRun = {
     config: {
       charId: GS.run.charId,
@@ -983,10 +1016,10 @@ function startRun(){
   GS.run.def = c.def + a.def + (lb.def*1);
   GS.run.maxMp = c.maxMp + (w.mp||0) + (a.mp||0) + (lb.mp*8); GS.run.mp = GS.run.maxMp;
   GS.run.crit = c.crit + lb.crit + (w.crit||0);
-  GS.run.dodge = c.dodge + lb.dodge + (GS.run.passiveSkills.includes('godspeed')?10:0);
-  GS.run.hdodge = c.hdodge + Math.floor(lb.dodge*1.5) + (GS.run.passiveSkills.includes('godspeed')?15:0);
-  GS.run.dmgBonus = GS.run.passiveSkills.includes('demonblessing')?1.2:1.0;
-  GS.run.defBonus = GS.run.passiveSkills.includes('demonblessing')?0.85:1.0;
+  GS.run.dodge = c.dodge + lb.dodge + ((GS.run.passiveSkills||[]).includes('godspeed')?10:0);
+  GS.run.hdodge = c.hdodge + Math.floor(lb.dodge*1.5) + ((GS.run.passiveSkills||[]).includes('godspeed')?15:0);
+  GS.run.dmgBonus = (GS.run.passiveSkills||[]).includes('demonblessing')?1.2:1.0;
+  GS.run.defBonus = (GS.run.passiveSkills||[]).includes('demonblessing')?0.85:1.0;
   
   GS.run.icon=c.icon; GS.run.name=c.name; GS.run.room=0; GS.run.kills=0; GS.run.runSouls=0; GS.run.runExp=0;
   GS.run.skillUsed=0; GS.run.dodgeCount=0; GS.run.undyingUsed=false; GS.run.lichUsed=false;
@@ -1024,7 +1057,7 @@ function renderDungeon(){
   document.getElementById('d-crit').textContent=GS.run.crit+'%';
   document.getElementById('d-dodge').textContent=GS.run.dodge+'%';
   const accInfo=document.getElementById('d-accessory-info');
-  if(GS.run.accessories.length){
+  if((GS.run.accessories||[]).length){
     accInfo.style.display='block';
     accInfo.innerHTML='💍: '+GS.run.accessories.map(id=>ACCESSORIES[id]?.icon).join(' ');
   } else accInfo.style.display='none';
@@ -1039,7 +1072,7 @@ function enterRoom(){
 // ─── バトル・オートバトル ──────────────────────────────────
 function startBattle(enemy, isBoss){
   let startMp = GS.run.mp;
-  GS.run.accessories.forEach(id=>{ if(ACCESSORIES[id]?.kind==='onBattleStart') startMp=Math.min(GS.run.maxMp, startMp+ACCESSORIES[id].effect.mp); });
+  (GS.run.accessories||[]).forEach(id=>{ if(ACCESSORIES[id]?.kind==='onBattleStart') startMp=Math.min(GS.run.maxMp, startMp+ACCESSORIES[id].effect.mp); });
   bState={
     heroHp:GS.run.hp, heroMaxHp:GS.run.maxHp, heroMp:startMp, heroMaxMp:GS.run.maxMp,
     enemyHp:enemy.hp, enemyMaxHp:enemy.hp, enemy, isBoss, turn:0, over:false,
@@ -1058,7 +1091,7 @@ function startBattle(enemy, isBoss){
 }
 
 function updateBattleStatsPanel(){
-  const cBonus = GS.run.passiveSkills.includes('critup')?20:0;
+  const cBonus = (GS.run.passiveSkills||[]).includes('critup')?20:0;
   document.getElementById('bs-atk').textContent=GS.run.atk;
   document.getElementById('bs-def').textContent=GS.run.def;
   document.getElementById('bs-crit').textContent=(GS.run.crit+cBonus)+'%';
@@ -1068,7 +1101,7 @@ function updateBattleStatsPanel(){
 
 function renderPassiveBadges(){
   const el=document.getElementById('passive-badges'); el.innerHTML='';
-  GS.run.passiveSkills.forEach(id=>{
+  (GS.run.passiveSkills||[]).forEach(id=>{
     const s=PASSIVE_SKILLS[id], b=document.createElement('span');
     b.className='passive-badge always'; b.textContent=s.icon+' '+s.name; el.appendChild(b);
   });
@@ -1076,7 +1109,7 @@ function renderPassiveBadges(){
 
 function renderActiveBtns(){
   const el=document.getElementById('active-skill-btns'); el.innerHTML='';
-  GS.run.activeSkills.forEach(id=>{
+  (GS.run.activeSkills||[]).forEach(id=>{
     const s=ACTIVE_SKILLS[id], btn=document.createElement('button');
     btn.className='active-btn'; btn.disabled=bState.heroMp<s.mpCost;
     btn.innerHTML=`<span>${s.icon} ${s.name}</span><span class="sk-cost">MP ${s.mpCost}</span>`;
@@ -1089,7 +1122,7 @@ function useActiveSkill(id){
 }
 
 function skillHitEnemy(bs,baseDmg,name){
-  const isCrit=Math.random()<(GS.run.crit+(GS.run.passiveSkills.includes('critup')?20:0))/100;
+  const isCrit=Math.random()<(GS.run.crit+((GS.run.passiveSkills||[]).includes('critup')?20:0))/100;
   let rawDmg = isCrit?Math.floor(baseDmg*1.5):baseDmg;
   if(isCrit && GS.run.weaponId==='axe') rawDmg+=15;
   const d=randVar(Math.floor(rawDmg*GS.run.dmgBonus));
@@ -1111,7 +1144,7 @@ function updateBattleUI(){
 function autoBattleTick(){
   if(bState.over) return;
   bState.turn++;
-  if(GS.run.passiveSkills.includes('cursedmark')){ bState.enemyHp-=Math.max(1,Math.floor(bState.enemyMaxHp*0.02)); }
+  if((GS.run.passiveSkills||[]).includes('cursedmark')){ bState.enemyHp-=Math.max(1,Math.floor(bState.enemyMaxHp*0.02)); }
   if(bState.curseTick) bState.enemyHp-=bState.curseTick;
   if(GS.run.uniqueSkills.includes('paladin_aura')) bState.heroHp=Math.min(bState.heroMaxHp, bState.heroHp+3);
 
@@ -1119,7 +1152,7 @@ function autoBattleTick(){
   if(bState.heroHp<bState.heroMaxHp*0.3 && GS.run.uniqueSkills.includes('warrior_berserk')) atk=Math.floor(atk*1.5);
   if(GS.run.counterReady){ atk=Math.floor(atk*1.3); GS.run.counterReady=false; }
   
-  const isCrit=bState.shadowbladeReady || Math.random()<(GS.run.crit+(GS.run.passiveSkills.includes('critup')?20:0))/100;
+  const isCrit=bState.shadowbladeReady || Math.random()<(GS.run.crit+((GS.run.passiveSkills||[]).includes('critup')?20:0))/100;
   bState.shadowbladeReady=false;
   let d=randVar(Math.max(1, (isCrit?Math.floor(atk*1.5):atk)-bState.enemy.def));
   if(isCrit&&GS.run.weaponId==='axe') d+=15;
@@ -1187,12 +1220,14 @@ function endRun(won){
   GS.achStats.killCount+=GS.run.kills;
   
   // 保存用のリザルトデータ
-  GS.lastRun.result = {
-    kills: GS.run.kills,
-    souls: GS.run.runSouls,
-    exp: GS.run.runExp,
-    icon: won?'✦':'💀'
-  };
+  if(GS.lastRun) {
+    GS.lastRun.result = {
+      kills: GS.run.kills,
+      souls: GS.run.runSouls,
+      exp: GS.run.runExp,
+      icon: won?'✦':'💀'
+    };
+  }
 
   const newly=checkAchievements();
   GS.souls+=GS.run.runSouls; GS.exp+=GS.run.runExp; save();
