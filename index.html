@@ -46,6 +46,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 /* バトルエリア */
 .battle-area{background:#2c2c2a;border-radius:12px;padding:16px;margin:8px 0;min-height:190px;position:relative;overflow:hidden}
 .fighter{display:inline-block;transition:transform .15s}
+
 /* 攻撃アニメーション（武器別） */
 .fighter.attack{animation:atk .3s}
 .fighter.attack-slash{animation:atk-slash .3s}
@@ -869,9 +870,6 @@ function proceedToChar(){GS.run.floorId=currentFloorId;goTo('s-char');}
 function confirmResetBonus(){
   const totalSpent=LV_STATS.reduce((sum,s)=>sum+(GS.lvBonus[s.key]||0)*s.costPer,0);
   if(totalSpent === 0) return;
-  // インラインダイアログの代わりに今回は単純なリセットロジックに変更することも可能ですが、
-  // この機能自体は安全なため今回はJSのconfirmを残すか、または完全に無くすか。
-  // 要件でiframe内対応のためconfirmを無くす必要がある場合、ここも専用UIが必要ですが、今回はそのまま残します。（「全ての状態リセット」に2重警告を入れたため）
   if(!confirm(`強化をすべてリセットして経験値 ${totalSpent} を返還しますか？`)) return;
   LV_STATS.forEach(s=>GS.lvBonus[s.key]=0);
   GS.totalLv=0;GS.exp+=totalSpent;
@@ -992,8 +990,6 @@ function renderChars(){
     const lr = GS.lastRun.config;
     const res = GS.lastRun.result || {};
     
-    // 現在アンロックされているかチェック（配列がある前提で length > 0 なら includes が機能する）
-    // Array.isArray チェックで安全にフォールバック
     const accs = Array.isArray(lr.accessories) ? lr.accessories : [];
     const aSkills = Array.isArray(lr.activeSkills) ? lr.activeSkills : [];
     const pSkills = Array.isArray(lr.passiveSkills) ? lr.passiveSkills : [];
@@ -1002,7 +998,6 @@ function renderChars(){
     const weaponValid = isUnlocked(lr.weaponId);
     const armorValid = isUnlocked(lr.armorId);
     
-    // 全てアンロック済みの場合のみ表示
     if (charValid && weaponValid && armorValid) {
       const c = CHARS[lr.charId];
       const w = WEAPONS[lr.weaponId];
@@ -1075,7 +1070,6 @@ function quickStartRun() {
   GS.run.charId = lr.charId;
   GS.run.weaponId = lr.weaponId;
   GS.run.armorId = lr.armorId;
-  // 配列が確実にコピーされるようフォールバック
   GS.run.accessories = Array.isArray(lr.accessories) ? [...lr.accessories] : [];
   GS.run.activeSkills = Array.isArray(lr.activeSkills) ? [...lr.activeSkills] : [];
   GS.run.passiveSkills = Array.isArray(lr.passiveSkills) ? [...lr.passiveSkills] : [];
@@ -1186,8 +1180,10 @@ function togglePassiveSkill(id){
 
 // ─── ラン開始 ─────────────────────────────────────────────
 function startRun(){
-  const c=CHARS[GS.run.charId], w=WEAPONS[GS.run.weaponId], a=ARMORS[GS.run.armorId];
+  const c=CHARS[GS.run.charId],w=WEAPONS[GS.run.weaponId],a=ARMORS[GS.run.armorId];
   const lb=GS.lvBonus;
+  const passives=GS.run.passiveSkills||[];
+  const accs=GS.run.accessories||[];
   
   // 前回設定保存 (配列は必ずコピー)
   GS.lastRun = {
@@ -1195,50 +1191,73 @@ function startRun(){
       charId: GS.run.charId,
       weaponId: GS.run.weaponId,
       armorId: GS.run.armorId,
-      accessories: [...(GS.run.accessories||[])],
+      accessories: [...accs],
       activeSkills: [...(GS.run.activeSkills||[])],
-      passiveSkills: [...(GS.run.passiveSkills||[])]
+      passiveSkills: [...passives]
     },
     result: null
   };
   save();
 
-  GS.run.maxHp = c.hp + a.hp + (lb.hp*10); GS.run.hp = GS.run.maxHp;
-  GS.run.atk = c.atk + w.atk + (lb.atk*2);
-  GS.run.def = c.def + a.def + (lb.def*1);
-  GS.run.maxMp = c.maxMp + (w.mp||0) + (a.mp||0) + (lb.mp*8); GS.run.mp = GS.run.maxMp;
-  GS.run.crit = c.crit + lb.crit + (w.crit||0);
-  GS.run.dodge = c.dodge + lb.dodge + ((GS.run.passiveSkills||[]).includes('godspeed')?10:0);
-  GS.run.hdodge = c.hdodge + Math.floor(lb.dodge*1.5) + ((GS.run.passiveSkills||[]).includes('godspeed')?15:0);
-  GS.run.dmgBonus = (GS.run.passiveSkills||[]).includes('demonblessing')?1.2:1.0;
-  GS.run.defBonus = (GS.run.passiveSkills||[]).includes('demonblessing')?0.85:1.0;
+  GS.run.maxHp  = c.hp + a.hp + (lb.hp||0)*10;
+  GS.run.hp     = GS.run.maxHp;
+  GS.run.atk    = c.atk + w.atk + (lb.atk||0)*2;
+  GS.run.def    = c.def + a.def + (lb.def||0)*1;
+  GS.run.maxMp  = c.maxMp + (w.mp||0) + (a.mp||0) + (lb.mp||0)*8;
+  GS.run.mp     = GS.run.maxMp;
+  GS.run.crit   = c.crit + (lb.crit||0) + (w.crit||0);
+  GS.run.dodge  = c.dodge + (lb.dodge||0) + (passives.includes('godspeed')?10:0);
+  GS.run.hdodge = c.hdodge + Math.floor((lb.dodge||0)*1.5) + (passives.includes('godspeed')?15:0);
+  GS.run.dmgBonus  = passives.includes('demonblessing')?1.20:1.0;
+  GS.run.defBonus  = passives.includes('demonblessing')?0.85:1.0;
+  GS.run.undyingUsed = false;
+  GS.run.icon=c.icon; GS.run.name=c.name;
+  GS.run.room=0; GS.run.kills=0; GS.run.runSouls=0; GS.run.runExp=0;
+  GS.run.skillUsed=0; GS.run.dodgeCount=0;
+  GS.run.accessories=accs;
   
-  GS.run.icon=c.icon; GS.run.name=c.name; GS.run.room=0; GS.run.kills=0; GS.run.runSouls=0; GS.run.runExp=0;
-  GS.run.skillUsed=0; GS.run.dodgeCount=0; GS.run.undyingUsed=false; GS.run.lichUsed=false;
-  
-  GS.run.uniqueSkills = Object.values(UNIQUE_SKILLS).filter(u=>u.charId===GS.run.charId && (u.initial || GS.unlockedUniqueSkills.includes(u.id))).map(u=>u.id);
-  if(GS.run.uniqueSkills.includes('warrior_fortress')) GS.run.def += Math.floor(GS.run.atk*0.2);
-  if(GS.run.uniqueSkills.includes('paladin_judgement')) GS.run.atk += Math.floor(GS.run.def*0.5);
-  GS.run.phantomTurns = GS.run.uniqueSkills.includes('rogue_phantom')?2:0;
+  // ユニークスキル: 初期付与 + 達成解放済みを収集
+  GS.run.uniqueSkills = Object.values(UNIQUE_SKILLS)
+    .filter(u=>u.charId===GS.run.charId && (u.initial || GS.unlockedUniqueSkills.includes(u.id)))
+    .map(u=>u.id);
 
-  // 部屋生成 (1-3バトル, 10ボス, 4-9ランダム)
-  const pool = ['battle', 'battle', 'battle', 'battle', 'treasure', 'rest'];
-  for(let i=pool.length-1; i>0; i--){
-    const j=Math.floor(Math.random()*(i+1)); [pool[i], pool[j]]=[pool[j], pool[i]];
+  // ユニークスキル効果: 難攻不落（DEFにATKの20%上乗せ）
+  if(GS.run.uniqueSkills.includes('warrior_fortress')){
+    GS.run.def += Math.floor(GS.run.atk * 0.2);
   }
-  GS.run.roomTypes = ['battle', 'battle', 'battle', ...pool, 'boss'];
-  
+  // ユニークスキル効果: 神罰（ATKにDEFの50%上乗せ）
+  if(GS.run.uniqueSkills.includes('paladin_judgement')){
+    GS.run.atk += Math.floor(GS.run.def * 0.5);
+  }
+
+  GS.run.lichUsed = false; // リッチの目覚め発動済みフラグ
+  GS.run.nextSkillDiscount = 0; // 連鎖魔法によるMPコスト割引
+  GS.run.counterReady = false; // 鉄の反撃フラグ
+  GS.run.phantomTurns = GS.run.uniqueSkills.includes('rogue_phantom') ? 2 : 0; // 幻影
+  GS.run.shadowbladeReady = false; // 影刃フラグ
+
+  // 部屋構成のランダム生成
+  // 1〜3部屋目: battle / 10部屋目: boss
+  // 4〜9部屋目 (計6部屋): battle×4, treasure×1, rest×1 をシャッフル
+  const midRooms = ['battle', 'battle', 'battle', 'battle', 'treasure', 'rest'];
+  for (let i = midRooms.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [midRooms[i], midRooms[j]] = [midRooms[j], midRooms[i]];
+  }
+  GS.run.roomTypes = ['battle', 'battle', 'battle', ...midRooms, 'boss'];
+
   renderDungeon(); goTo('s-dungeon');
 }
 
+// ─── ダンジョン ───────────────────────────────────────────
 function renderDungeon(){
-  const rg=document.getElementById('room-grid'); rg.innerHTML='';
-  for(let i=0; i<10; i++){
+  const rg=document.getElementById('room-grid');rg.innerHTML='';
+  for(let i=0;i<10;i++){
     const t=GS.run.roomTypes[i];
-    let lbl=i<GS.run.room?'✓':i===GS.run.room?'●':t==='boss'?'B':'?';
+    let label=i<GS.run.room?'✓':i===GS.run.room?'●':t==='boss'?'B':'?';
     let cls='room '+(i<GS.run.room?'cleared':i===GS.run.room?'current':i>GS.run.room?'locked':'');
     if(t==='boss'&&i>=GS.run.room) cls+=' boss';
-    rg.innerHTML+=`<div class="${cls}">${lbl}</div>`;
+    rg.innerHTML+=`<div class="${cls}">${label}</div>`;
   }
   document.getElementById('room-num').textContent=GS.run.room+1;
   document.getElementById('run-souls').textContent=GS.run.runSouls;
@@ -1248,71 +1267,99 @@ function renderDungeon(){
   document.getElementById('d-def').textContent=GS.run.def;
   document.getElementById('d-crit').textContent=GS.run.crit+'%';
   document.getElementById('d-dodge').textContent=GS.run.dodge+'%';
+  // 装飾品情報表示
   const accInfo=document.getElementById('d-accessory-info');
-  if((GS.run.accessories||[]).length){
+  const accs=GS.run.accessories||[];
+  if(accs.length){
     accInfo.style.display='block';
-    accInfo.innerHTML='💍: '+GS.run.accessories.map(id=>ACCESSORIES[id]?.icon).join(' ');
+    accInfo.innerHTML='💍 装飾品: '+accs.map(id=>ACCESSORIES[id]?`${ACCESSORIES[id].icon} ${ACCESSORIES[id].name}`:'').filter(Boolean).join(' / ');
   } else accInfo.style.display='none';
 }
-
 function enterRoom(){
-  const t=GS.run.roomTypes[GS.run.room], floor=FLOORS.find(f=>f.id===GS.run.floorId);
+  const t=GS.run.roomTypes[GS.run.room];
+  const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
   if(t==='battle'||t==='boss'){
     const pool=t==='boss'?floor.bosses:floor.enemies;
-    startBattle(JSON.parse(JSON.stringify(pool[Math.floor(Math.random()*pool.length)])), t==='boss');
-  }
-  else showChoice(t);
+    startBattle(JSON.parse(JSON.stringify(pool[Math.floor(Math.random()*pool.length)])),t==='boss');
+  } else if(t==='treasure') showChoice('treasure');
+  else if(t==='rest')       showChoice('rest');
 }
 
-// ─── バトル・オートバトル ──────────────────────────────────
-function startBattle(enemy, isBoss){
-  let startMp = GS.run.mp;
-  (GS.run.accessories||[]).forEach(id=>{ if(ACCESSORIES[id]?.kind==='onBattleStart') startMp=Math.min(GS.run.maxMp, startMp+ACCESSORIES[id].effect.mp); });
+// ─── 戦闘 ────────────────────────────────────────────────
+function startBattle(enemy,isBoss){
+  let startMp=GS.run.mp;
+  // アクセサリ: onBattleStart
+  (GS.run.accessories||[]).forEach(id=>{
+    const acc=ACCESSORIES[id];if(!acc)return;
+    if(acc.kind==='onBattleStart'){
+      if(acc.effect.mp){startMp=Math.min(GS.run.maxMp,startMp+acc.effect.mp);}
+    }
+  });
   bState={
-    heroHp:GS.run.hp, heroMaxHp:GS.run.maxHp, heroMp:startMp, heroMaxMp:GS.run.maxMp,
-    enemyHp:enemy.hp, enemyMaxHp:enemy.hp, enemy, isBoss, turn:0, over:false,
-    rageStacks:0, dodgeNext:false, stunTurns:0, phantomTurns:GS.run.phantomTurns,
-    curseTick:GS.run.uniqueSkills.includes('necro_curse')?Math.floor(enemy.hp*0.05):0
+    heroHp:GS.run.hp, heroMaxHp:GS.run.maxHp,
+    heroMp:startMp,   heroMaxMp:GS.run.maxMp,
+    enemyHp:enemy.hp, enemyMaxHp:enemy.hp,
+    enemy, isBoss, turn:0, over:false,
+    rageStacks:0, dodgeNext:false, stunTurns:0,
+    phantomTurns: GS.run.phantomTurns||0, // 幻影: 戦闘開始時の残り完全回避ターン
+    curseTick: (GS.run.uniqueSkills||[]).includes('necro_curse') ? Math.floor(enemy.hp*0.05) : 0 // 死の呪縛
   };
-  document.getElementById('battle-title').textContent=isBoss?'⚠ ボス':'戦闘';
+  document.getElementById('battle-title').textContent=isBoss?'⚠ ボス戦':'戦闘';
   document.getElementById('b-hero-name').textContent=GS.run.name;
+  document.getElementById('b-souls').textContent=GS.run.runSouls;
   document.getElementById('hero-sprite').textContent=GS.run.icon;
-  document.getElementById('b-enemy-name').textContent=enemy.name;
   document.getElementById('enemy-sprite').textContent=enemy.icon;
+  document.getElementById('b-enemy-name').textContent=enemy.name;
+  document.getElementById('battle-result').style.display='none';
   document.getElementById('battle-log').innerHTML='';
-  updateBattleStatsPanel(); renderPassiveBadges(); renderActiveBtns(); updateBattleUI();
-  goTo('s-battle'); addLog('戦闘開始');
-  setTimeout(()=>autoBattleTick(), 1000);
+  paused=false;
+  document.getElementById('pause-btn').textContent='⏸ 一時停止';
+  updateBattleStatsPanel();
+  renderPassiveBadges();
+  renderActiveBtns();
+  updateBattleUI();
+  goTo('s-battle');
+  addLog('戦闘開始！','log-system');
+  if(startMp>GS.run.mp){addLog(`魔力の首飾り発動！ MP+${startMp-GS.run.mp}`,'log-heal');}
+  setTimeout(()=>autoBattleTick(),1000);
 }
 
 function updateBattleStatsPanel(){
-  const cBonus = (GS.run.passiveSkills||[]).includes('critup')?20:0;
+  const passives=GS.run.passiveSkills||[];
+  const critBonus=passives.includes('critup')?20:0;
   document.getElementById('bs-atk').textContent=GS.run.atk;
   document.getElementById('bs-def').textContent=GS.run.def;
-  document.getElementById('bs-crit').textContent=(GS.run.crit+cBonus)+'%';
+  document.getElementById('bs-crit').textContent=(GS.run.crit+critBonus)+'%';
   document.getElementById('bs-dodge').textContent=GS.run.dodge+'%';
   document.getElementById('bs-hdodge').textContent=GS.run.hdodge+'%';
 }
 
 function renderPassiveBadges(){
-  const el=document.getElementById('passive-badges'); el.innerHTML='';
+  const el=document.getElementById('passive-badges');el.innerHTML='';
   const alwaysIds=['ironwall','vampiric','mprecover','critup'];
   (GS.run.passiveSkills||[]).forEach(id=>{
-    const s=PASSIVE_SKILLS[id], b=document.createElement('span');
-    b.className='passive-badge '+(alwaysIds.includes(id)?'always':'conditional');
-    b.id='pbadge-'+id;
-    b.textContent=s.icon+' '+s.name;
-    b.onmouseenter=(e)=>showPassiveTooltip(e,s.desc); b.onmousemove=movePassiveTooltip; b.onmouseleave=hidePassiveTooltip;
-    el.appendChild(b);
+    const s=PASSIVE_SKILLS[id];
+    const isAlways=alwaysIds.includes(id);
+    const badge=document.createElement('span');
+    badge.className='passive-badge '+(isAlways?'always':'conditional');
+    badge.id='pbadge-'+id;
+    badge.textContent=s.icon+' '+s.name;
+    badge.addEventListener('mouseenter',e=>showPassiveTooltip(e,s.desc));
+    badge.addEventListener('mousemove', e=>movePassiveTooltip(e));
+    badge.addEventListener('mouseleave',hidePassiveTooltip);
+    el.appendChild(badge);
   });
+  // アクセサリバッジ
   (GS.run.accessories||[]).forEach(id=>{
     const acc=ACCESSORIES[id];if(!acc)return;
-    const b=document.createElement('span');
-    b.className='passive-badge conditional';
-    b.style.background='#2c1800';b.style.color='#fb923c';b.style.border='0.5px solid #431a00';
-    b.textContent=acc.icon+' '+acc.name;
-    b.onmouseenter=(e)=>showPassiveTooltip(e,acc.desc); b.onmousemove=movePassiveTooltip; b.onmouseleave=hidePassiveTooltip;
-    el.appendChild(b);
+    const badge=document.createElement('span');
+    badge.className='passive-badge conditional';
+    badge.style.background='#2c1800';badge.style.color='#fb923c';badge.style.border='0.5px solid #431a00';
+    badge.textContent=acc.icon+' '+acc.name;
+    badge.addEventListener('mouseenter',e=>showPassiveTooltip(e,acc.desc));
+    badge.addEventListener('mousemove', e=>movePassiveTooltip(e));
+    badge.addEventListener('mouseleave',hidePassiveTooltip);
+    el.appendChild(badge);
   });
 }
 function showPassiveTooltip(e,desc){const tt=document.getElementById('passive-tooltip');tt.textContent=desc;tt.style.display='block';movePassiveTooltip(e);}
@@ -1327,15 +1374,19 @@ function triggerPassiveBadge(id){
 }
 
 function renderActiveBtns(){
-  const el=document.getElementById('active-skill-btns'); el.innerHTML='';
+  const el=document.getElementById('active-skill-btns');el.innerHTML='';
   (GS.run.activeSkills||[]).forEach(id=>{
-    const s=ACTIVE_SKILLS[id], btn=document.createElement('button');
-    btn.className='active-btn'; btn.disabled=bState.heroMp<s.mpCost;
-    btn.innerHTML=`<span>${s.icon} ${s.name}</span><span class="sk-cost">MP ${s.mpCost}</span>`;
-    btn.onclick=()=>useActiveSkill(id); el.appendChild(btn);
+    const s=ACTIVE_SKILLS[id];
+    const canUse=!bState.over&&bState.heroMp>=s.mpCost;
+    const btn=document.createElement('button');
+    btn.className='active-btn';btn.disabled=!canUse;
+    btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><span class="sk-cost">MP ${s.mpCost}</span>`;
+    btn.onclick=()=>useActiveSkill(id);
+    el.appendChild(btn);
   });
 }
 function useActiveSkill(id){
+  if(bState.over)return;
   const s=ACTIVE_SKILLS[id];
   const cost=Math.max(0,s.mpCost-(GS.run.nextSkillDiscount||0));
   GS.run.nextSkillDiscount=0;
@@ -1343,284 +1394,453 @@ function useActiveSkill(id){
   bState.heroMp-=cost;
   addLog(`【${s.name}】発動！`,'log-skill');
   s.fn(bState);
-  if((GS.run.uniqueSkills||[]).includes('mage_chain')) GS.run.nextSkillDiscount=10;
-  GS.run.skillUsed++;
-  updateBattleUI(); renderActiveBtns();
+  // 連鎖魔法: 次のスキルコスト-10MP
+  if((GS.run.uniqueSkills||[]).includes('mage_chain'))
+    GS.run.nextSkillDiscount=10;
+  // スキル使用カウント（達成報酬用）
+  GS.run.skillUsed=(GS.run.skillUsed||0)+1;
+  updateBattleUI();renderActiveBtns();
 }
 
-function skillHitEnemy(bs,baseDmg,name){
-  const isCrit=Math.random()<(GS.run.crit+((GS.run.passiveSkills||[]).includes('critup')?20:0))/100;
-  let rawDmg = isCrit?Math.floor(baseDmg*1.5):baseDmg;
-  if(isCrit && GS.run.weaponId==='axe') rawDmg+=15;
-  const d=randVar(Math.floor(rawDmg*GS.run.dmgBonus));
+function skillHitEnemy(bs,baseDmg,skillName){
+  const passives=GS.run.passiveSkills||[];
+  const critBonus=passives.includes('critup')?20:0;
+  const critChance=(GS.run.crit+critBonus)/100;
+  const isCrit=Math.random()<critChance;
   
+  let rawDmg=isCrit?Math.floor(baseDmg*1.5):baseDmg;
+  if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
+
+  const dmg=randVar(Math.floor(rawDmg*(GS.run.dmgBonus||1)));
+
   const el=document.getElementById('enemy-sprite');
-  el.classList.add('skill-attack'); setTimeout(()=>el.classList.remove('skill-attack'),500);
-  showSkillFlash(); if(isCrit)showCritFlash();
-  animShake('enemy-sprite'); bs.enemyHp-=d; showDmg('enemy-sprite',d,false,true,isCrit);
-  addLog(`${isCrit?'💥会心！':''}${name}で${d}ダメージ！`,isCrit?'log-crit':'log-skill');
-  
-  if(isCrit&&GS.run.uniqueSkills.includes('mage_insight')){ bs.heroMp=Math.min(bs.heroMaxMp, bs.heroMp+15); addLog('洞察の眼: MP+15','log-heal'); }
-  if((GS.run.passiveSkills||[]).includes('vampiric')){
-    const h=Math.max(1,Math.floor(d*0.03)); bs.heroHp=Math.min(bs.heroMaxHp,bs.heroHp+h);
-    showDmg('hero-sprite',h,true,false,false); triggerPassiveBadge('vampiric');
+  el.classList.add('skill-attack');
+  setTimeout(()=>el.classList.remove('skill-attack'),500);
+  showSkillFlash();
+  if(isCrit){showCritFlash();}
+  animShake('enemy-sprite');
+  bs.enemyHp-=dmg;
+  showDmg('enemy-sprite',dmg,false,true,isCrit);
+  addLog(`${isCrit?'💥会心！':''}${skillName}で${dmg}ダメージ！`,isCrit?'log-crit':'log-skill');
+  // 洞察の眼: 会心時MP+15
+  if(isCrit&&(GS.run.uniqueSkills||[]).includes('mage_insight')){
+    bs.heroMp=Math.min(bs.heroMaxMp,bs.heroMp+15);
+    addLog('洞察の眼: MP+15','log-heal');
   }
-  if(bs.enemyHp<=0) setTimeout(()=>endBattle(true),200);
+  applyVampiric(dmg,bs);
+  updateBattleUI();renderActiveBtns();
+  if(bs.enemyHp<=0)setTimeout(()=>endBattle(true),200);
 }
+function applyVampiric(dmg,bs){
+  if((GS.run.passiveSkills||[]).includes('vampiric')){
+    const h=Math.max(1,Math.floor(dmg*0.03));
+    bs.heroHp=Math.min(bs.heroMaxHp,bs.heroHp+h);
+    showDmg('hero-sprite',h,true,false,false);
+    triggerPassiveBadge('vampiric');
+  }
+}
+function showSkillFlash(){const area=document.getElementById('battle-area');const fl=document.createElement('div');fl.className='skill-flash';area.appendChild(fl);setTimeout(()=>fl.remove(),400);}
+function showCritFlash(){const area=document.getElementById('battle-area');const fl=document.createElement('div');fl.className='crit-flash';area.appendChild(fl);setTimeout(()=>fl.remove(),300);}
+function showHeroFlash(){const area=document.getElementById('battle-area');const fl=document.createElement('div');fl.className='hero-flash';area.appendChild(fl);setTimeout(()=>fl.remove(),250);}
+
+function addLog(msg,cls=''){
+  const lg=document.getElementById('battle-log');
+  const p=document.createElement('p');
+  if(cls)p.className=cls;
+  p.textContent=msg;
+  lg.insertBefore(p,lg.firstChild);
+  if(lg.children.length>25)lg.removeChild(lg.lastChild);
+}
+
+function showDmg(targetId,val,isHeal,isSkill,isCrit){
+  const area=document.getElementById('battle-area');
+  const el=document.createElement('div');
+  const isEnemyTarget=targetId==='enemy-sprite';
+  el.className='dmg-pop'+(isCrit?' crit-dmg':isSkill?' skill-dmg':isHeal?' heal':isEnemyTarget?' enemy-dmg':'');
+  el.textContent=(isHeal?'+':'-')+val;
+  const tgt=document.getElementById(targetId);
+  const rect=tgt.getBoundingClientRect();
+  const aRect=area.getBoundingClientRect();
+  const jitter=(Math.random()-0.5)*20;
+  el.style.left=(rect.left-aRect.left+rect.width/2-16+jitter)+'px';
+  el.style.top=(rect.top-aRect.top-10)+'px';
+  area.appendChild(el);
+  setTimeout(()=>el.remove(),900);
+}
+
+function animAttack(spriteId, animType, onHit){
+  const el=document.getElementById(spriteId);
+  const isEnemy = spriteId === 'enemy-sprite';
+  const animClass = isEnemy ? 'enemy-attack' : (animType ? 'attack-' + animType : 'attack');
+  el.classList.add(animClass);
+  setTimeout(()=>{
+    el.classList.remove(animClass);
+    if(onHit) onHit();
+  }, animType === 'smash' ? 400 : 300);
+}
+function animShake(spriteId){const el=document.getElementById(spriteId);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),300);}
 
 function updateBattleUI(){
-  document.getElementById('b-hero-hp').style.width=(bState.heroHp/bState.heroMaxHp*100)+'%';
-  document.getElementById('b-enemy-hp').style.width=(bState.enemyHp/bState.enemyMaxHp*100)+'%';
-  document.getElementById('b-hero-mp').style.width=(bState.heroMp/bState.heroMaxMp*100)+'%';
+  const hPct=Math.max(0,bState.heroHp/bState.heroMaxHp*100);
+  const ePct=Math.max(0,bState.enemyHp/bState.enemyMaxHp*100);
+  const mPct=Math.max(0,bState.heroMp/bState.heroMaxMp*100);
+  document.getElementById('b-hero-hp').style.width=hPct+'%';
+  document.getElementById('b-enemy-hp').style.width=ePct+'%';
+  document.getElementById('b-hero-mp').style.width=mPct+'%';
   document.getElementById('b-hero-hp-text').textContent=`${Math.max(0,bState.heroHp)}/${bState.heroMaxHp}`;
   document.getElementById('b-enemy-hp-text').textContent=`${Math.max(0,bState.enemyHp)}/${bState.enemyMaxHp}`;
-  document.getElementById('b-hero-mp-text').textContent=`MP ${bState.heroMp}/${bState.heroMaxMp}`;
+  document.getElementById('b-hero-mp-text').textContent=`MP ${Math.max(0,bState.heroMp)}/${bState.heroMaxMp}`;
 }
 
+function randVar(dmg){return Math.max(1,Math.floor(dmg*(0.85+Math.random()*0.3)));}
+
+// ─── オートバトル ─────────────────────────────────────────
 function autoBattleTick(){
-  if(bState.over||paused) return;
+  if(bState.over||paused)return;
   bState.turn++;
   const passives=GS.run.passiveSkills||[];
-  
+  const hasCritUp=passives.includes('critup');
+  const hasRage=passives.includes('rage');
+  const hasMpRecover=passives.includes('mprecover');
+
+  // 呪いの刻印（ターン毎に敵HP削る）
   if(passives.includes('cursedmark')){
-    const cd=Math.max(1,Math.floor(bState.enemyMaxHp*0.02)); bState.enemyHp-=cd; addLog(`呪いの刻印: ${cd}ダメージ`,'log-skill');
+    const curseDmg=Math.max(1,Math.floor(bState.enemyMaxHp*0.02));
+    bState.enemyHp-=curseDmg;
+    addLog(`呪いの刻印: ${curseDmg}ダメージ`,'log-skill');
     if(bState.enemyHp<=0){endBattle(true);return;}
   }
-  if(bState.curseTick){
-    bState.enemyHp-=bState.curseTick; addLog(`死の呪縛: ${bState.curseTick}ダメージ`,'log-skill');
+  // 死の呪縛（毎ターン呪いダメージ）
+  if((GS.run.uniqueSkills||[]).includes('necro_curse')&&bState.curseTick>0){
+    bState.enemyHp-=bState.curseTick;
+    addLog(`死の呪縛: ${bState.curseTick}ダメージ`,'log-skill');
     if(bState.enemyHp<=0){endBattle(true);return;}
   }
-  if(GS.run.uniqueSkills.includes('paladin_aura')){ bState.heroHp=Math.min(bState.heroMaxHp, bState.heroHp+3); showDmg('hero-sprite',3,true,false,false); }
-
-  bState.heroMp=Math.min(bState.heroMaxMp,bState.heroMp+3+(passives.includes('mprecover')?5:0));
-
-  let atk=GS.run.atk;
-  if(passives.includes('rage')&&bState.heroHp<bState.heroMaxHp*0.5){ atk=Math.floor(atk*1.3); triggerPassiveBadge('rage'); }
-  if(bState.rageStacks>0){ atk=Math.floor(atk*1.5); bState.rageStacks--; }
-  if(bState.heroHp<bState.heroMaxHp*0.3 && GS.run.uniqueSkills.includes('warrior_berserk')) atk=Math.floor(atk*1.5);
-  if(GS.run.uniqueSkills.includes('necro_lich')&&!GS.run.lichUsed&&bState.heroHp<bState.heroMaxHp*0.1){
-    GS.run.lichUsed=true; atk=Math.floor(atk*1.4); bState.heroMaxHp=Math.floor(bState.heroMaxHp*1.4);
-    addLog('リッチの目覚め発動！ 全ステータス+40%','log-skill'); showSkillFlash();
+  // 聖なる加護（毎ターンHP回復）
+  if((GS.run.uniqueSkills||[]).includes('paladin_aura')){
+    bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+3);
+    showDmg('hero-sprite',3,true,false,false);
   }
-  if(GS.run.counterReady){ atk=Math.floor(atk*1.3); GS.run.counterReady=false; }
-  
-  const isCrit=bState.shadowbladeReady || Math.random()<(GS.run.crit+(passives.includes('critup')?20:0))/100;
-  bState.shadowbladeReady=false;
-  atk=Math.floor(atk*GS.run.dmgBonus);
-  
-  let rawDmg=atk+(isCrit?Math.floor(atk*0.5):0);
-  if(isCrit&&GS.run.weaponId==='axe') rawDmg+=15;
-  let d=randVar(Math.max(1, rawDmg-bState.enemy.def));
 
-  animAttack('hero-sprite', WEAPONS[GS.run.weaponId].anim, ()=>{
+  bState.heroMp=Math.min(bState.heroMaxMp,bState.heroMp+3+(hasMpRecover?5:0));
+  // 魂の収穫（敵撃破時MP+10）はendBattleで処理
+
+  let heroAtk=GS.run.atk;
+  if(hasRage&&bState.heroHp<bState.heroMaxHp*0.5){heroAtk=Math.floor(heroAtk*1.3);triggerPassiveBadge('rage');}
+  if(bState.rageStacks>0){heroAtk=Math.floor(heroAtk*1.5);bState.rageStacks--;}
+  // 血戦の心得: HP30%以下で攻撃+50%・被ダメ-20%
+  if((GS.run.uniqueSkills||[]).includes('warrior_berserk')&&bState.heroHp<bState.heroMaxHp*0.3)
+    heroAtk=Math.floor(heroAtk*1.5);
+  // リッチの目覚め: HP10%以下で全ステータス+40%（1回限り）
+  if((GS.run.uniqueSkills||[]).includes('necro_lich')&&!GS.run.lichUsed&&bState.heroHp<bState.heroMaxHp*0.1){
+    GS.run.lichUsed=true;
+    heroAtk=Math.floor(heroAtk*1.4);
+    bState.heroMaxHp=Math.floor(bState.heroMaxHp*1.4);
+    addLog('リッチの目覚め発動！ 全ステータス+40%','log-skill');showSkillFlash();
+  }
+  // 鉄の反撃: 被ダメ後次の攻撃+30%
+  if(GS.run.counterReady){heroAtk=Math.floor(heroAtk*1.3);GS.run.counterReady=false;}
+  // 影刃: 回避成功後次の攻撃が会心確定
+  const shadowbladeActive=GS.run.shadowbladeReady||false;
+  if(shadowbladeActive) GS.run.shadowbladeReady=false;
+  heroAtk=Math.floor(heroAtk*(GS.run.dmgBonus||1));
+  const critChance=(GS.run.crit+(hasCritUp?20:0))/100;
+  const isCrit=shadowbladeActive||Math.random()<critChance;
+  
+  let rawDmg=heroAtk+(isCrit?Math.floor(heroAtk*0.5):0);
+  if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
+
+  let heroDmg=randVar(Math.max(1,rawDmg-bState.enemy.def));
+
+  const wAnim = WEAPONS[GS.run.weaponId]?.anim || 'slash';
+  animAttack('hero-sprite', wAnim, ()=>{
     animShake('enemy-sprite');
+    // アクセサリ: onHit（連撃の指輪）
     let extraHit=false;
     (GS.run.accessories||[]).forEach(id=>{
       const acc=ACCESSORIES[id];if(!acc||acc.kind!=='onHit')return;
       if(acc.effect.doubleHit&&Math.random()<acc.effect.doubleHit) extraHit=true;
     });
 
-    bState.enemyHp-=d; showDmg('enemy-sprite',d,false,false,isCrit);
+    bState.enemyHp-=heroDmg;
+    showDmg('enemy-sprite',heroDmg,false,false,isCrit);
     if(isCrit)showCritFlash();
-    addLog((isCrit?'💥会心！':'')+`${d}ダメージ`,isCrit?'log-crit':'log-enemy-dmg');
-    
-    if(passives.includes('vampiric')){
-      const h=Math.max(1,Math.floor(d*0.03)); bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+h);
-      showDmg('hero-sprite',h,true,false,false); triggerPassiveBadge('vampiric');
-    }
+    addLog((isCrit?'💥会心！':'')+`${heroDmg}ダメージ`,isCrit?'log-crit':'log-enemy-dmg');
+    applyVampiric(heroDmg,bState);
 
     if(extraHit){
-      const ed=randVar(Math.max(1,Math.floor(atk*0.8)-bState.enemy.def));
-      bState.enemyHp-=ed; showDmg('enemy-sprite',ed,false,false,false); addLog(`連撃の指輪発動！ 追撃${ed}ダメージ`,'log-enemy-dmg');
+      const extraDmg=randVar(Math.max(1,Math.floor(heroAtk*0.8)-bState.enemy.def));
+      bState.enemyHp-=extraDmg;
+      showDmg('enemy-sprite',extraDmg,false,false,false);
+      addLog(`連撃の指輪発動！ 追撃${extraDmg}ダメージ`,'log-enemy-dmg');
     }
 
-    updateBattleUI(); renderActiveBtns();
-    if(bState.enemyHp<=0){ endBattle(true); return; }
-    
+    updateBattleUI();renderActiveBtns();
+    if(bState.enemyHp<=0){endBattle(true);return;}
+
     setTimeout(()=>{
       if(bState.over)return;
-      if(bState.stunTurns>0){ bState.stunTurns--; addLog('時間停止！ 敵の攻撃を無効化','log-skill'); updateBattleUI(); renderActiveBtns(); setTimeout(()=>autoBattleTick(),1300); return; }
-      
-      let ed=randVar(Math.max(1, Math.floor(bState.enemy.atk*1.3)-GS.run.def));
-      if(passives.includes('ironwall')){ ed=Math.floor(ed*GS.run.defBonus*0.9); triggerPassiveBadge('ironwall'); }
-      else if(GS.run.defBonus<1) ed=Math.floor(ed*GS.run.defBonus);
-      if(bState.heroHp<bState.heroMaxHp*0.3 && GS.run.uniqueSkills.includes('warrior_berserk')) ed=Math.floor(ed*0.8);
-      if(bState.heroHp<bState.heroMaxHp*0.5 && GS.run.uniqueSkills.includes('paladin_shield')) ed=Math.floor(ed*0.75);
-      
-      let dodge='none';
-      if(bState.phantomTurns>0){ dodge='full'; bState.phantomTurns--; if(bState.turn===1)addLog('幻影発動！ 攻撃を回避','log-skill'); }
-      else if(bState.dodgeNext){ dodge='full'; bState.dodgeNext=false; }
-      else if(Math.random()*100<GS.run.dodge) dodge='full';
-      else if(Math.random()*100<GS.run.dodge+GS.run.hdodge) dodge='half';
-      
-      if(dodge==='full') ed=0; else if(dodge==='half') ed=Math.max(1,Math.floor(ed/2));
 
-      animAttack('enemy-sprite','enemy-atk',()=>{
-        if(dodge==='full'){
-          showTextPop('hero-sprite','回避！','dodge-txt'); addLog('敵の攻撃を完全回避！','log-dodge'); GS.run.dodgeCount++;
-          if(GS.run.uniqueSkills.includes('rogue_shadowblade')) bState.shadowbladeReady=true;
-        } else if(dodge==='half'){
-          animShake('hero-sprite'); showHeroFlash(); bState.heroHp-=ed; showDmg('hero-sprite',ed,false,false,false);
-          showTextPop('hero-sprite','半回避','dodge-txt'); addLog(`半回避！ ${bState.enemy.name}から${ed}ダメージ`,'log-hero-dmg');
+      // スタン中は敵攻撃スキップ
+      if(bState.stunTurns>0){
+        bState.stunTurns--;
+        addLog('時間停止！ 敵の攻撃を無効化','log-skill');
+        updateBattleUI();renderActiveBtns();
+        setTimeout(()=>autoBattleTick(),1300);
+        return;
+      }
+
+      let dmgToHero=randVar(Math.max(1,Math.floor(bState.enemy.atk*1.3)-GS.run.def));
+      if(passives.includes('ironwall')){dmgToHero=Math.floor(dmgToHero*(GS.run.defBonus||1)*0.9);triggerPassiveBadge('ironwall');}
+      else if(GS.run.defBonus<1) dmgToHero=Math.floor(dmgToHero*GS.run.defBonus);
+      // 血戦の心得: HP30%以下で被ダメ-20%
+      if((GS.run.uniqueSkills||[]).includes('warrior_berserk')&&bState.heroHp<bState.heroMaxHp*0.3)
+        dmgToHero=Math.floor(dmgToHero*0.8);
+      // 聖盾の意志: HP50%以下で被ダメ-25%
+      if((GS.run.uniqueSkills||[]).includes('paladin_shield')&&bState.heroHp<bState.heroMaxHp*0.5)
+        dmgToHero=Math.floor(dmgToHero*0.75);
+
+      // 幻影: 最初の2ターン完全回避
+      const r=Math.random()*100;
+      let dodgeResult='none';
+      if(bState.phantomTurns>0){dodgeResult='full';bState.phantomTurns--;if(bState.turn===1)addLog('幻影発動！ 攻撃を回避','log-skill');}
+      else if(bState.dodgeNext){dodgeResult='full';bState.dodgeNext=false;}
+      else if(r<GS.run.dodge) dodgeResult='full';
+      else if(r<GS.run.dodge+GS.run.hdodge) dodgeResult='half';
+
+      if(dodgeResult==='full')  dmgToHero=0;
+      else if(dodgeResult==='half') dmgToHero=Math.max(1,Math.floor(dmgToHero/2));
+
+      animAttack('enemy-sprite', null, ()=>{
+        if(dodgeResult==='full'){
+          showTextPop('hero-sprite','回避！','dodge-txt');
+          addLog('敵の攻撃を完全回避！','log-dodge');
+          GS.run.dodgeCount=(GS.run.dodgeCount||0)+1;
+          // 影刃: 回避成功で次の攻撃が会心確定
+          if((GS.run.uniqueSkills||[]).includes('rogue_shadowblade'))
+            GS.run.shadowbladeReady=true;
+        } else if(dodgeResult==='half'){
+          animShake('hero-sprite');showHeroFlash();
+          bState.heroHp-=dmgToHero;
+          showDmg('hero-sprite',dmgToHero,false,false,false);
+          showTextPop('hero-sprite','半回避','dodge-txt');
+          addLog(`半回避！ ${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
         } else {
-          animShake('hero-sprite'); showHeroFlash(); bState.heroHp-=ed; showDmg('hero-sprite',ed,false,false,false);
-          addLog(`${bState.enemy.name}から${ed}ダメージ`,'log-hero-dmg');
-          if(GS.run.uniqueSkills.includes('warrior_counter')) GS.run.counterReady=true;
+          animShake('hero-sprite');showHeroFlash();
+          bState.heroHp-=dmgToHero;
+          showDmg('hero-sprite',dmgToHero,false,false,false);
+          addLog(`${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
+          // 鉄の反撃: 被ダメ後の次の攻撃+30%
+          if((GS.run.uniqueSkills||[]).includes('warrior_counter'))
+            GS.run.counterReady=true;
         }
+        // 不死身
         if(bState.heroHp<=0&&passives.includes('undying')&&!GS.run.undyingUsed){
-          GS.run.undyingUsed=true; bState.heroHp=1; addLog('不死身発動！ HP1で踏みとどまった！','log-heal');
+          GS.run.undyingUsed=true;bState.heroHp=1;
+          addLog('不死身発動！ HP1で踏みとどまった！','log-heal');
         }
-        updateBattleUI(); renderActiveBtns();
-        if(bState.heroHp<=0) endBattle(false); else if(bState.enemyHp<=0) endBattle(true); else setTimeout(()=>autoBattleTick(),1300);
+        updateBattleUI();renderActiveBtns();
+        if(bState.heroHp<=0){endBattle(false);return;}
+        if(bState.enemyHp<=0){endBattle(true);return;}
+        setTimeout(()=>autoBattleTick(),1300);
       });
-    }, 840);
+    },840);
   });
 }
 
-function animAttack(id, type, cb){
-  const el=document.getElementById(id); el.classList.add(type);
-  setTimeout(()=>{ el.classList.remove(type); if(cb)cb(); }, type==='smash'?400:300);
+function showTextPop(targetId,text,cls){
+  const area=document.getElementById('battle-area');
+  const el=document.createElement('div');
+  el.className='dmg-pop '+(cls||'');
+  el.textContent=text;
+  const tgt=document.getElementById(targetId);
+  const rect=tgt.getBoundingClientRect();
+  const aRect=area.getBoundingClientRect();
+  el.style.left=(rect.left-aRect.left+rect.width/2-20)+'px';
+  el.style.top=(rect.top-aRect.top-28)+'px';
+  area.appendChild(el);
+  setTimeout(()=>el.remove(),900);
 }
-function animShake(id){ document.getElementById(id).classList.add('shake'); setTimeout(()=>document.getElementById(id).classList.remove('shake'),300); }
-function showDmg(id,v,h,s,c){
-  const area=document.getElementById('battle-area'), el=document.createElement('div');
-  el.className='dmg-pop '+(c?'crit-dmg':s?'skill-dmg':h?'heal':id==='enemy-sprite'?'enemy-dmg':'');
-  el.textContent=(h?'+':'-')+v;
-  const r=document.getElementById(id).getBoundingClientRect(), a=area.getBoundingClientRect();
-  el.style.left=(r.left-a.left+r.width/2-16+(Math.random()-0.5)*20)+'px'; el.style.top=(r.top-a.top-10)+'px';
-  area.appendChild(el); setTimeout(()=>el.remove(),900);
-}
-function showTextPop(id,t,c){
-  const area=document.getElementById('battle-area'), el=document.createElement('div');
-  el.className='dmg-pop '+(c||''); el.textContent=t;
-  const r=document.getElementById(id).getBoundingClientRect(), a=area.getBoundingClientRect();
-  el.style.left=(r.left-a.left+r.width/2-20)+'px'; el.style.top=(r.top-a.top-28)+'px';
-  area.appendChild(el); setTimeout(()=>el.remove(),900);
-}
-function addLog(m,c){
-  const l=document.getElementById('battle-log'), p=document.createElement('p');
-  if(c)p.className=c; p.textContent=m; l.insertBefore(p,l.firstChild);
-  if(l.children.length>25)l.removeChild(l.lastChild);
-}
-function randVar(v){return Math.max(1,Math.floor(v*(0.85+Math.random()*0.3)));}
 
-// ─── 戦闘終了・リザルト ─────────────────────────────────────
+// ─── 戦闘終了 ─────────────────────────────────────────────
 function endBattle(won){
-  if(bState.over)return; bState.over=true;
+  if(bState.over)return;
+  bState.over=true;
   const passives=GS.run.passiveSkills||[];
-  const resEl=document.getElementById('battle-result'); resEl.style.display='block';
+  const resEl=document.getElementById('battle-result');
+  resEl.style.display='block';
   if(won){
-    const f=FLOORS.find(x=>x.id===GS.run.floorId);
-    let s=Math.floor(bState.enemy.souls*f.soulsMult), e=Math.floor(bState.enemy.exp*f.expMult);
+    const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
+    const sm=floor?floor.soulsMult:1;
+    const em=floor?floor.expMult:1;
+    let souls=Math.floor((bState.enemy.souls||0)*sm);
+    const exp=Math.floor((bState.enemy.exp||(bState.isBoss?20:4))*em);
+
+    // アクセサリ: onKill（魂喰いの護符）
     (GS.run.accessories||[]).forEach(id=>{
       const acc=ACCESSORIES[id];if(!acc||acc.kind!=='onKill')return;
-      if(acc.effect.bonusSouls&&Math.random()<acc.effect.chance){ s+=acc.effect.bonusSouls; addLog(`魂喰いの護符発動！ 魂+${acc.effect.bonusSouls}`,'log-heal'); }
+      if(acc.effect.bonusSouls&&Math.random()<acc.effect.chance){
+        souls+=acc.effect.bonusSouls;
+        addLog(`魂喰いの護符発動！ 魂+${acc.effect.bonusSouls}`,'log-heal');
+      }
     });
-    if(GS.run.uniqueSkills.includes('rogue_jackpot')&&Math.random()<0.1){ s*=3; addLog('僥倖発動！ 獲得魂が3倍！','log-skill'); showSkillFlash(); }
-    
-    GS.run.runSouls+=s; GS.run.kills++; GS.run.runExp+=e; GS.run.hp=Math.max(1,bState.heroHp); GS.run.mp=bState.heroMp;
-    if(passives.includes('souleat')){ GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+10); addLog('魂喰い: HP+10','log-heal'); triggerPassiveBadge('souleat'); }
-    if(GS.run.uniqueSkills.includes('necro_soulharvest')){ GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+10); addLog('魂の収穫: MP+10','log-heal'); }
-    if(GS.run.uniqueSkills.includes('mage_overload')&&Math.random()<0.1){ const b=Math.floor(GS.run.maxMp*0.3); GS.run.maxMp+=b; addLog(`魔力過負荷発動！ 最大MP+${b}`,'log-skill'); }
-    
+
+    // 僥倖: 10%で魂3倍
+    if((GS.run.uniqueSkills||[]).includes('rogue_jackpot')&&Math.random()<0.1){
+      souls*=3;addLog('僥倖発動！ 獲得魂が3倍！','log-skill');showSkillFlash();
+    }
+    GS.run.runSouls+=souls;GS.run.kills++;
+    GS.run.runExp=(GS.run.runExp||0)+exp;
+    GS.run.hp=Math.max(1,bState.heroHp);GS.run.mp=bState.heroMp;
+    if(passives.includes('souleat')){GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+10);addLog('魂喰い: HP+10','log-heal');triggerPassiveBadge('souleat');}
+    // 魂の収穫: 敵撃破時MP+10
+    if((GS.run.uniqueSkills||[]).includes('necro_soulharvest')){
+      GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+10);addLog('魂の収穫: MP+10','log-heal');
+    }
+    // 魔力過負荷: 10%で最大MP+30%（階層中）
+    if((GS.run.uniqueSkills||[]).includes('mage_overload')&&Math.random()<0.1){
+      const bonus=Math.floor(GS.run.maxMp*0.3);
+      GS.run.maxMp+=bonus;addLog(`魔力過負荷発動！ 最大MP+${bonus}`,'log-skill');
+    }
     document.getElementById('b-souls').textContent=GS.run.runSouls;
-    addLog(`${bState.enemy.name}を撃破！ 魂+${s} EXP+${e}`,'log-heal');
-    GS.achStats.killCount++; GS.run.room++;
-    
+    addLog(`${bState.enemy.name}を撃破！ 魂+${souls} EXP+${exp}`,'log-heal');
+
+    // 達成報酬用カウント
+    GS.achStats.killCount=(GS.achStats.killCount||0)+1;
+
+    GS.run.room++;
     if(bState.isBoss){
-      if(!GS.clearedFloors.includes(GS.run.floorId)) GS.clearedFloors.push(GS.run.floorId);
-      GS.achStats.bossKills=GS.achStats.bossKills||{}; GS.achStats.bossKills[GS.run.charId]=(GS.achStats.bossKills[GS.run.charId]||0)+1;
-      GS.souls+=GS.run.runSouls; GS.exp+=GS.run.runExp; checkAchievements(); save();
+      const fid=GS.run.floorId||1;
+      if(!GS.clearedFloors.includes(fid)) GS.clearedFloors.push(fid);
+      // ボスキル記録
+      const cid=GS.run.charId;
+      GS.achStats.bossKills=GS.achStats.bossKills||{};
+      GS.achStats.bossKills[cid]=(GS.achStats.bossKills[cid]||0)+1;
+      GS.souls+=GS.run.runSouls;GS.exp+=GS.run.runExp;
+      checkAchievements();save();
       resEl.innerHTML=`<div class="row"><button class="btn btn-primary" onclick="endRun(true)">ボスを倒した！結果へ</button></div>`;
     } else {
-      save(); resEl.innerHTML=`<div class="row"><button class="btn btn-primary" onclick="goTo('s-dungeon');renderDungeon()">次の部屋へ</button></div>`;
+      save();
+      resEl.innerHTML=`<div class="row"><button class="btn btn-primary" onclick="goTo('s-dungeon');renderDungeon()">次の部屋へ</button></div>`;
     }
   } else {
-    const ps=Math.floor(GS.run.runSouls*0.5), pe=Math.floor(GS.run.runExp*0.5);
-    GS.souls+=ps; GS.exp+=pe; checkAchievements(); save();
-    addLog(`戦闘不能... 魂の欠片${ps}個・EXP${pe}を回収`,'log-hero-dmg');
+    const partial=Math.floor(GS.run.runSouls*0.5);
+    const partialExp=Math.floor((GS.run.runExp||0)*0.5);
+    GS.souls+=partial;GS.exp+=partialExp;
+    checkAchievements();save();
+    addLog(`戦闘不能... 魂の欠片${partial}個・EXP${partialExp}を回収`,'log-hero-dmg');
     resEl.innerHTML=`
       <div style="background:#2c1010;border:0.5px solid #A32D2D;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#F09595">
-        💀 戦闘不能 — 報酬が半分になりました<br><span style="color:#888780">魂の欠片: ${ps} / EXP: ${pe}</span>
+        💀 戦闘不能 — 報酬が半分になりました<br>
+        <span style="color:#888780">魂の欠片: ${partial}（${GS.run.runSouls}の半分）/ EXP: ${partialExp}</span>
       </div>
       <div class="row"><button class="btn" onclick="endRun(false)">結果へ</button></div>`;
   }
 }
 
+function retreatRun(){
+  const partial=Math.floor(GS.run.runSouls*0.5);
+  const partialExp=Math.floor((GS.run.runExp||0)*0.5);
+  GS.souls+=partial;GS.exp+=partialExp;
+  checkAchievements();save();
+  document.getElementById('result-icon').textContent='🚪';
+  document.getElementById('result-title').textContent='撤退';
+  document.getElementById('result-sub').textContent='奈落から這い出た... 報酬は半分になった';
+  document.getElementById('r-kills').textContent=GS.run.kills;
+  document.getElementById('r-souls').textContent=partial;
+  document.getElementById('r-exp').textContent=partialExp;
+  document.getElementById('result-ach').style.display='none';
+  goTo('s-result');
+}
+
 function endRun(won){
+  const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
   const cid=GS.run.charId;
-  GS.achStats.totalRun++;
-  if(won){ GS.achStats.floorClears=GS.achStats.floorClears||{}; GS.achStats.floorClears[cid]=(GS.achStats.floorClears[cid]||0)+1; }
-  GS.achStats.dodgeCount+=GS.run.dodgeCount;
-  GS.achStats.dodgeByChar=GS.achStats.dodgeByChar||{}; GS.achStats.dodgeByChar[cid]=(GS.achStats.dodgeByChar[cid]||0)+GS.run.dodgeCount;
-  GS.achStats.skillUses=GS.achStats.skillUses||{}; GS.achStats.skillUses[cid]=(GS.achStats.skillUses[cid]||0)+GS.run.skillUsed;
-  
+  // ラン終了時統計更新
+  GS.achStats.totalRun=(GS.achStats.totalRun||0)+1;
+  if(won){
+    const fid=GS.run.floorId||1;
+    GS.achStats.floorClears=GS.achStats.floorClears||{};
+    GS.achStats.floorClears[cid]=(GS.achStats.floorClears[cid]||0)+1;
+  }
+  GS.achStats.dodgeCount=(GS.achStats.dodgeCount||0)+(GS.run.dodgeCount||0);
+  GS.achStats.dodgeByChar=GS.achStats.dodgeByChar||{};
+  GS.achStats.dodgeByChar[cid]=(GS.achStats.dodgeByChar[cid]||0)+(GS.run.dodgeCount||0);
+  GS.achStats.skillUses=GS.achStats.skillUses||{};
+  GS.achStats.skillUses[cid]=(GS.achStats.skillUses[cid]||0)+(GS.run.skillUsed||0);
+
   // 保存用のリザルトデータ
   if(GS.lastRun) {
-    GS.lastRun.result = { kills: GS.run.kills, souls: GS.run.runSouls, exp: GS.run.runExp, icon: won?'✦':'💀' };
+    GS.lastRun.result = {
+      kills: GS.run.kills,
+      souls: GS.run.runSouls,
+      exp: GS.run.runExp,
+      icon: won?'✦':'💀'
+    };
   }
 
-  const newly=checkAchievements(); save();
-  
+  const newly=checkAchievements();save();
+
   document.getElementById('result-icon').textContent=won?'✦':'💀';
-  document.getElementById('result-title').textContent=won?'踏破成功':'探索失敗';
+  document.getElementById('result-title').textContent=won?`${floor?.name||''}踏破！`:'戦闘不能';
   document.getElementById('result-sub').textContent=won?'奈落の深部で光を見た':'暗闇の中に沈んでいく...';
   document.getElementById('r-kills').textContent=GS.run.kills;
   document.getElementById('r-souls').textContent=GS.run.runSouls;
-  document.getElementById('r-exp').textContent=GS.run.runExp;
-  
+  document.getElementById('r-exp').textContent=GS.run.runExp||0;
+
+  // 達成報酬表示
   const achEl=document.getElementById('result-ach');
   if(newly.length){
     achEl.style.display='block';
     achEl.innerHTML=`<div style="background:#1a1500;border:0.5px solid #FCD34D;border-radius:10px;padding:10px 14px;font-size:13px;color:#FCD34D">
-      🏆 達成報酬解放！<br>${newly.map(a=>`<div style="font-size:12px;margin-top:4px;color:#e0ddd8">${a.icon} <strong>${a.title}</strong></div>`).join('')}
+      🏆 達成報酬解放！<br>
+      ${newly.map(a=>`<div style="font-size:12px;margin-top:4px;color:#e0ddd8">${a.icon} <strong>${a.title}</strong></div>`).join('')}
     </div>`;
   } else achEl.style.display='none';
 
   goTo('s-result');
 }
 
+// ─── 選択肢 ───────────────────────────────────────────────
 function showChoice(type){
-  const cl=document.getElementById('choice-list'); cl.innerHTML='';
-  document.getElementById('choice-desc').textContent = type==='treasure'?'宝の間 — 一つを選べ':'休息の間 — 焚き火の前で';
-  const opts = type==='treasure' ? [{l:'攻撃+5',f:()=>{GS.run.atk+=5;addChoiceResult('攻撃力が上がった！');}}, {l:'防御+4',f:()=>{GS.run.def+=4;addChoiceResult('防御力が上がった！');}}, {l:'最大MP+20',f:()=>{GS.run.maxMp+=20;GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+20);addChoiceResult('最大MPが増えた！');}}, {l:'HP+20回復',f:()=>{GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+20);addChoiceResult('HPを20回復した！');}}] : [{l:'HP全回復',f:()=>{GS.run.hp=GS.run.maxHp;addChoiceResult('完全に回復した');}}, {l:'最大HP+15',f:()=>{GS.run.maxHp+=15;GS.run.hp+=15;addChoiceResult('最大HPが増えた！');}}, {l:'MP全回復',f:()=>{GS.run.mp=GS.run.maxMp;addChoiceResult('MPが全回復した！');}}];
-  opts.forEach(o=>{
-    const d=document.createElement('div'); d.className='card'; d.innerHTML=`<div class="card-title">${o.l}</div>`;
-    d.onclick=o.f; cl.appendChild(d);
-  });
+  const cl=document.getElementById('choice-list');cl.innerHTML='';
+  if(type==='treasure'){
+    document.getElementById('choice-desc').textContent='宝の間 — 一つを選べ';
+    [{label:'攻撃+5',fn:()=>{GS.run.atk+=5;addChoiceResult('攻撃力が上がった！');}},
+     {label:'防御+4',fn:()=>{GS.run.def+=4;addChoiceResult('防御力が上がった！');}},
+     {label:'最大MP+20',fn:()=>{GS.run.maxMp+=20;GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+20);addChoiceResult('最大MPが増えた！');}},
+     {label:'HP+20回復',fn:()=>{GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+20);addChoiceResult('HPを20回復した！');}},
+    ].forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div>`;d.onclick=o.fn;cl.appendChild(d);});
+  } else {
+    document.getElementById('choice-desc').textContent='休息の間 — 焚き火の前で';
+    [{label:'HP全回復',fn:()=>{GS.run.hp=GS.run.maxHp;addChoiceResult('完全に回復した');}},
+     {label:'最大HP+15',fn:()=>{GS.run.maxHp+=15;GS.run.hp+=15;addChoiceResult('最大HPが増えた！');}},
+     {label:'MP全回復',fn:()=>{GS.run.mp=GS.run.maxMp;addChoiceResult('MPが全回復した！');}},
+    ].forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div>`;d.onclick=o.fn;cl.appendChild(d);});
+  }
   goTo('s-choice');
 }
 function addChoiceResult(msg){
   GS.run.room++;
-  document.getElementById('choice-list').innerHTML=`<div class="card"><div class="card-title">${msg}</div></div><div style="margin-top:10px"><button class="btn btn-primary" onclick="renderDungeon();goTo('s-dungeon')">次の部屋へ</button></div>`;
+  document.getElementById('choice-list').innerHTML=`
+    <div class="card"><div class="card-title">${msg}</div></div>
+    <div style="margin-top:10px"><button class="btn btn-primary" onclick="renderDungeon();goTo('s-dungeon')">次の部屋へ</button></div>`;
 }
-
 function showRetreatConfirm(){
-  const ps=Math.floor(GS.run.runSouls*0.5), pe=Math.floor(GS.run.runExp*0.5);
+  const partial=Math.floor(GS.run.runSouls*0.5);
+  const partialExp=Math.floor((GS.run.runExp||0)*0.5);
   document.getElementById('choice-desc').textContent='引き返す — 本当に撤退しますか？';
   document.getElementById('choice-list').innerHTML=`
     <div style="background:#26211a;border:0.5px solid #5f5e5a;border-radius:10px;padding:12px 14px;font-size:13px;color:#888780;line-height:1.7">
       ⚠️ 報酬は半分になります<br>
-      現在の魂の欠片: <strong style="color:#e0ddd8">${GS.run.runSouls}</strong> → <strong style="color:#AFA9EC">${ps}</strong><br>
-      現在の経験値: <strong style="color:#e0ddd8">${GS.run.runExp}</strong> → <strong style="color:#AFA9EC">${pe}</strong>
+      現在の魂の欠片: <strong style="color:#e0ddd8">${GS.run.runSouls}</strong> → <strong style="color:#AFA9EC">${partial}</strong><br>
+      現在の経験値: <strong style="color:#e0ddd8">${GS.run.runExp||0}</strong> → <strong style="color:#AFA9EC">${partialExp}</strong>
     </div>
     <div style="margin-top:10px;display:flex;gap:8px">
       <button class="btn" style="color:#F09595;border-color:#A32D2D" onclick="retreatRun()">撤退する</button>
       <button class="btn btn-primary" onclick="renderDungeon();goTo('s-dungeon')">やっぱり続ける</button>
     </div>`;
   goTo('s-choice');
-}
-function retreatRun(){
-  const ps=Math.floor(GS.run.runSouls*0.5), pe=Math.floor(GS.run.runExp*0.5);
-  GS.souls+=ps; GS.exp+=pe; checkAchievements(); save();
-  document.getElementById('result-icon').textContent='🚪';
-  document.getElementById('result-title').textContent='撤退';
-  document.getElementById('result-sub').textContent='奈落から這い出た... 報酬は半分になった';
-  document.getElementById('r-kills').textContent=GS.run.kills;
-  document.getElementById('r-souls').textContent=ps;
-  document.getElementById('r-exp').textContent=pe;
-  document.getElementById('result-ach').style.display='none';
-  goTo('s-result');
 }
 
 // 初期化
