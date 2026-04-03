@@ -602,38 +602,41 @@ const CHARS={
   mage:       {id:'mage',       name:'魔術師',   icon:'✦', hp:70, atk:28,def:3, mp:120,maxMp:120, crit:15,dodge:5,  hdodge:8,  activeSlots:3, accSlots:1, desc:'高火力・高MP。アクティブ3枠'},
   rogue:      {id:'rogue',      name:'盗賊',     icon:'◆', hp:90, atk:22,def:5, mp:80, maxMp:80,  crit:20,dodge:20, hdodge:30, activeSlots:3, accSlots:1, desc:'会心・回避最高。アクティブ3枠'},
   paladin:    {id:'paladin',    name:'聖騎士',   icon:'🛡', hp:150,atk:20,def:14,mp:70, maxMp:70,  crit:8, dodge:5,  hdodge:10, activeSlots:2, accSlots:2, desc:'超高耐久。装飾品2枠',lvReq:5},
-  necromancer:{id:'necromancer',name:'死霊術師', icon:'💀', hp:65, atk:32,def:2, mp:140,maxMp:140, crit:18,dodge:8,  hdodge:12, activeSlots:3, accSlots:1, desc:'最高MP・高火力。アクティブ3枠',lvReq:15}
+  necromancer:{id:'necromancer',name:'死霊術師', icon:'💀', hp:65, atk:32,def:2, mp:140,maxMp:140, crit:18,dodge:8,  hdodge:12, activeSlots:3, accSlots:1, desc:'最高MP・高火力。アクティブ3枠',lvReq:15},
+  samurai:    {id:'samurai',    name:'侍',       icon:'⚔️', hp:105,atk:26,def:7, mp:50, maxMp:50,  crit:15,dodge:10, hdodge:15, activeSlots:3, accSlots:1, desc:'反撃の達人。被弾時に反撃する武士。アクティブ3枠',lvReq:25,unlockCond:'achievement'}
 };
 const WEAPONS={
-  sword:    {id:'sword',    name:'錆びた剣',   atk:5, mp:0,  desc:'古びた剣。基本の一撃', anim:'slash'},
-  axe:      {id:'axe',      name:'呪われた斧', atk:10,mp:0,  desc:'重い一撃。クリット時+15', anim:'smash', special:'critBonus15'},
-  staff:    {id:'staff',    name:'骨の杖',     atk:8, mp:20, desc:'魔力を宿した杖。MP+20', anim:'strike'},
-  dagger:   {id:'dagger',   name:'影の短剣',   atk:7, mp:0,  desc:'連撃しやすい。盗賊向き', anim:'pierce'},
-  mageblade:{id:'mageblade',name:'魔剣',       atk:14,mp:10, desc:'魔力を帯びた剣。強力',lvReq:5, anim:'slash'},
-  holyspear:{id:'holyspear',name:'聖槍',       atk:12,mp:0,  desc:'光を宿す槍。会心+5%',crit:5,lvReq:15, anim:'pierce'}
+  sword:    {id:'sword',    name:'錆びた剣',   icon:'🗡️', atk:5, mp:0,  crit:0, desc:'古びた剣。基本の一撃', anim:'slash'},
+  axe:      {id:'axe',      name:'呪われた斧', icon:'🪓', atk:10,mp:0,  crit:0, desc:'重い一撃。クリット時+15', anim:'smash', special:'critBonus15'},
+  staff:    {id:'staff',    name:'骨の杖',     icon:'🦴', atk:8, mp:20, crit:0, desc:'魔力を宿した杖。MP+20', anim:'strike'},
+  dagger:   {id:'dagger',   name:'影の短剣',   icon:'🔪', atk:7, mp:0,  crit:0, desc:'連撃しやすい。盗賊向き', anim:'pierce'},
+  mageblade:{id:'mageblade',name:'魔剣',       icon:'⚡', atk:14,mp:10, crit:0, desc:'魔力を帯びた剣。強力',lvReq:5, anim:'slash'},
+  holyspear:{id:'holyspear',name:'聖槍',       icon:'✨', atk:12,mp:0,  crit:5, desc:'光を宿す槍。会心+5%',lvReq:15, anim:'pierce'},
+  katana:   {id:'katana',   name:'日本刀',     icon:'⚔️', atk:30,mp:0,  crit:5, desc:'魂を吸う伝説の刀。侍装備時に反撃確率2倍',lvReq:100, anim:'slash', special:'samuraiDoubleCounter', unlockCond:'achievement'}
 };
 const ARMORS={
-  leather:   {id:'leather',   name:'粗末な革鎧',    def:3, hp:0,  mp:0,  desc:'最低限の防護'},
-  chainmail: {id:'chainmail', name:'腐食した鎖帷子', def:7, hp:10, mp:0,  desc:'まだ使える防具'},
-  robe:      {id:'robe',      name:'呪術師の外套',  def:2, hp:5,  mp:20, desc:'魔防が高い。MP+20'},
-  shadow:    {id:'shadow',    name:'影織りの外套',  def:4, hp:8,  mp:0,  desc:'回避しやすい。盗賊向き'},
-  cursedmail:{id:'cursedmail',name:'呪術鎧',        def:10,hp:15, mp:0,  desc:'重厚な呪術の鎧。高防御',lvReq:5},
-  bonemantle:{id:'bonemantle',name:'骸骨外套',      def:3, hp:8,  mp:30, desc:'骸骨の外套。MP+30',lvReq:15}
+  leather:   {id:'leather',   name:'粗末な革鎧',    icon:'🥋', def:3, hp:0,  mp:0,  desc:'最低限の防護'},
+  chainmail: {id:'chainmail', name:'腐食した鎖帷子', icon:'⛓️', def:7, hp:10, mp:0,  desc:'まだ使える防具'},
+  robe:      {id:'robe',      name:'呪術師の外套',  icon:'🧥', def:2, hp:5,  mp:20, desc:'魔防が高い。MP+20'},
+  shadow:    {id:'shadow',    name:'影織りの外套',  icon:'🌑', def:4, hp:8,  mp:0,  desc:'回避しやすい。盗賊向き'},
+  cursedmail:{id:'cursedmail',name:'呪術鎧',        icon:'🛡', def:10,hp:15, mp:0,  desc:'重厚な呪術の鎧。高防御',lvReq:5},
+  bonemantle:{id:'bonemantle',name:'骸骨外套',      icon:'💀', def:3, hp:8,  mp:30, desc:'骸骨の外套。MP+30',lvReq:15}
 };
 
 // ─── アクセサリデータ ────────────────────────────────────
-// 効果種別: passive / onHit / onKill / onBattleStart / onTurnEnd
 const ACCESSORIES={
-  amulet_mp:   {id:'amulet_mp',   name:'魔力の首飾り', icon:'📿', desc:'戦闘開始時MP+20',             kind:'onBattleStart', effect:{mp:20}},
-  ring_double: {id:'ring_double', name:'連撃の指輪',   icon:'💍', desc:'10%の確率で通常攻撃を2回実行', kind:'onHit',         effect:{doubleHit:0.1}},
-  charm_souls: {id:'charm_souls', name:'魂喰いの護符', icon:'🪶', desc:'敵撃破時5%の確率で魂+5追加',   kind:'onKill',        effect:{bonusSouls:5, chance:0.05}},
+  amulet_mp:       {id:'amulet_mp',       name:'魔力の首飾り',   icon:'📿', desc:'戦闘開始時MP+20',                        kind:'onBattleStart', effect:{mp:20}},
+  ring_double:     {id:'ring_double',     name:'連撃の指輪',     icon:'💍', desc:'10%の確率で通常攻撃を2回実行',            kind:'onHit',         effect:{doubleHit:0.1}},
+  charm_souls:     {id:'charm_souls',     name:'魂喰いの護符',   icon:'🪶', desc:'敵撃破時5%の確率で魂+5追加',             kind:'onKill',         effect:{bonusSouls:5, chance:0.05}},
+  hayabusa_feather:{id:'hayabusa_feather',name:'はやぶさの羽',   icon:'🪶', desc:'行動時5%の確率でその行動を2回繰り返す。スキルのMPは1回分', kind:'onAction', effect:{doubleAction:0.05}},
 };
 const UNLOCK_GROUPS={
   char:[
-    {id:'mage',        label:'魔術師',   cost:15, sub:'高火力・高MP・アクティブ3枠'},
-    {id:'rogue',       label:'盗賊',     cost:20, sub:'会心・回避最高・アクティブ3枠'},
-    {id:'paladin',     label:'聖騎士',   cost:30, sub:'超高耐久・装飾品2枠',      lvReq:5},
-    {id:'necromancer', label:'死霊術師', cost:40, sub:'最高MP・高火力スペシャリスト',lvReq:15}
+    {id:'mage',        label:'魔術師',   cost:15,   sub:'高火力・高MP・アクティブ3枠'},
+    {id:'rogue',       label:'盗賊',     cost:20,   sub:'会心・回避最高・アクティブ3枠'},
+    {id:'paladin',     label:'聖騎士',   cost:30,   sub:'超高耐久・装飾品2枠',      lvReq:5},
+    {id:'necromancer', label:'死霊術師', cost:40,   sub:'最高MP・高火力スペシャリスト',lvReq:15},
+    {id:'samurai',     label:'侍',       cost:1000, sub:'反撃の達人・被弾時反撃',    achReq:'ach_samurai_unlock', lvReq:25}
   ],
   equip:[
     {id:'axe',       label:'呪われた斧',    cost:12, sub:'攻撃+10'},
@@ -645,12 +648,14 @@ const UNLOCK_GROUPS={
     {id:'mageblade', label:'魔剣',          cost:25, sub:'攻撃+14 MP+10',         lvReq:5},
     {id:'holyspear', label:'聖槍',          cost:30, sub:'攻撃+12 会心+5%',       lvReq:15},
     {id:'cursedmail',label:'呪術鎧',        cost:25, sub:'防御+10 HP+15',         lvReq:5},
-    {id:'bonemantle',label:'骸骨外套',      cost:30, sub:'防御+3 HP+8 MP+30',     lvReq:15}
+    {id:'bonemantle',label:'骸骨外套',      cost:30, sub:'防御+3 HP+8 MP+30',     lvReq:15},
+    {id:'katana',    label:'日本刀',         cost:3000,sub:'攻撃+30 会心+5% 侍専用特殊効果', achReq:'ach_katana_unlock', lvReq:100}
   ],
   accessory:[
-    {id:'amulet_mp',   label:'魔力の首飾り', cost:0,  sub:'戦闘開始時MP+20 — デフォルト解放'},
-    {id:'ring_double', label:'連撃の指輪',   cost:0,  sub:'10%で2連撃 — デフォルト解放'},
-    {id:'charm_souls', label:'魂喰いの護符', cost:0,  sub:'撃破時5%で魂+5 — デフォルト解放'},
+    {id:'amulet_mp',       label:'魔力の首飾り', cost:0,   sub:'戦闘開始時MP+20 — デフォルト解放'},
+    {id:'ring_double',     label:'連撃の指輪',   cost:0,   sub:'10%で2連撃 — デフォルト解放'},
+    {id:'charm_souls',     label:'魂喰いの護符', cost:0,   sub:'撃破時5%で魂+5 — デフォルト解放'},
+    {id:'hayabusa_feather',label:'はやぶさの羽', cost:150, sub:'行動時5%で行動2回繰り返し', achReq:'ach_hayabusa_unlock'},
   ],
   skill:[
     {id:'blaze',         label:'地獄炎',     cost:18, sub:'攻撃×4の爆発',           kind:'active'},
@@ -710,7 +715,6 @@ const PASSIVE_SKILLS={
 };
 
 // ─── ユニークスキル定義 ───────────────────────────────────
-// initial:true = キャラ選択時から付与。false = 達成報酬で解放
 const UNIQUE_SKILLS={
   warrior_berserk:   {id:'warrior_berserk',   charId:'warrior',     name:'血戦の心得',    icon:'💢', initial:true,  desc:'HP30%以下で攻撃+50%・被ダメ-20%'},
   warrior_fortress:  {id:'warrior_fortress',  charId:'warrior',     name:'難攻不落',      icon:'🛡', initial:false, desc:'防御力をATKの20%分上乗せ'},
@@ -727,27 +731,37 @@ const UNIQUE_SKILLS={
   necro_soulharvest: {id:'necro_soulharvest', charId:'necromancer', name:'魂の収穫',      icon:'💀', initial:true,  desc:'敵撃破時MP+10追加回復'},
   necro_lich:        {id:'necro_lich',        charId:'necromancer', name:'リッチの目覚め', icon:'👾', initial:false, desc:'HP10%以下で全ステータス+40%（1回限り）'},
   necro_curse:       {id:'necro_curse',       charId:'necromancer', name:'死の呪縛',      icon:'🌑', initial:false, desc:'戦闘開始時に敵にHP最大値の5%の呪い付与'},
+  samurai_counter:   {id:'samurai_counter',   charId:'samurai',     name:'反撃',          icon:'⚔️', initial:true,  desc:'被弾時10%の確率で攻撃を無効化しATK×2のダメージを与える'},
 };
 
 // ─── システム開放定義 ─────────────────────────────────────
 const SYSTEM_UNLOCKS=[
-  {id:'clairvoyance', name:'千里眼', icon:'🔮', cost:500, lvReq:20,
-   desc:'ダンジョン探索時、各部屋の内容（戦闘・宝・休息・ボス）がアイコンで事前に表示される'}
+  {id:'clairvoyance',   name:'千里眼',        icon:'🔮', cost:500,  lvReq:20,
+   desc:'ダンジョン探索時、各部屋の内容がアイコンで事前に表示される', achReq:null},
+  {id:'passive_slot_up',name:'魔法の覚醒',    icon:'🛡', cost:300,  lvReq:0,
+   desc:'パッシブスキルの装備枠が1増加する（最大3枠）', achReq:'ach_floor2_clear'},
+  {id:'active_slot_up', name:'刃の冴え',      icon:'⚡', cost:400,  lvReq:0,
+   desc:'アクティブスキルの装備枠が全キャラ+1増加する', achReq:'ach_floor4_clear'},
 ];
+
 const ACHIEVEMENTS=[
-  {id:'ach_w_floor3',   title:'戦士の試練',     cond:{kind:'floorClear', val:3,  charId:'warrior'},     reward:{type:'uniqueSkill', id:'warrior_fortress'},  icon:'⚔', desc:'戦士で地下3階をクリア'},
-  {id:'ach_w_boss5',    title:'戦士の覚醒',     cond:{kind:'bossKill',   val:5,  charId:'warrior'},     reward:{type:'uniqueSkill', id:'warrior_counter'},   icon:'⚔', desc:'戦士でボスを5回撃破'},
-  {id:'ach_w_boss10',   title:'戦士の極意',     cond:{kind:'bossKill',   val:10, charId:'warrior'},     reward:{type:'unlockItem',  id:'未定'},              icon:'⚔', desc:'戦士でボスを10回撃破'},
-  {id:'ach_m_floor3',   title:'魔術師の試練',   cond:{kind:'floorClear', val:3,  charId:'mage'},        reward:{type:'uniqueSkill', id:'mage_insight'},      icon:'✦', desc:'魔術師で地下3階をクリア'},
-  {id:'ach_m_skill100', title:'魔術師の道',     cond:{kind:'skillUse',   val:100,charId:'mage'},        reward:{type:'uniqueSkill', id:'mage_chain'},        icon:'✦', desc:'魔術師でスキルを100回使用'},
-  {id:'ach_r_floor3',   title:'盗賊の試練',     cond:{kind:'floorClear', val:3,  charId:'rogue'},       reward:{type:'uniqueSkill', id:'rogue_phantom'},     icon:'◆', desc:'盗賊で地下3階をクリア'},
-  {id:'ach_r_dodge10',  title:'影の達人',       cond:{kind:'dodgeCount', val:10, charId:'rogue'},       reward:{type:'uniqueSkill', id:'rogue_shadowblade'}, icon:'◆', desc:'盗賊で10回完全回避'},
-  {id:'ach_p_floor3',   title:'聖騎士の試練',   cond:{kind:'floorClear', val:3,  charId:'paladin'},     reward:{type:'uniqueSkill', id:'paladin_judgement'}, icon:'🛡', desc:'聖騎士で地下3階をクリア'},
-  {id:'ach_p_boss5',    title:'聖騎士の誓い',   cond:{kind:'bossKill',   val:5,  charId:'paladin'},     reward:{type:'uniqueSkill', id:'paladin_shield'},    icon:'🛡', desc:'聖騎士でボスを5回撃破'},
-  {id:'ach_n_floor3',   title:'死霊術師の試練', cond:{kind:'floorClear', val:3,  charId:'necromancer'}, reward:{type:'uniqueSkill', id:'necro_lich'},        icon:'💀', desc:'死霊術師で地下3階をクリア'},
-  {id:'ach_total10',    title:'奈落の探索者',   cond:{kind:'totalRun',   val:10},                       reward:{type:'unlockItem',  id:'未定'},              icon:'🌑', desc:'合計10回ランを完了'},
-  {id:'ach_total50',    title:'奈落の住人',     cond:{kind:'totalRun',   val:50},                       reward:{type:'unlockItem',  id:'未定'},              icon:'🌑', desc:'合計50回ランを完了'},
-  {id:'ach_kill100',    title:'殲滅者',         cond:{kind:'killCount',  val:100},                      reward:{type:'unlockItem',  id:'未定'},              icon:'💀', desc:'累計100体撃破'},
+  {id:'ach_w_floor3',     title:'戦士の試練',     cond:{kind:'floorClear', val:3,  charId:'warrior'},     reward:{type:'uniqueSkill', id:'warrior_fortress'},  icon:'⚔', desc:'戦士で地下3階をクリア'},
+  {id:'ach_w_boss5',      title:'戦士の覚醒',     cond:{kind:'bossKill',   val:5,  charId:'warrior'},     reward:{type:'uniqueSkill', id:'warrior_counter'},   icon:'⚔', desc:'戦士でボスを5回撃破'},
+  {id:'ach_w_boss10',     title:'戦士の極意',     cond:{kind:'bossKill',   val:10, charId:'warrior'},     reward:{type:'unlockItem',  id:'未定'},              icon:'⚔', desc:'戦士でボスを10回撃破'},
+  {id:'ach_m_floor3',     title:'魔術師の試練',   cond:{kind:'floorClear', val:3,  charId:'mage'},        reward:{type:'uniqueSkill', id:'mage_insight'},      icon:'✦', desc:'魔術師で地下3階をクリア'},
+  {id:'ach_m_skill100',   title:'魔術師の道',     cond:{kind:'skillUse',   val:100,charId:'mage'},        reward:{type:'uniqueSkill', id:'mage_chain'},        icon:'✦', desc:'魔術師でスキルを100回使用'},
+  {id:'ach_r_floor3',     title:'盗賊の試練',     cond:{kind:'floorClear', val:3,  charId:'rogue'},       reward:{type:'uniqueSkill', id:'rogue_phantom'},     icon:'◆', desc:'盗賊で地下3階をクリア'},
+  {id:'ach_r_dodge10',    title:'影の達人',       cond:{kind:'dodgeCount', val:10, charId:'rogue'},       reward:{type:'uniqueSkill', id:'rogue_shadowblade'}, icon:'◆', desc:'盗賊で10回完全回避'},
+  {id:'ach_p_floor3',     title:'聖騎士の試練',   cond:{kind:'floorClear', val:3,  charId:'paladin'},     reward:{type:'uniqueSkill', id:'paladin_judgement'}, icon:'🛡', desc:'聖騎士で地下3階をクリア'},
+  {id:'ach_p_boss5',      title:'聖騎士の誓い',   cond:{kind:'bossKill',   val:5,  charId:'paladin'},     reward:{type:'uniqueSkill', id:'paladin_shield'},    icon:'🛡', desc:'聖騎士でボスを5回撃破'},
+  {id:'ach_n_floor3',     title:'死霊術師の試練', cond:{kind:'floorClear', val:3,  charId:'necromancer'}, reward:{type:'uniqueSkill', id:'necro_lich'},        icon:'💀', desc:'死霊術師で地下3階をクリア'},
+  {id:'ach_total10',      title:'奈落の探索者',   cond:{kind:'totalRun',   val:10},                       reward:{type:'unlockAccessory',id:'hayabusa_feather'},icon:'🌑', desc:'合計10回ランを完了'},
+  {id:'ach_total50',      title:'奈落の住人',     cond:{kind:'totalRun',   val:50},                       reward:{type:'unlockItem',  id:'未定'},              icon:'🌑', desc:'合計50回ランを完了'},
+  {id:'ach_kill100',      title:'殲滅者',         cond:{kind:'killCount',  val:100},                      reward:{type:'unlockItem',  id:'未定'},              icon:'💀', desc:'累計100体撃破'},
+  {id:'ach_samurai_unlock',title:'武士道の自覚',  cond:{kind:'floorClear', val:2},                        reward:{type:'unlockChar',  id:'samurai'},           icon:'⚔️', desc:'地下2階クリア+総Lv25でアンロックショップに侍が登場'},
+  {id:'ach_katana_unlock', title:'刀匠の統べ',    cond:{kind:'floorClear', val:4,  charId:'samurai'},     reward:{type:'unlockWeapon',id:'katana'},             icon:'⚔️', desc:'侍で地下4階クリア+総Lv100でアンロックショップに日本刀が登場'},
+  {id:'ach_floor2_clear',  title:'腐食の征服',    cond:{kind:'floorClear', val:2},                        reward:{type:'unlockSystem',id:'passive_slot_up'},    icon:'🌿', desc:'地下2階をクリアでパッシブ枠+1がアンロック可能に'},
+  {id:'ach_floor4_clear',  title:'虚無の克服',    cond:{kind:'floorClear', val:4},                        reward:{type:'unlockSystem',id:'active_slot_up'},     icon:'🌑', desc:'地下4階をクリアでアクティブ枠+1がアンロック可能に'},
 ];
 
 const ENEMIES=[
@@ -761,7 +775,16 @@ const ENEMIES=[
 const FLOORS=[
   {id:1,name:'地下1階',sub:'奈落の入口',icon:'🪨',color:'#888780',unlockReq:null,soulsMult:1.0,expMult:1.0,
     enemies:[{name:'腐乱した屍',icon:'💀',hp:40,atk:8,def:1,souls:2,exp:3},{name:'影の番人',icon:'👁',hp:55,atk:12,def:2,souls:3,exp:4},{name:'骨の騎士',icon:'⚰',hp:70,atk:14,def:5,souls:4,exp:5},{name:'呪われた狼',icon:'🐺',hp:45,atk:16,def:1,souls:3,exp:4},{name:'石の守護者',icon:'🗿',hp:90,atk:10,def:8,souls:5,exp:6},{name:'魂の亡者',icon:'👻',hp:60,atk:18,def:3,souls:5,exp:6}],
-    bosses:[{name:'奈落の番人',icon:'👁',hp:450,atk:24,def:10,souls:15,exp:20},{name:'深淵の覇者',icon:'🦂',hp:660,atk:34,def:14,souls:25,exp:35}]},
+    bosses:[
+      {id:'f1b_ban',  name:'奈落の番人',icon:'👁',hp:450,atk:24,def:10,crit:8,dodge:5,souls:15,exp:20,
+        specials:[
+          {type:'mpDrain',   chance:0.10, label:'MP吸い',   desc:'MPを-10奪う'},
+          {type:'fullGuard', chance:0.15, label:'完全防御', turns:3, desc:'3ターン完全防御の構えをとる'}
+        ],
+        libNote:'稀にMPを吸い取る。またしばしば完全防御の構えをとる。'
+      },
+      {id:'f1b_hasha',name:'深淵の覇者',icon:'🦂',hp:660,atk:34,def:14,crit:10,dodge:8,souls:25,exp:35}
+    ]},
   {id:2,name:'地下2階',sub:'腐食の回廊',icon:'🌿',color:'#4ade80',unlockReq:{clearedFloor:1},soulsMult:1.8,expMult:2.0,
     enemies:[{name:'苔むした巨人',icon:'🧌',hp:110,atk:20,def:6,souls:5,exp:8},{name:'毒蛇の使者',icon:'🐍',hp:80,atk:26,def:2,souls:4,exp:7},{name:'腐食の番兵',icon:'🫙',hp:130,atk:18,def:10,souls:6,exp:9},{name:'胞子の怪物',icon:'🍄',hp:95,atk:22,def:4,souls:5,exp:8},{name:'蔦の精霊',icon:'🌿',hp:75,atk:30,def:3,souls:5,exp:9},{name:'腐敗の守護者',icon:'🦠',hp:145,atk:16,def:12,souls:7,exp:10}],
     bosses:[{name:'腐食の王',icon:'🧌',hp:950,atk:50,def:22,souls:30,exp:50},{name:'毒牙の女王',icon:'🐍',hp:800,atk:65,def:16,souls:35,exp:60}]},
@@ -789,21 +812,31 @@ function checkAchievements(){
     if(GS.achDone.includes(a.id)) return;
     let prog=0,target=a.cond.val;
     const st=GS.achStats;
+    // 追加条件チェック（侍解放・日本刀はlvReqも必要）
+    if(a.id==='ach_samurai_unlock'&&GS.totalLv<25) return;
+    if(a.id==='ach_katana_unlock'&&GS.totalLv<100) return;
     if(a.cond.kind==='totalRun')        prog=st.totalRun||0;
     else if(a.cond.kind==='bossKill')   prog=(st.bossKills||{})[a.cond.charId]||0;
-    else if(a.cond.kind==='floorClear') prog=(st.floorClears||{})[a.cond.charId]||0;
+    else if(a.cond.kind==='floorClear'){
+      if(a.cond.charId) prog=(st.floorClears||{})[a.cond.charId]||0;
+      else prog=Math.max(...Object.values(st.floorClears||{0:0}),st.maxFloorCleared||0);
+    }
     else if(a.cond.kind==='skillUse')   prog=(st.skillUses||{})[a.cond.charId]||0;
     else if(a.cond.kind==='dodgeCount') prog=(st.dodgeByChar||{})[a.cond.charId]||(st.dodgeCount||0);
     else if(a.cond.kind==='killCount')  prog=st.killCount||0;
     if(prog>=target){
       GS.achDone.push(a.id);
-      // 報酬付与
-      if(a.reward.type==='uniqueSkill'){
-        if(!GS.unlockedUniqueSkills.includes(a.reward.id))
-          GS.unlockedUniqueSkills.push(a.reward.id);
-      } else if(a.reward.type==='unlockSkill'||a.reward.type==='unlockItem'){
-        if(a.reward.id!=='未定'&&!GS.unlocked.includes(a.reward.id))
-          GS.unlocked.push(a.reward.id);
+      const r=a.reward;
+      if(r.type==='uniqueSkill'){
+        if(!GS.unlockedUniqueSkills.includes(r.id)) GS.unlockedUniqueSkills.push(r.id);
+      } else if(r.type==='unlockSkill'||r.type==='unlockItem'||r.type==='unlockWeapon'){
+        if(r.id!=='未定'&&!GS.unlocked.includes(r.id)) GS.unlocked.push(r.id);
+      } else if(r.type==='unlockChar'){
+        // キャラはアンロックショップに登場させるだけ（自動解放はしない）
+      } else if(r.type==='unlockAccessory'){
+        if(!GS.unlocked.includes(r.id)) GS.unlocked.push(r.id);
+      } else if(r.type==='unlockSystem'){
+        // システム開放もショップに登場させるだけ
       }
       newly.push(a);
     }
@@ -871,12 +904,15 @@ function renderAchievements(){
     const prog=getAchProgress(a);
     const pct=Math.min(100,Math.floor(prog/a.cond.val*100));
     let rewardText='';
-    if(a.reward.type==='uniqueSkill'){
-      const us=UNIQUE_SKILLS[a.reward.id];
-      rewardText=`✨ ユニークスキル解放: ${us?us.icon+' '+us.name:a.reward.id}`;
-    } else if(a.reward.type==='unlockSkill') rewardText=`⚡ スキル解放: ${ACTIVE_SKILLS[a.reward.id]?.name||PASSIVE_SKILLS[a.reward.id]?.name||a.reward.id}`;
-    else if(a.reward.type==='unlockItem') rewardText=`🔓 装備解放`;
-    else if(a.reward.type==='souls') rewardText=`💠 魂の欠片 +${a.reward.soulsAmt||'?'}`;
+    const r=a.reward;
+    if(r.type==='uniqueSkill'){const us=UNIQUE_SKILLS[r.id];rewardText=`✨ ユニークスキル: ${us?us.icon+' '+us.name:r.id}`;}
+    else if(r.type==='unlockSkill') rewardText=`⚡ スキル解放: ${ACTIVE_SKILLS[r.id]?.name||PASSIVE_SKILLS[r.id]?.name||r.id}`;
+    else if(r.type==='unlockChar'){const c=CHARS[r.id];rewardText=`👤 キャラ解放: ${c?c.icon+' '+c.name:r.id}（アンロックショップへ）`;}
+    else if(r.type==='unlockWeapon'){const w=WEAPONS[r.id];rewardText=`🗡️ 武器解放: ${w?w.icon+' '+w.name:r.id}（アンロックショップへ）`;}
+    else if(r.type==='unlockAccessory'){const acc=ACCESSORIES[r.id];rewardText=`💍 装飾品解放: ${acc?acc.icon+' '+acc.name:r.id}（アンロックショップへ）`;}
+    else if(r.type==='unlockItem') rewardText=r.id==='未定'?`🔓 装備解放（未定）`:`🔓 解放: ${r.id}`;
+    else if(r.type==='unlockSystem'){const s=SYSTEM_UNLOCKS.find(x=>x.id===r.id);rewardText=`⚙️ システム解放: ${s?s.icon+' '+s.name:r.id}（アンロックショップへ）`;}
+    else if(r.type==='souls') rewardText=`💠 魂の欠片 +${r.soulsAmt||'?'}`;
     el.innerHTML+=`<div class="ach-card ${done?'done':''}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="flex:1">
@@ -1025,6 +1061,8 @@ function renderUnlock(){
   UNLOCK_GROUPS[unlockTab].forEach(u=>{
     const done=isUnlocked(u.id);
     const lvOk=!u.lvReq||GS.totalLv>=u.lvReq;
+    // 達成報酬条件チェック
+    const achOk=!u.achReq||GS.achDone.includes(u.achReq);
     let kindBadge='';
     if(unlockTab==='skill'){
       kindBadge=u.kind==='active'
@@ -1032,14 +1070,17 @@ function renderUnlock(){
         :'<span class="badge badge-green"  style="margin-left:6px;font-size:10px">パッシブ</span>';
     }
     const lvBadge=u.lvReq?`<span class="badge badge-amber" style="font-size:10px">総Lv${u.lvReq}〜</span> `:'';
-    const locked=!lvOk&&!done;
+    const locked=(!lvOk||!achOk)&&!done;
     const isFree=u.cost===0;
+    let lockReason='';
+    if(!achOk&&!done) lockReason=`<div style="font-size:11px;color:#F09595;margin-top:2px">🏆 達成報酬で解放条件を満たすと登場</div>`;
+    else if(!lvOk&&!done) lockReason=`<div style="font-size:11px;color:#F09595;margin-top:2px">🔒 総Lv${u.lvReq}で解放</div>`;
     el.innerHTML+=`<div class="card ${locked?'locked':''}" style="${done?'opacity:.5':''}" onclick="${done||locked?'':isFree?(`unlockFree('${u.id}')`):(`unlockItem('${u.id}',${u.cost})`)}">
       <div class="row" style="justify-content:space-between;align-items:flex-start">
         <div>
           <div class="card-title">${lvBadge}${u.label}${kindBadge}</div>
           ${u.sub?`<div class="card-sub">${u.sub}</div>`:''}
-          ${locked?`<div style="font-size:11px;color:#F09595;margin-top:2px">🔒 総Lv${u.lvReq}で解放</div>`:''}
+          ${lockReason}
         </div>
         ${done?'<span class="badge badge-gray">解放済</span>':locked?'<span class="badge badge-red" style="font-weight:bold;">未到達</span>':isFree?'<span class="badge badge-green">無料</span>':`<span class="badge badge-purple">${u.cost} 欠片</span>`}
       </div></div>`;
@@ -1131,9 +1172,24 @@ function renderLibrary(){
     allEquip.forEach(e=>{
       const kindBadge=e.kind==='weapon'?'badge-amber':e.kind==='armor'?'badge-blue':'badge-orange';
       const kindLabel=e.kind==='weapon'?'武器':e.kind==='armor'?'防具':'装飾品';
+      let params='';
+      if(e.kind==='weapon'){
+        params=`<span class="badge badge-amber">ATK+${e.atk}</span>`;
+        if(e.mp) params+=`<span class="badge badge-purple">MP+${e.mp}</span>`;
+        if(e.crit) params+=`<span class="badge badge-teal">会心+${e.crit}%</span>`;
+        if(e.special) params+=`<span class="badge badge-gold" style="font-size:9px">特殊</span>`;
+      } else if(e.kind==='armor'){
+        params=`<span class="badge badge-blue">DEF+${e.def}</span>`;
+        if(e.hp) params+=`<span class="badge badge-red">HP+${e.hp}</span>`;
+        if(e.mp) params+=`<span class="badge badge-purple">MP+${e.mp}</span>`;
+      } else {
+        params=`<span class="badge badge-orange">装飾品</span>`;
+      }
       el.innerHTML+=`<div class="lib-card">
         <div class="lib-card-title">${e.icon||'🔸'} ${e.name} <span class="badge ${kindBadge}" style="font-size:9px">${kindLabel}</span></div>
+        <div style="margin:4px 0;display:flex;gap:4px;flex-wrap:wrap">${params}</div>
         <div class="lib-card-desc">${e.desc}</div>
+        ${e.special?`<div style="font-size:10px;color:#FCD34D;margin-top:3px">✨ 特殊効果: ${WEAPONS[e.id]?.special||e.special}</div>`:''}
       </div>`;
     });
     if(!el.innerHTML) el.innerHTML='<div style="color:#5f5e5a;font-size:12px;padding:10px">アンロック済み装備がありません</div>';
@@ -1160,8 +1216,21 @@ function renderLibrary(){
       el.innerHTML='<div style="color:#5f5e5a;font-size:12px;padding:10px">まだ接敵した敵がいません。ダンジョンを探索しましょう。</div>';
       return;
     }
+    // 頻度ラベル変換
+    const freqLabel=(chance)=>{
+      if(chance>=0.4) return 'かなりの頻度で';
+      if(chance>=0.2) return 'しばしば';
+      if(chance>=0.1) return '稀に';
+      return '極稀に';
+    };
     seen.forEach(e=>{
       const isBoss=e.souls>=15;
+      const specialsHtml=(e.specials||[]).map(sp=>
+        `<div style="font-size:10px;color:#AFA9EC;margin-top:2px">
+          ⚡ ${freqLabel(sp.chance)}「${sp.label}」— ${sp.desc}
+        </div>`
+      ).join('');
+      const noteHtml=e.libNote?`<div style="font-size:10px;color:#5f5e5a;margin-top:3px;font-style:italic">${e.libNote}</div>`:'';
       el.innerHTML+=`<div class="lib-card">
         <div class="lib-card-title">${e.icon} ${e.name} ${isBoss?'<span class="badge badge-red" style="font-size:9px">BOSS</span>':''}</div>
         <div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">
@@ -1170,6 +1239,8 @@ function renderLibrary(){
           <span class="badge badge-blue">DEF ${e.def}</span>
           <span class="badge badge-gray">魂 ${e.souls}</span>
         </div>
+        ${specialsHtml}
+        ${noteHtml}
       </div>`;
     });
   }
@@ -1201,23 +1272,30 @@ function renderChars(){
       const w = WEAPONS[lr.weaponId];
       const a = ARMORS[lr.armorId];
       
-      const skillIcons = [...aSkills, ...pSkills]
-        .map(id => (ACTIVE_SKILLS[id] || PASSIVE_SKILLS[id])?.icon || '')
-        .join('');
+      const aSkillDetails=aSkills.map(id=>{const s=ACTIVE_SKILLS[id];return s?`${s.icon} ${s.name}`:'';}).filter(Boolean);
+      const pSkillDetails=pSkills.map(id=>{const s=PASSIVE_SKILLS[id];return s?`${s.icon} ${s.name}`:'';}).filter(Boolean);
+      const accDetails=accs.map(id=>{const acc=ACCESSORIES[id];return acc?`${acc.icon} ${acc.name}`:'';}).filter(Boolean);
 
       lastContainer.innerHTML = `
         <div class="sub">前回と同じ設定で挑む</div>
         <div class="card last-run-card" onclick="quickStartRun()">
-          <div class="row" style="gap:12px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
             <div style="font-size:28px">${c.icon}</div>
-            <div style="flex:1">
+            <div style="flex:1;min-width:0">
               <div class="card-title">${c.name} — クイック再挑戦</div>
-              <div class="card-sub">
-                ${w.name} / ${a.name} / 💍${accs.length}個<br>
-                スキル: ${skillIcons || 'なし'}
+              <div style="font-size:11px;color:#888780;margin-top:4px;line-height:1.7">
+                <div>🗡️ <span style="color:#EF9F27">${w.icon||''}${w.name}</span>
+                  <span style="color:#5f5e5a;font-size:10px"> ATK+${w.atk}${w.mp?` MP+${w.mp}`:''}${w.crit?` 会心+${w.crit}%`:''}</span>
+                </div>
+                <div>🛡 <span style="color:#85B7EB">${a.icon||''}${a.name}</span>
+                  <span style="color:#5f5e5a;font-size:10px"> DEF+${a.def}${a.hp?` HP+${a.hp}`:''}${a.mp?` MP+${a.mp}`:''}</span>
+                </div>
+                ${accDetails.length?`<div>💍 <span style="color:#fb923c">${accDetails.join(' / ')}</span></div>`:''}
+                ${aSkillDetails.length?`<div>⚡ アクティブ: <span style="color:#AFA9EC">${aSkillDetails.join(' / ')}</span></div>`:''}
+                ${pSkillDetails.length?`<div>🛡 パッシブ: <span style="color:#6ee7b7">${pSkillDetails.join(' / ')}</span></div>`:''}
               </div>
-              <div style="font-size:10px; color:#534AB7; margin-top:4px;">
-                前回: ${res.icon||''} 撃破:${res.kills||0} 魂:${res.souls||0} EXP:${res.exp||0}
+              <div style="font-size:10px;color:#534AB7;margin-top:4px;border-top:0.5px solid #3a3a38;padding-top:4px">
+                前回: ${res.icon||''} 撃破 ${res.kills||0} / 魂 ${res.souls||0} / EXP ${res.exp||0}
               </div>
             </div>
           </div>
@@ -1350,8 +1428,12 @@ function renderSkills(){
   GS.run.activeSkills=GS.run.activeSkills||[];
   GS.run.passiveSkills=GS.run.passiveSkills||[];
   const c=CHARS[GS.run.charId];
-  const slots=c?c.activeSlots:3;
-  document.getElementById('skill-screen-sub').textContent=`アクティブ最大${slots}枠 / パッシブ最大2枠`;
+  // システム開放によるスロット拡張
+  const activeBonus=(GS.systemUnlocked||[]).includes('active_slot_up')?1:0;
+  const passiveBonus=(GS.systemUnlocked||[]).includes('passive_slot_up')?1:0;
+  const slots=(c?c.activeSlots:3)+activeBonus;
+  const passiveSlots=2+passiveBonus;
+  document.getElementById('skill-screen-sub').textContent=`アクティブ最大${slots}枠 / パッシブ最大${passiveSlots}枠`;
   document.getElementById('active-skill-max').textContent=slots;
   const ael=document.getElementById('active-skill-list');ael.innerHTML='';
   Object.values(ACTIVE_SKILLS).forEach(s=>{
@@ -1378,16 +1460,19 @@ function renderSkills(){
   document.getElementById('passive-skill-count').textContent=GS.run.passiveSkills.length;
 }
 function toggleActiveSkill(id){
-  const slots=CHARS[GS.run.charId]?.activeSlots||3;
+  const activeBonus=(GS.systemUnlocked||[]).includes('active_slot_up')?1:0;
+  const slots=(CHARS[GS.run.charId]?.activeSlots||3)+activeBonus;
   const idx=GS.run.activeSkills.indexOf(id);
   if(idx>=0)GS.run.activeSkills.splice(idx,1);
   else if(GS.run.activeSkills.length<slots)GS.run.activeSkills.push(id);
   renderSkills();
 }
 function togglePassiveSkill(id){
+  const passiveBonus=(GS.systemUnlocked||[]).includes('passive_slot_up')?1:0;
+  const slots=2+passiveBonus;
   const idx=GS.run.passiveSkills.indexOf(id);
   if(idx>=0)GS.run.passiveSkills.splice(idx,1);
-  else if(GS.run.passiveSkills.length<2)GS.run.passiveSkills.push(id);
+  else if(GS.run.passiveSkills.length<slots)GS.run.passiveSkills.push(id);
   renderSkills();
 }
 
@@ -1443,11 +1528,14 @@ function startRun(){
     GS.run.atk += Math.floor(GS.run.def * 0.5);
   }
 
-  GS.run.lichUsed = false; // リッチの目覚め発動済みフラグ
-  GS.run.nextSkillDiscount = 0; // 連鎖魔法によるMPコスト割引
-  GS.run.counterReady = false; // 鉄の反撃フラグ
-  GS.run.phantomTurns = GS.run.uniqueSkills.includes('rogue_phantom') ? 2 : 0; // 幻影
-  GS.run.shadowbladeReady = false; // 影刃フラグ
+  GS.run.lichUsed = false;
+  GS.run.nextSkillDiscount = 0;
+  GS.run.counterReady = false;
+  GS.run.phantomTurns = GS.run.uniqueSkills.includes('rogue_phantom') ? 2 : 0;
+  GS.run.shadowbladeReady = false;
+  // 侍の反撃確率（日本刀装備で2倍）
+  GS.run.samuraiCounterChance = GS.run.uniqueSkills.includes('samurai_counter')
+    ? (WEAPONS[GS.run.weaponId]?.special==='samuraiDoubleCounter' ? 0.20 : 0.10) : 0;
 
   // 部屋構成のランダム生成
   // 1〜3部屋目: battle / 10部屋目: boss
@@ -1530,8 +1618,9 @@ function startBattle(enemy,isBoss){
     enemyHp:enemy.hp, enemyMaxHp:enemy.hp,
     enemy, isBoss, turn:0, over:false,
     rageStacks:0, dodgeNext:false, stunTurns:0,
-    phantomTurns: GS.run.phantomTurns||0, // 幻影: 戦闘開始時の残り完全回避ターン
-    curseTick: (GS.run.uniqueSkills||[]).includes('necro_curse') ? Math.floor(enemy.hp*0.05) : 0 // 死の呪縛
+    fullGuardTurns:0,
+    phantomTurns: GS.run.phantomTurns||0,
+    curseTick: (GS.run.uniqueSkills||[]).includes('necro_curse') ? Math.floor(enemy.hp*0.05) : 0
   };
   document.getElementById('battle-title').textContent=isBoss?'⚠ ボス戦':'戦闘';
   document.getElementById('b-hero-name').textContent=GS.run.name;
@@ -1632,6 +1721,14 @@ function useActiveSkill(id){
   bState.heroMp-=cost;
   addLog(`【${s.name}】発動！`,'log-skill');
   s.fn(bState);
+  // はやぶさの羽: onAction 5%でスキル2回目（MP追加消費なし）
+  (GS.run.accessories||[]).forEach(accId=>{
+    const acc=ACCESSORIES[accId];if(!acc||acc.kind!=='onAction')return;
+    if(acc.effect.doubleAction&&!bState.over&&Math.random()<acc.effect.doubleAction){
+      addLog(`🪶 はやぶさの羽発動！ ${s.name}を再発動！`,'log-skill');
+      s.fn(bState);
+    }
+  });
   // 連鎖魔法: 次のスキルコスト-10MP
   if((GS.run.uniqueSkills||[]).includes('mage_chain'))
     GS.run.nextSkillDiscount=10;
@@ -1806,11 +1903,35 @@ function autoBattleTick(){
     addLog((isCrit?'💥会心！':'')+`${heroDmg}ダメージ`,isCrit?'log-crit':'log-enemy-dmg');
     applyVampiric(heroDmg,bState);
 
+    // はやぶさの羽: 通常攻撃で発動チェック
+    if(!bState.over&&bState.enemyHp>0){
+      const hayabusa=(GS.run.accessories||[]).find(id=>id==='hayabusa_feather');
+      if(hayabusa&&Math.random()<0.05){
+        const extra2=randVar(Math.max(1,heroAtk-bState.enemy.def));
+        bState.enemyHp-=extra2;
+        showDmg('enemy-sprite',extra2,false,false,false);
+        addLog(`🪶 はやぶさの羽発動！ 追加攻撃 ${extra2}ダメージ`,'log-skill');
+      }
+    }
+
     if(extraHit){
       const extraDmg=randVar(Math.max(1,Math.floor(heroAtk*0.8)-bState.enemy.def));
       bState.enemyHp-=extraDmg;
       showDmg('enemy-sprite',extraDmg,false,false,false);
       addLog(`連撃の指輪発動！ 追撃${extraDmg}ダメージ`,'log-enemy-dmg');
+    }
+
+    // はやぶさの羽: onAction 5%で通常攻撃2回目
+    if(!extraHit){
+      (GS.run.accessories||[]).forEach(id=>{
+        const acc=ACCESSORIES[id];if(!acc||acc.kind!=='onAction')return;
+        if(acc.effect.doubleAction&&Math.random()<acc.effect.doubleAction){
+          const bonusDmg=randVar(Math.max(1,heroAtk-bState.enemy.def));
+          bState.enemyHp-=bonusDmg;
+          showDmg('enemy-sprite',bonusDmg,false,false,false);
+          addLog(`🪶 はやぶさの羽発動！ 追撃${bonusDmg}ダメージ`,'log-skill');
+        }
+      });
     }
 
     updateBattleUI();renderActiveBtns();
@@ -1827,6 +1948,39 @@ function autoBattleTick(){
         setTimeout(()=>autoBattleTick(),1300);
         return;
       }
+
+      // 完全防御中は攻撃ダメージ0
+      if(bState.fullGuardTurns>0){
+        bState.fullGuardTurns--;
+        addLog(`${bState.enemy.name}は完全防御の構えをとっている！（残${bState.fullGuardTurns}T）`,'log-skill');
+        updateBattleUI();
+        setTimeout(()=>autoBattleTick(),1300);
+        return;
+      }
+
+      // 敵の特殊行動チェック
+      const specials=bState.enemy.specials||[];
+      let specialFired=false;
+      for(const sp of specials){
+        if(Math.random()<sp.chance){
+          if(sp.type==='fullGuard'){
+            bState.fullGuardTurns=(sp.turns||3);
+            addLog(`${bState.enemy.name}が完全防御の構えをとった！ ${bState.fullGuardTurns}ターン攻撃無効`,'log-skill');
+            showSkillFlash();updateBattleUI();
+            setTimeout(()=>autoBattleTick(),1300);
+            specialFired=true;break;
+          } else if(sp.type==='mpDrain'){
+            const drain=10;
+            bState.heroMp=Math.max(0,bState.heroMp-drain);
+            addLog(`${bState.enemy.name}がMP吸い！ MP-${drain}`,'log-hero-dmg');
+            updateBattleUI();renderActiveBtns();
+            // MP吸い後は通常攻撃なし（このターンは終わり）
+            setTimeout(()=>autoBattleTick(),1300);
+            specialFired=true;break;
+          }
+        }
+      }
+      if(specialFired) return;
 
       let dmgToHero=randVar(Math.max(1,Math.floor(bState.enemy.atk*1.3)-GS.run.def));
       if(passives.includes('ironwall')){dmgToHero=Math.floor(dmgToHero*(GS.run.defBonus||1)*0.9);triggerPassiveBadge('ironwall');}
@@ -1864,12 +2018,22 @@ function autoBattleTick(){
           addLog(`直撃を避けた！ ${bState.enemy.name}からダメージを受けた`,'log-hero-dmg');
         } else {
           animShake('hero-sprite');showHeroFlash();
-          bState.heroHp-=dmgToHero;
-          showDmg('hero-sprite',dmgToHero,false,false,false);
-          addLog(`${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
-          // 鉄の反撃: 被ダメ後の次の攻撃+30%
-          if((GS.run.uniqueSkills||[]).includes('warrior_counter'))
-            GS.run.counterReady=true;
+          // 侍の反撃チェック
+          if((GS.run.samuraiCounterChance||0)>0&&Math.random()<GS.run.samuraiCounterChance){
+            addLog(`反撃！ 攻撃を無効化し反撃！`,'log-skill');showSkillFlash();
+            const counterDmg=Math.max(1,Math.floor(GS.run.atk*2)-bState.enemy.def);
+            bState.enemyHp-=counterDmg;
+            showDmg('enemy-sprite',counterDmg,false,true,false);
+            addLog(`反撃で${counterDmg}ダメージ！`,'log-crit');
+            // ダメージを受けない
+          } else {
+            bState.heroHp-=dmgToHero;
+            showDmg('hero-sprite',dmgToHero,false,false,false);
+            addLog(`${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
+            // 鉄の反撃: 被ダメ後の次の攻撃+30%
+            if((GS.run.uniqueSkills||[]).includes('warrior_counter'))
+              GS.run.counterReady=true;
+          }
         }
         // 不死身
         if(bState.heroHp<=0&&passives.includes('undying')&&!GS.run.undyingUsed){
@@ -2003,6 +2167,7 @@ function endRun(won){
     const fid=GS.run.floorId||1;
     GS.achStats.floorClears=GS.achStats.floorClears||{};
     GS.achStats.floorClears[cid]=(GS.achStats.floorClears[cid]||0)+1;
+    GS.achStats.maxFloorCleared=Math.max(GS.achStats.maxFloorCleared||0, fid);
   }
   GS.achStats.dodgeCount=(GS.achStats.dodgeCount||0)+(GS.run.dodgeCount||0);
   GS.achStats.dodgeByChar=GS.achStats.dodgeByChar||{};
@@ -2045,19 +2210,63 @@ function endRun(won){
 // ─── 選択肢 ───────────────────────────────────────────────
 function showChoice(type){
   const cl=document.getElementById('choice-list');cl.innerHTML='';
+  const floorId=GS.run.floorId||1;
+  const s=floorId; // 階層が深いほどボーナス大
   if(type==='treasure'){
-    document.getElementById('choice-desc').textContent='宝の間 — 一つを選べ';
-    [{label:'攻撃+5',fn:()=>{GS.run.atk+=5;addChoiceResult('攻撃力が上がった！');}},
-     {label:'防御+4',fn:()=>{GS.run.def+=4;addChoiceResult('防御力が上がった！');}},
-     {label:'最大MP+20',fn:()=>{GS.run.maxMp+=20;GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+20);addChoiceResult('最大MPが増えた！');}},
-     {label:'HP+20回復',fn:()=>{GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+20);addChoiceResult('HPを20回復した！');}},
-    ].forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div>`;d.onclick=o.fn;cl.appendChild(d);});
+    document.getElementById('choice-desc').textContent='💎 宝の間 — 一つを選べ';
+    const options=[
+      {label:`⚔️ 攻撃力 +${4+s}`,         desc:'刃が研ぎ澄まされる',              fn:()=>{GS.run.atk+=4+s;addChoiceResult(`攻撃力が+${4+s}上がった！`);}},
+      {label:`🛡 防御力 +${3+Math.floor(s*0.8)}`, desc:'鎧が強化される', fn:()=>{const v=3+Math.floor(s*0.8);GS.run.def+=v;addChoiceResult(`防御力が+${v}上がった！`);}},
+      {label:`💜 最大MP +${15+s*5}`,       desc:'魔力の源泉が広がる',              fn:()=>{const v=15+s*5;GS.run.maxMp+=v;GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+v);addChoiceResult(`最大MPが+${v}増えた！`);}},
+      {label:`❤️ HP +${20+s*5}回復`,       desc:'傷が癒える',                      fn:()=>{const v=20+s*5;GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+v);addChoiceResult(`HPを+${v}回復した！`);}},
+      {label:`✨ 会心率 +${2+s}%`,          desc:'急所を見極める眼が冴える',         fn:()=>{const v=2+s;GS.run.crit+=v;addChoiceResult(`会心率が+${v}%上がった！`);}},
+      {label:`👟 回避率 +${2+s}%`,          desc:'身のこなしが軽くなる',             fn:()=>{const v=2+s;GS.run.dodge+=v;addChoiceResult(`回避率が+${v}%上がった！`);}},
+    ];
+    if(s>=2) options.push(
+      {label:`⬆ 最大HP +${10+s*5}`,        desc:'生命力の器が広がる',              fn:()=>{const v=10+s*5;GS.run.maxHp+=v;GS.run.hp+=v;addChoiceResult(`最大HPが+${v}増えた！`);}},
+      {label:`⚡ MP全回復 + ATK +${s}`,      desc:'魔力を充填し力も増す',            fn:()=>{GS.run.mp=GS.run.maxMp;GS.run.atk+=s;addChoiceResult(`MP全回復＋攻撃力+${s}！`);}},
+    );
+    if(s>=3) options.push(
+      {label:`💥 攻撃+防御 +${2+s}`,        desc:'攻守が同時に強化される',          fn:()=>{const v=2+s;GS.run.atk+=v;GS.run.def+=v;addChoiceResult(`攻撃と防御が+${v}上がった！`);}},
+      {label:`🌑 全ステータス +${s}`,        desc:'奈落の力が体に宿る',              fn:()=>{GS.run.atk+=s;GS.run.def+=s;GS.run.crit+=s;addChoiceResult(`全ステータスが+${s}上がった！`);}},
+    );
+    if(s>=4) options.push(
+      {label:`💢 HP消費でATK+${s*5}（HP-${Math.floor(GS.run.maxHp*0.2)}）`, desc:'命を削り力を得る',
+        fn:()=>{const cost=Math.floor(GS.run.maxHp*0.2);if(GS.run.hp<=cost){addChoiceResult('HPが足りず断念した...');return;}GS.run.hp-=cost;GS.run.atk+=s*5;addChoiceResult(`HP-${cost}と引き換えに攻撃+${s*5}を得た！`);}},
+      {label:`🔮 ランダム強化×3`,             desc:'奈落の気まぐれに身を委ねる',
+        fn:()=>{let log=[];for(let i=0;i<3;i++){const r=Math.floor(Math.random()*4);if(r===0){GS.run.atk+=s;log.push(`ATK+${s}`);}else if(r===1){GS.run.def+=s;log.push(`DEF+${s}`);}else if(r===2){GS.run.maxHp+=s*5;GS.run.hp+=s*5;log.push(`MaxHP+${s*5}`);}else{GS.run.maxMp+=s*5;GS.run.mp+=s*5;log.push(`MaxMP+${s*5}`);}}addChoiceResult(`ランダム強化: ${log.join(' / ')}`);}},
+    );
+    if(s>=5) options.push(
+      {label:`☠️ 全HP消費でATK+${s*10}（1HPで生存）`, desc:'命を賭けた究極の取引',
+        fn:()=>{if(GS.run.hp<=1){addChoiceResult('すでに瀕死...');return;}GS.run.atk+=s*10;GS.run.hp=1;addChoiceResult(`HPを1まで削りATK+${s*10}を得た！`);}},
+    );
+    // ランダム3択
+    const picks=options.sort(()=>Math.random()-0.5).slice(0,3);
+    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.onclick=o.fn;cl.appendChild(d);});
   } else {
-    document.getElementById('choice-desc').textContent='休息の間 — 焚き火の前で';
-    [{label:'HP全回復',fn:()=>{GS.run.hp=GS.run.maxHp;addChoiceResult('完全に回復した');}},
-     {label:'最大HP+15',fn:()=>{GS.run.maxHp+=15;GS.run.hp+=15;addChoiceResult('最大HPが増えた！');}},
-     {label:'MP全回復',fn:()=>{GS.run.mp=GS.run.maxMp;addChoiceResult('MPが全回復した！');}},
-    ].forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div>`;d.onclick=o.fn;cl.appendChild(d);});
+    document.getElementById('choice-desc').textContent='🔥 休息の間 — 焚き火の前で';
+    const options=[
+      {label:'❤️ HP全回復',                  desc:'傷を完全に癒す',                fn:()=>{GS.run.hp=GS.run.maxHp;addChoiceResult('完全に回復した！');}},
+      {label:'💜 MP全回復',                   desc:'魔力を完全に充填する',           fn:()=>{GS.run.mp=GS.run.maxMp;addChoiceResult('MPが全回復した！');}},
+      {label:`❤️ 最大HP +${10+s*5}`,          desc:'生命力の器が広がる',             fn:()=>{const v=10+s*5;GS.run.maxHp+=v;GS.run.hp+=v;addChoiceResult(`最大HPが+${v}増えた！`);}},
+      {label:'❤️💜 HP+MP両方70%回復',         desc:'心身を整える',                   fn:()=>{GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+Math.floor(GS.run.maxHp*0.7));GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+Math.floor(GS.run.maxMp*0.7));addChoiceResult('HP・MPを70%回復した！');}},
+    ];
+    if(s>=2) options.push(
+      {label:`⚔️ ATK +${2+s} ＆ HP半回復`,    desc:'研鑽と休息を両立する',           fn:()=>{const v=2+s;GS.run.atk+=v;GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+Math.floor(GS.run.maxHp*0.5));addChoiceResult(`ATK+${v}、HP半回復した！`);}},
+      {label:`💜 最大MP +${10+s*5}`,           desc:'魔力の器が広がる',               fn:()=>{const v=10+s*5;GS.run.maxMp+=v;GS.run.mp=GS.run.maxMp;addChoiceResult(`最大MPが+${v}増えた！`);}},
+    );
+    if(s>=3) options.push(
+      {label:`🛡 DEF +${2+s} ＆ HP全回復`,     desc:'防御を固め満を持して進む',       fn:()=>{const v=2+s;GS.run.def+=v;GS.run.hp=GS.run.maxHp;addChoiceResult(`DEF+${v}、HP全回復した！`);}},
+      {label:`✨ 会心 +${1+s}% ＆ MP全回復`,   desc:'静寂の中で集中力を研ぎ澄ます', fn:()=>{const v=1+s;GS.run.crit+=v;GS.run.mp=GS.run.maxMp;addChoiceResult(`会心率+${v}%、MP全回復した！`);}},
+    );
+    if(s>=4) options.push(
+      {label:'🔥 HP1消費で最大HP+50 ＆ 全回復',desc:'命を燃やして限界を突破する',     fn:()=>{if(GS.run.hp<=1){addChoiceResult('HPが足りず...');return;}GS.run.maxHp+=50;GS.run.hp=GS.run.maxHp;addChoiceResult('HP1消費し最大HP+50、全回復した！');}},
+    );
+    if(s>=5) options.push(
+      {label:'💀 死の淵から這い戻る',           desc:'不死の意志で全てを取り戻す',     fn:()=>{GS.run.hp=GS.run.maxHp;GS.run.mp=GS.run.maxMp;GS.run.atk+=s;GS.run.def+=s;addChoiceResult('HP・MP全回復＋全ステータスが僅かに上昇した！');}},
+    );
+    const picks=options.sort(()=>Math.random()-0.5).slice(0,3);
+    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.onclick=o.fn;cl.appendChild(d);});
   }
   goTo('s-choice');
 }

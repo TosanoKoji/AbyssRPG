@@ -109,6 +109,28 @@
       "uniqueSkills": [
         "necro_soulharvest"
       ]
+    },
+    "samurai": {
+      "id": "samurai",
+      "name": "侍",
+      "icon": "⚔️",
+      "hp": 105,
+      "atk": 26,
+      "def": 7,
+      "mp": 50,
+      "maxMp": 50,
+      "crit": 15,
+      "dodge": 10,
+      "hdodge": 15,
+      "activeSlots": 3,
+      "accSlots": 1,
+      "desc": "反撃の達人。被弾時に反撃する武士。アクティブ3枠",
+      "lvReq": 25,
+      "unlockCond": "achievement",
+      "unlockCost": 1000,
+      "uniqueSkills": [
+        "samurai_counter"
+      ]
     }
   },
   "weapons": {
@@ -189,6 +211,19 @@
       "lvReq": 15,
       "special": "",
       "desc": "光を宿す槍。会心+5%"
+    },
+    "katana": {
+      "id": "katana",
+      "name": "日本刀",
+      "icon": "⚔️",
+      "atk": 30,
+      "mp": 0,
+      "crit": 5,
+      "special": "samuraiDoubleCounter",
+      "unlockCond": "achievement",
+      "unlockCost": 3000,
+      "lvReq": 100,
+      "desc": "魂を吸う伝説の刀。侍装備時に反撃確率2倍"
     }
   },
   "armors": {
@@ -304,6 +339,17 @@
       "effectType": "onKill",
       "effectVal": "5%/+5魂",
       "desc": "敵撃破時5%の確率で魂+5追加"
+    },
+    "hayabusa_feather": {
+      "id": "hayabusa_feather",
+      "name": "はやぶさの羽",
+      "icon": "🪶",
+      "unlockCond": "achievement",
+      "unlockCost": 150,
+      "lvReq": 0,
+      "effectType": "onAction",
+      "effectVal": "5%/行動2回",
+      "desc": "行動時5%の確率でその行動を2回繰り返す。スキルのMPは1回分"
     }
   },
   "activeSkills": {
@@ -650,6 +696,14 @@
       "icon": "🌑",
       "initial": false,
       "desc": "戦闘開始時に敵にHP最大値の5%の呪い付与"
+    },
+    "samurai_counter": {
+      "id": "samurai_counter",
+      "charId": "samurai",
+      "name": "反撃",
+      "icon": "⚔️",
+      "initial": true,
+      "desc": "被弾時10%の確率で攻撃を無効化しATK×2のダメージを与える"
     }
   },
   "floors": [
@@ -754,7 +808,23 @@
           "dodge": 5,
           "souls": 15,
           "exp": 20,
-          "kind": "boss"
+          "kind": "boss",
+          "specials": [
+            {
+              "type": "mpDrain",
+              "chance": 0.1,
+              "label": "MP吸い",
+              "desc": "MPを-10奪う"
+            },
+            {
+              "type": "fullGuard",
+              "chance": 0.15,
+              "label": "完全防御",
+              "turns": 3,
+              "desc": "3ターン完全防御の構えをとる"
+            }
+          ],
+          "libNote": "稀にMPを吸い取る。またしばしば完全防御の構えをとる。"
         },
         {
           "id": "f1b_hasha",
@@ -1395,10 +1465,109 @@
       "rewardType": "unlockItem",
       "rewardId": "未定",
       "implStatus": "未実装"
+    },
+    {
+      "id": "ach_samurai_unlock",
+      "title": "武士道の自覚",
+      "condType": "floorClear",
+      "condVal": 2,
+      "condDesc": "地下2階クリア+総Lv25以上",
+      "charId": "",
+      "rewardType": "unlockChar",
+      "rewardId": "samurai",
+      "implStatus": "実装済"
+    },
+    {
+      "id": "ach_katana_unlock",
+      "title": "刀匠の統べ",
+      "condType": "floorClear",
+      "condVal": 4,
+      "condDesc": "侍で地下4階クリア+総Lv100以上",
+      "charId": "samurai",
+      "rewardType": "unlockWeapon",
+      "rewardId": "katana",
+      "implStatus": "実装済"
+    },
+    {
+      "id": "ach_floor2_clear",
+      "title": "腐食の征服",
+      "condType": "floorClear",
+      "condVal": 2,
+      "condDesc": "地下2階クリア",
+      "charId": "",
+      "rewardType": "unlockSystem",
+      "rewardId": "passive_slot_up",
+      "implStatus": "実装済"
+    },
+    {
+      "id": "ach_floor4_clear",
+      "title": "虚無の克服",
+      "condType": "floorClear",
+      "condVal": 4,
+      "condDesc": "地下4階クリア",
+      "charId": "",
+      "rewardType": "unlockSystem",
+      "rewardId": "active_slot_up",
+      "implStatus": "実装済"
+    },
+    {
+      "id": "ach_samurai_unlock",
+      "title": "武士道の自覚",
+      "condType": "floorClear",
+      "condVal": 2,
+      "condDesc": "地下2階クリア+総Lv25以上",
+      "charId": "",
+      "rewardType": "unlockChar",
+      "rewardId": "samurai",
+      "implStatus": "実装済"
+    },
+    {
+      "id": "ach_katana_unlock",
+      "title": "刀匠の統べ",
+      "condType": "floorClear",
+      "condVal": 4,
+      "condDesc": "侍で地下4階クリア+総Lv100以上",
+      "charId": "samurai",
+      "rewardType": "unlockWeapon",
+      "rewardId": "katana",
+      "implStatus": "実装済"
+    },
+    {
+      "id": "ach_hayabusa_unlock",
+      "title": "奔流の大鷹",
+      "condType": "totalRun",
+      "condVal": 10,
+      "condDesc": "合計10回ランを完了",
+      "charId": "",
+      "rewardType": "unlockAccessory",
+      "rewardId": "hayabusa_feather",
+      "implStatus": "実装済"
+    },
+    {
+      "id": "ach_floor2_clear",
+      "title": "腐食の征服",
+      "condType": "floorClear",
+      "condVal": 2,
+      "condDesc": "地下2階クリア",
+      "charId": "",
+      "rewardType": "unlockSystem",
+      "rewardId": "passive_slot_up",
+      "implStatus": "実装済"
+    },
+    {
+      "id": "ach_floor4_clear",
+      "title": "虚無の克服",
+      "condType": "floorClear",
+      "condVal": 4,
+      "condDesc": "地下4階クリア",
+      "charId": "",
+      "rewardType": "unlockSystem",
+      "rewardId": "active_slot_up",
+      "implStatus": "実装済"
     }
   ],
   "meta": {
-    "version": "2.1.0",
+    "version": "2.2.0",
     "generatedAt": "2026-04-03",
     "source": "Notion MasterDB"
   },
@@ -1410,6 +1579,40 @@
       "cost": 500,
       "lvReq": 20,
       "desc": "ダンジョン探索時、各部屋の内容（戦闘・宝・休息・ボス）がアイコンで事前に表示される"
+    },
+    {
+      "id": "passive_slot_up",
+      "name": "魔法の覚醒",
+      "icon": "🛡",
+      "cost": 300,
+      "lvReq": 0,
+      "desc": "パッシブスキルの装備枠が1増加する（地下2階クリアで解放）",
+      "achReq": "ach_floor2_clear"
+    },
+    {
+      "id": "active_slot_up",
+      "name": "刃の冴え",
+      "icon": "⚡",
+      "cost": 400,
+      "lvReq": 0,
+      "desc": "アクティブスキルの装備枠が全キャラ+1増加する（地下4階クリアで解放）",
+      "achReq": "ach_floor4_clear"
+    },
+    {
+      "id": "passive_slot_up",
+      "name": "魔法の覚醒",
+      "icon": "🛡",
+      "cost": 300,
+      "lvReq": 0,
+      "desc": "パッシブスキルの装備枠が1増加する（最大3枠）"
+    },
+    {
+      "id": "active_slot_up",
+      "name": "刃の冴え",
+      "icon": "⚡",
+      "cost": 400,
+      "lvReq": 0,
+      "desc": "アクティブスキルの装備枠が全キャラ+1増加する"
     }
   ]
 }
