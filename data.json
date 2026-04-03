@@ -1,18 +1,18 @@
 {
   "chars": {
-    "warrior": { "id": "warrior", "name": "戦士", "icon": "⚔", "hp": 120, "atk": 18, "def": 8, "mp": 60, "crit": 10, "dodge": 0, "hdodge": 0, "activeSlots": 2, "accessorySlots": 1, "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "高HPと防御力。アクティブ2枠", "uniqueSkills": ["warrior_berserk"] },
-    "mage": { "id": "mage", "name": "魔術師", "icon": "✦", "hp": 70, "atk": 28, "def": 3, "mp": 120, "crit": 15, "dodge": 5, "hdodge": 8, "activeSlots": 3, "accessorySlots": 1, "unlockCond": "souls", "unlockCost": 15, "lvReq": 0, "desc": "高火力・高MP。アクティブ3枠", "uniqueSkills": ["mage_overload"] },
-    "rogue": { "id": "rogue", "name": "盗賊", "icon": "◆", "hp": 90, "atk": 22, "def": 5, "mp": 80, "crit": 20, "dodge": 20, "hdodge": 30, "activeSlots": 3, "accessorySlots": 1, "unlockCond": "souls", "unlockCost": 20, "lvReq": 0, "desc": "会心・回避最高。アクティブ3枠", "uniqueSkills": ["rogue_jackpot"] },
-    "paladin": { "id": "paladin", "name": "聖騎士", "icon": "🛡", "hp": 150, "atk": 20, "def": 14, "mp": 70, "crit": 8, "dodge": 5, "hdodge": 10, "activeSlots": 2, "accessorySlots": 1, "unlockCond": "souls", "unlockCost": 30, "lvReq": 5, "desc": "超高耐久。防御特化・アクティブ2枠", "uniqueSkills": ["paladin_aura"] },
-    "necromancer": { "id": "necromancer", "name": "死霊術師", "icon": "💀", "hp": 65, "atk": 32, "def": 2, "mp": 140, "crit": 18, "dodge": 8, "hdodge": 12, "activeSlots": 3, "accessorySlots": 1, "unlockCond": "souls", "unlockCost": 40, "lvReq": 15, "desc": "最高MP・高火力。アクティブ3枠", "uniqueSkills": ["necro_soulharvest"] }
+    "warrior": { "id": "warrior", "name": "戦士", "icon": "⚔", "hp": 120, "atk": 18, "def": 8, "mp": 60, "activeSlots": 2, "accessorySlots": 1, "crit": 10, "dodge": 0, "hdodge": 0, "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "高HPと防御力。アクティブ2枠" },
+    "mage": { "id": "mage", "name": "魔術師", "icon": "✦", "hp": 70, "atk": 28, "def": 3, "mp": 120, "activeSlots": 3, "accessorySlots": 1, "crit": 15, "dodge": 5, "hdodge": 8, "unlockCond": "souls", "unlockCost": 15, "lvReq": 0, "desc": "高火力・高MP。アクティブ3枠" },
+    "rogue": { "id": "rogue", "name": "盗賊", "icon": "◆", "hp": 90, "atk": 22, "def": 5, "mp": 80, "activeSlots": 3, "accessorySlots": 1, "crit": 20, "dodge": 20, "hdodge": 30, "unlockCond": "souls", "unlockCost": 20, "lvReq": 0, "desc": "会心・回避最高。アクティブ3枠" },
+    "paladin": { "id": "paladin", "name": "聖騎士", "icon": "🛡", "hp": 150, "atk": 20, "def": 14, "mp": 70, "activeSlots": 2, "accessorySlots": 1, "crit": 8, "dodge": 5, "hdodge": 10, "unlockCond": "souls", "unlockCost": 30, "lvReq": 5, "desc": "超高耐久。防御特化・アクティブ2枠" },
+    "necromancer": { "id": "necromancer", "name": "死霊術師", "icon": "💀", "hp": 65, "atk": 32, "def": 2, "mp": 140, "activeSlots": 3, "accessorySlots": 1, "crit": 18, "dodge": 8, "hdodge": 12, "unlockCond": "souls", "unlockCost": 40, "lvReq": 15, "desc": "最高MP・高火力。アクティブ3枠" }
   },
   "weapons": {
-    "sword": { "id": "sword", "name": "錆びた剣", "icon": "🗡️", "atk": 5, "mp": 0, "crit": 0, "anim": "slash", "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "古びた剣。基本の一撃" },
-    "axe": { "id": "axe", "name": "呪われた斧", "icon": "🪓", "atk": 10, "mp": 0, "crit": 0, "anim": "smash", "unlockCond": "souls", "unlockCost": 12, "lvReq": 0, "desc": "重い一撃。会心時ダメージ+15" },
-    "staff": { "id": "staff", "name": "骨の杖", "icon": "🦴", "atk": 8, "mp": 20, "crit": 0, "anim": "strike", "unlockCond": "souls", "unlockCost": 10, "lvReq": 0, "desc": "魔力を宿した杖。MP+20" },
-    "dagger": { "id": "dagger", "name": "影の短剣", "icon": "🔪", "atk": 7, "mp": 0, "crit": 0, "anim": "pierce", "unlockCond": "souls", "unlockCost": 8, "lvReq": 0, "desc": "連撃しやすい。盗賊向き" },
-    "mageblade": { "id": "mageblade", "name": "魔剣", "icon": "⚡", "atk": 14, "mp": 10, "crit": 0, "anim": "slash", "unlockCond": "souls", "unlockCost": 25, "lvReq": 5, "desc": "魔力を帯びた剣" },
-    "holyspear": { "id": "holyspear", "name": "聖槍", "icon": "✨", "atk": 12, "mp": 0, "crit": 5, "anim": "pierce", "unlockCond": "souls", "unlockCost": 30, "lvReq": 15, "desc": "光を宿す槍。会心+5%" }
+    "sword": { "id": "sword", "name": "錆びた剣", "icon": "🗡️", "atk": 5, "mp": 0, "anim": "slash", "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "古びた剣。基本の一撃" },
+    "axe": { "id": "axe", "name": "呪われた斧", "icon": "🪓", "atk": 10, "mp": 0, "anim": "smash", "unlockCond": "souls", "unlockCost": 12, "lvReq": 0, "desc": "重い一撃。会心時+15ダメ" },
+    "staff": { "id": "staff", "name": "骨の杖", "icon": "🦴", "atk": 8, "mp": 20, "anim": "strike", "unlockCond": "souls", "unlockCost": 10, "lvReq": 0, "desc": "魔力を宿した杖。MP+20" },
+    "dagger": { "id": "dagger", "name": "影の短剣", "icon": "🔪", "atk": 7, "mp": 0, "anim": "pierce", "unlockCond": "souls", "unlockCost": 8, "lvReq": 0, "desc": "連撃しやすい。盗賊向き" },
+    "mageblade": { "id": "mageblade", "name": "魔剣", "icon": "⚡", "atk": 14, "mp": 10, "anim": "slash", "unlockCond": "souls", "unlockCost": 25, "lvReq": 5, "desc": "魔力を帯びた剣" },
+    "holyspear": { "id": "holyspear", "name": "聖槍", "icon": "✨", "atk": 12, "mp": 0, "anim": "pierce", "unlockCond": "souls", "unlockCost": 30, "lvReq": 15, "desc": "光を宿す槍。会心+5%" }
   },
   "armors": {
     "leather": { "id": "leather", "name": "粗末な革鎧", "icon": "🥋", "def": 3, "hp": 0, "mp": 0, "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "最低限の防護" },
@@ -23,35 +23,72 @@
     "bonemantle": { "id": "bonemantle", "name": "骸骨外套", "icon": "💀", "def": 3, "hp": 8, "mp": 30, "unlockCond": "souls", "unlockCost": 30, "lvReq": 15, "desc": "骸骨の外套。MP+30" }
   },
   "accessories": {
-    "ring_double": { "id": "ring_double", "name": "連撃の指輪", "icon": "💍", "effectType": "onHit", "effectVal": 0.1, "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "10%の確率で通常攻撃を2回実行" },
-    "amulet_mp": { "id": "amulet_mp", "name": "魔力の首飾り", "icon": "📿", "effectType": "onBattleStart", "effectVal": 20, "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "戦闘開始時MP+20" },
-    "charm_souls": { "id": "charm_souls", "name": "魂喰いの護符", "icon": "🪶", "effectType": "onKill", "effectVal": 5, "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "敵撃破時5%の確率で魂+5追加" }
+    "ring_double": { "id": "ring_double", "name": "連撃の指輪", "icon": "💍", "effectType": "onHit", "effectVal": 0.1, "unlockCond": "default", "unlockCost": 0, "desc": "10%の確率で通常攻撃を2回実行" },
+    "amulet_mp": { "id": "amulet_mp", "name": "魔力の首飾り", "icon": "📿", "effectType": "onBattleStart", "effectVal": 20, "unlockCond": "default", "unlockCost": 0, "desc": "戦闘開始時MP+20" },
+    "charm_souls": { "id": "charm_souls", "name": "魂喰いの護符", "icon": "🪶", "effectType": "onKill", "effectVal": 5, "unlockCond": "default", "unlockCost": 0, "desc": "敵撃破時5%の確率で魂+5追加" }
   },
   "activeSkills": {
-    "rallycry": { "id": "rallycry", "name": "鬨の声", "icon": "⚡", "mpCost": 15, "multiplier": 0, "effectType": "buff", "unlockCond": "souls", "unlockCost": 20, "lvReq": 0, "desc": "3ターン攻撃+50%バフ" },
-    "divinewrath": { "id": "divinewrath", "name": "天罰", "icon": "⚡", "mpCost": 60, "multiplier": 7.0, "effectType": "damage", "unlockCond": "souls", "unlockCost": 55, "lvReq": 60, "desc": "防御無視・光ダメージ×7" },
-    "slash": { "id": "slash", "name": "断罪の一刀", "icon": "⚔", "mpCost": 20, "multiplier": 2.5, "effectType": "damage", "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "攻撃×2.5の斬撃ダメージ" },
-    "arcane": { "id": "arcane", "name": "魔弾乱射", "icon": "✦", "mpCost": 30, "multiplier": 2.4, "effectType": "damage", "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "3連続魔法ダメージ（防御無視）" },
-    "apocalypse": { "id": "apocalypse", "name": "終焉", "icon": "🌑", "mpCost": 80, "multiplier": 0.3, "effectType": "damage_hp_rate", "unlockCond": "souls", "unlockCost": 80, "lvReq": 100, "desc": "敵残HP30%分ダメージ" },
-    "lifedrain": { "id": "lifedrain", "name": "生命吸収", "icon": "🩸", "mpCost": 25, "multiplier": 1.5, "effectType": "drain", "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "ダメージ＆同量HP吸収" },
-    "blaze": { "id": "blaze", "name": "地獄炎", "icon": "🔥", "mpCost": 35, "multiplier": 4.0, "effectType": "damage", "unlockCond": "souls", "unlockCost": 18, "lvReq": 0, "desc": "爆発ダメージ。防御50%無視" },
-    "shadowstep": { "id": "shadowstep", "name": "影踏み", "icon": "◆", "mpCost": 20, "multiplier": 2.0, "effectType": "dodge", "unlockCond": "souls", "unlockCost": 18, "lvReq": 0, "desc": "次の敵攻撃を回避＋反撃×2" },
-    "soulburst": { "id": "soulburst", "name": "魂の爆発", "icon": "💜", "mpCost": 45, "multiplier": 6.0, "effectType": "damage", "unlockCond": "souls", "unlockCost": 35, "lvReq": 15, "desc": "最大HP30%消費→攻撃×6" },
-    "timestop": { "id": "timestop", "name": "時間停止", "icon": "⏳", "mpCost": 50, "multiplier": 0, "effectType": "stun", "unlockCond": "souls", "unlockCost": 40, "lvReq": 30, "desc": "敵の攻撃を2回無効化" },
-    "fireballs": { "id": "fireballs", "name": "火の玉", "icon": "🔥", "mpCost": 50, "multiplier": 5.0, "effectType": "damage", "unlockCond": "souls", "unlockCost": 50, "lvReq": 40, "desc": "強力な火球攻撃" }
+    "slash": { "id": "slash", "name": "断罪の一刀", "icon": "⚔", "mpCost": 20, "multiplier": 2.5, "unlockCond": "default", "unlockCost": 0, "desc": "攻撃×2.5の斬撃" },
+    "arcane": { "id": "arcane", "name": "魔弾乱射", "icon": "✦", "mpCost": 30, "multiplier": 2.4, "unlockCond": "default", "unlockCost": 0, "desc": "3連魔法ダメージ" },
+    "lifedrain": { "id": "lifedrain", "name": "生命吸収", "icon": "🩸", "mpCost": 25, "multiplier": 1.5, "unlockCond": "default", "unlockCost": 0, "desc": "ダメージ＆同量HP吸収" },
+    "blaze": { "id": "blaze", "name": "地獄炎", "icon": "🔥", "mpCost": 35, "multiplier": 4.0, "unlockCond": "souls", "unlockCost": 18, "desc": "爆発ダメージ" },
+    "fireballs": { "id": "fireballs", "name": "火の玉", "icon": "🔥", "mpCost": 50, "multiplier": 5.0, "unlockCond": "souls", "unlockCost": 50, "lvReq": 40, "desc": "強力な火球攻撃" },
+    "shadowstep": { "id": "shadowstep", "name": "影踏み", "icon": "◆", "mpCost": 20, "multiplier": 2.0, "unlockCond": "souls", "unlockCost": 18, "desc": "回避＋反撃×2" },
+    "rallycry": { "id": "rallycry", "name": "鬨の声", "icon": "⚡", "mpCost": 15, "multiplier": 1.5, "unlockCond": "souls", "unlockCost": 20, "desc": "3ターン攻撃+50%" },
+    "soulburst": { "id": "soulburst", "name": "魂の爆発", "icon": "💜", "mpCost": 45, "multiplier": 6.0, "unlockCond": "souls", "unlockCost": 35, "lvReq": 15, "desc": "最大HP30%消費→攻撃×6" },
+    "timestop": { "id": "timestop", "name": "時間停止", "icon": "⏳", "mpCost": 50, "multiplier": 0, "unlockCond": "souls", "unlockCost": 40, "lvReq": 30, "desc": "敵攻撃を2回封じる" },
+    "divinewrath": { "id": "divinewrath", "name": "天罰", "icon": "⚡", "mpCost": 60, "multiplier": 7.0, "unlockCond": "souls", "unlockCost": 55, "lvReq": 60, "desc": "光の裁き×7" },
+    "apocalypse": { "id": "apocalypse", "name": "終焉", "icon": "🌑", "mpCost": 80, "multiplier": 0.3, "unlockCond": "souls", "unlockCost": 80, "lvReq": 100, "desc": "敵残HP30%ダメージ" }
   },
   "passiveSkills": {
-    "cursedmark": { "id": "cursedmark", "name": "呪いの刻印", "icon": "🩸", "effectType": "onTurnEnd", "unlockCond": "souls", "unlockCost": 30, "lvReq": 30, "desc": "毎ターン敵最大HP2%の呪いダメージ" },
-    "undying": { "id": "undying", "name": "不死身", "icon": "💀", "effectType": "onDamaged", "unlockCond": "souls", "unlockCost": 50, "lvReq": 60, "desc": "HP0時1度だけHP1で踏みとどまる" },
-    "mprecover": { "id": "mprecover", "name": "魔力回路", "icon": "⚡", "effectType": "always", "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "毎ターンMP+5追加回復" },
-    "souleat": { "id": "souleat", "name": "魂喰い", "icon": "👁", "effectType": "onKill", "unlockCond": "souls", "unlockCost": 20, "lvReq": 0, "desc": "敵撃破時HP+10" },
-    "ironwall": { "id": "ironwall", "name": "鉄壁", "icon": "🛡", "effectType": "always", "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "被ダメージ-10%" },
-    "vampiric": { "id": "vampiric", "name": "吸血", "icon": "🩸", "effectType": "always", "unlockCond": "default", "unlockCost": 0, "lvReq": 0, "desc": "与ダメの3%をHP吸収" },
-    "godspeed": { "id": "godspeed", "name": "神速", "icon": "💨", "effectType": "always", "unlockCond": "souls", "unlockCost": 30, "lvReq": 30, "desc": "完全回避+10%・半回避+15%" },
-    "rage": { "id": "rage", "name": "血の怒り", "icon": "💢", "effectType": "conditional", "unlockCond": "souls", "unlockCost": 15, "lvReq": 0, "desc": "HP50%以下で攻撃+30%" },
-    "demonblessing": { "id": "demonblessing", "name": "魔神の加護", "icon": "🌑", "effectType": "always", "unlockCond": "souls", "unlockCost": 80, "lvReq": 100, "desc": "与ダメ+20%・被ダメ-15%" },
-    "critup": { "id": "critup", "name": "急所穿ち", "icon": "🎯", "effectType": "always", "unlockCond": "souls", "unlockCost": 15, "lvReq": 0, "desc": "会心率+20%" }
+    "ironwall": { "id": "ironwall", "name": "鉄壁", "icon": "🛡", "unlockCond": "default", "desc": "被ダメ-10%" },
+    "vampiric": { "id": "vampiric", "name": "吸血", "icon": "🩸", "unlockCond": "default", "desc": "与ダメの3%吸収" },
+    "mprecover": { "id": "mprecover", "name": "魔力回路", "icon": "⚡", "unlockCond": "default", "desc": "毎ターンMP+5" },
+    "critup": { "id": "critup", "name": "急所穿ち", "icon": "🎯", "unlockCond": "souls", "unlockCost": 15, "desc": "会心率+20%" },
+    "rage": { "id": "rage", "name": "血の怒り", "icon": "💢", "unlockCond": "souls", "unlockCost": 15, "desc": "低HPで攻撃+30%" },
+    "souleat": { "id": "souleat", "name": "魂喰い", "icon": "👁", "unlockCond": "souls", "unlockCost": 20, "desc": "撃破時HP+10" },
+    "cursedmark": { "id": "cursedmark", "name": "呪いの刻印", "icon": "🩸", "unlockCond": "souls", "unlockCost": 30, "lvReq": 30, "desc": "毎ターン呪いダメージ" },
+    "godspeed": { "id": "godspeed", "name": "神速", "icon": "💨", "unlockCond": "souls", "unlockCost": 30, "lvReq": 30, "desc": "回避性能UP" },
+    "undying": { "id": "undying", "name": "不死身", "icon": "💀", "unlockCond": "souls", "unlockCost": 50, "lvReq": 60, "desc": "1度だけ耐える" },
+    "demonblessing": { "id": "demonblessing", "name": "魔神の加護", "icon": "🌑", "unlockCond": "souls", "unlockCost": 80, "lvReq": 100, "desc": "攻防大幅強化" }
   },
   "uniqueSkills": {
-    "necro_curse": { "id": "necro_curse", "name": "死の呪縛", "icon": "🌑", "charId": "necromancer", "initial": false, "desc": "開始時に敵にHP最大値5%の呪い付与" },
-    "rogue_jackpot": { "id": "rogue_
+    "warrior_berserk": { "id": "warrior_berserk", "charId": "warrior", "name": "血戦の心得", "icon": "💢", "initial": true, "desc": "低HPで攻撃超UP" },
+    "warrior_fortress": { "id": "warrior_fortress", "charId": "warrior", "name": "難攻不落", "icon": "🛡", "initial": false, "desc": "ATKの20%をDEFに" },
+    "warrior_counter": { "id": "warrior_counter", "charId": "warrior", "name": "鉄の反撃", "icon": "⚔", "initial": false, "desc": "被弾後次撃強化" },
+    "mage_overload": { "id": "mage_overload", "charId": "mage", "name": "魔力過負荷", "icon": "✦", "initial": true, "desc": "勝利時MP成長" },
+    "mage_insight": { "id": "mage_insight", "charId": "mage", "name": "洞察の眼", "icon": "👁", "initial": false, "desc": "会心時MP回復" },
+    "mage_chain": { "id": "mage_chain", "charId": "mage", "name": "連鎖魔法", "icon": "🔥", "initial": false, "desc": "連続スキル割引" },
+    "rogue_jackpot": { "id": "rogue_jackpot", "charId": "rogue", "name": "僥倖", "icon": "💰", "initial": true, "desc": "魂3倍の幸運" },
+    "rogue_phantom": { "id": "rogue_phantom", "charId": "rogue", "name": "幻影", "icon": "💨", "initial": false, "desc": "開始時完全回避" },
+    "rogue_shadowblade": { "id": "rogue_shadowblade", "charId": "rogue", "name": "影刃", "icon": "◆", "initial": false, "desc": "回避後必中会心" },
+    "paladin_aura": { "id": "paladin_aura", "charId": "paladin", "name": "聖なる加護", "icon": "✨", "initial": true, "desc": "毎ターンHP回復" },
+    "paladin_judgement": { "id": "paladin_judgement", "charId": "paladin", "name": "神罰", "icon": "⚡", "initial": false, "desc": "DEFの50%をATKに" },
+    "paladin_shield": { "id": "paladin_shield", "charId": "paladin", "name": "聖盾の意志", "icon": "🛡", "initial": false, "desc": "鉄壁の守り" },
+    "necro_soulharvest": { "id": "necro_soulharvest", "charId": "necromancer", "name": "魂の収穫", "icon": "💀", "initial": true, "desc": "撃破時MP回復" },
+    "necro_lich": { "id": "necro_lich", "charId": "necromancer", "name": "不死王", "icon": "👾", "initial": false, "desc": "窮地で超覚醒" },
+    "necro_curse": { "id": "necro_curse", "charId": "necromancer", "name": "死の呪縛", "icon": "🌑", "initial": false, "desc": "開始時割合呪い" }
+  },
+  "floors": [
+    {
+      "id": 1, "name": "地下1階", "sub": "入口", "icon": "🪨", "color": "#888780", "soulsMult": 1, "expMult": 1,
+      "enemies": [
+        {"id": "f1_shika", "name": "腐乱した屍", "icon": "💀", "hp": 40, "atk": 8, "def": 1, "獲得魂": 2, "獲得EXP": 3},
+        {"id": "f1_kage", "name": "影の番人", "icon": "👁", "hp": 55, "atk": 12, "def": 2, "獲得魂": 3, "獲得EXP": 4},
+        {"id": "f1_ookami", "name": "呪われた狼", "icon": "🐺", "hp": 45, "atk": 16, "def": 1, "獲得魂": 3, "獲得EXP": 4},
+        {"id": "f1_tamashii", "name": "魂の亡者", "icon": "👻", "hp": 60, "atk": 18, "def": 3, "獲得魂": 5, "獲得EXP": 6},
+        {"id": "f1_ishi", "name": "石の守護者", "icon": "🗿", "hp": 90, "atk": 10, "def": 8, "獲得魂": 5, "獲得EXP": 6},
+        {"id": "f1_hone", "name": "骨の騎士", "icon": "⛰", "hp": 70, "atk": 14, "def": 5, "獲得魂": 4, "獲得EXP": 5}
+      ],
+      "bosses": [
+        {"id": "f1b_ban", "name": "番人", "icon": "👁", "hp": 450, "atk": 24, "def": 10, "獲得魂": 15, "獲得EXP": 20},
+        {"id": "f1b_hasha", "name": "覇者", "icon": "🦂", "hp": 660, "atk": 34, "def": 14, "獲得魂": 25, "獲得EXP": 35}
+      ]
+    }
+  ],
+  "achievements": [
+    { "id": "ach_n_floor3", "charId": "necromancer", "title": "死霊術師の試練", "condType": "floorClear", "condVal": 3, "condDesc": "地下3階踏破" },
+    { "id": "ach_total50", "charId": "", "title": "奈落の住人", "condType": "totalRun", "condVal": 50, "condDesc": "50回探索" },
+    { "id": "ach_w_boss5", "charId": "warrior", "title": "戦士の覚醒", "condType": "bossKill", "condVal": 5, "condDesc": "ボスキル5回" }
+  ]
+}
