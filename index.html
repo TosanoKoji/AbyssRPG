@@ -34,13 +34,26 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 /* バトルエリア */
 .battle-area{background:#2c2c2a;border-radius:12px;padding:16px;margin:8px 0;min-height:190px;position:relative;overflow:hidden}
 .fighter{display:inline-block;transition:transform .15s}
+/* 攻撃アニメーション（武器別） */
 .fighter.attack{animation:atk .3s}
+.fighter.attack-slash{animation:atk-slash .3s}
+.fighter.attack-pierce{animation:atk-pierce .2s}
+.fighter.attack-smash{animation:atk-smash .4s}
+.fighter.attack-strike{animation:atk-strike .35s}
+.fighter.enemy-attack{animation:enemy-atk .3s}
 .fighter.skill-attack{animation:sklatk .5s}
 .fighter.shake{animation:shk .3s}
+
 @keyframes atk{0%{transform:translateX(0)}40%{transform:translateX(18px)}100%{transform:translateX(0)}}
+@keyframes atk-slash{0%{transform:translateX(0) rotate(0deg)}40%{transform:translateX(18px) rotate(15deg)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes atk-pierce{0%{transform:translateX(0)}40%{transform:translateX(24px)}100%{transform:translateX(0)}}
+@keyframes atk-smash{0%{transform:translate(0,0) rotate(0deg)}30%{transform:translate(-5px,-15px) rotate(-10deg)}50%{transform:translate(20px,10px) rotate(20deg)}100%{transform:translate(0,0) rotate(0deg)}}
+@keyframes atk-strike{0%{transform:translateX(0)}40%{transform:translateX(18px) scale(1.1)}100%{transform:translateX(0) scale(1)}}
+@keyframes enemy-atk{0%{transform:translateX(0)}40%{transform:translateX(-18px)}100%{transform:translateX(0)}}
 @keyframes sklatk{0%{transform:scale(1)}30%{transform:scale(1.4) translateX(12px)}70%{transform:scale(1.2) translateX(18px)}100%{transform:scale(1) translateX(0)}}
 @keyframes shk{0%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}100%{transform:translateX(0)}}
-/* ダメージポップ — 大きめに改善 */
+
+/* ダメージポップ */
 .dmg-pop{position:absolute;font-size:22px;font-weight:700;color:#E24B4A;pointer-events:none;animation:pop .9s forwards;text-shadow:0 2px 6px rgba(0,0,0,.5)}
 .dmg-pop.skill-dmg{font-size:28px;color:#c084fc;text-shadow:0 0 12px #a855f7,0 2px 6px rgba(0,0,0,.5)}
 .dmg-pop.crit-dmg{font-size:26px;color:#FCD34D;text-shadow:0 0 10px #F59E0B,0 2px 6px rgba(0,0,0,.5)}
@@ -52,15 +65,15 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .crit-flash{position:absolute;inset:0;background:rgba(252,211,77,.12);border-radius:12px;animation:flash .3s forwards;pointer-events:none}
 .hero-flash{position:absolute;inset:0;background:rgba(226,75,74,.10);border-radius:12px;animation:flash .25s forwards;pointer-events:none}
 @keyframes flash{0%{opacity:1}100%{opacity:0}}
-/* ログ — 色分け強化 */
+/* ログ */
 .log{background:#1a1a1f;border:0.5px solid #2c2c2a;border-radius:8px;padding:8px 12px;font-size:12px;color:#888780;max-height:200px;overflow-y:auto;margin:6px 0}
 .log p{margin:2px 0;padding:1px 0;border-bottom:0.5px solid #22222a}
 .log p:first-child{border-bottom:none}
 .log .log-crit{color:#FCD34D;font-weight:600}
 .log .log-dodge{color:#60A5FA}
 .log .log-skill{color:#c084fc}
-.log .log-hero-dmg{color:#F09595}       /* 自分がダメージ受けた */
-.log .log-enemy-dmg{color:#85B7EB}      /* 敵がダメージ受けた */  
+.log .log-hero-dmg{color:#F09595}
+.log .log-enemy-dmg{color:#85B7EB}
 .log .log-heal{color:#6ee7b7}
 .log .log-system{color:#5f5e5a;font-style:italic}
 /* パッシブ */
@@ -139,7 +152,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 /* リセットボタン */
 .btn-danger{border-color:#A32D2D;color:#F09595}
 .btn-danger:hover{background:#2c1010}
-/* タイトル画面 — 刷新 */
+/* タイトル画面 */
 .title-hero{text-align:center;padding:28px 0 16px;position:relative}
 .title-logo{font-size:32px;font-weight:500;letter-spacing:3px;margin-bottom:4px;background:linear-gradient(135deg,#e0ddd8 40%,#AFA9EC 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .title-sub-text{font-size:12px;color:#5f5e5a;letter-spacing:1px;margin-bottom:20px}
@@ -469,12 +482,12 @@ const CHARS={
   necromancer:{id:'necromancer',name:'死霊術師', icon:'💀', hp:65, atk:32,def:2, mp:140,maxMp:140, crit:18,dodge:8,  hdodge:12, activeSlots:3, accSlots:1, desc:'最高MP・高火力。アクティブ3枠',lvReq:15}
 };
 const WEAPONS={
-  sword:    {id:'sword',    name:'錆びた剣',   atk:5, mp:0,  desc:'古びた剣。基本の一撃'},
-  axe:      {id:'axe',      name:'呪われた斧', atk:10,mp:0,  desc:'重い一撃。クリット時+15'},
-  staff:    {id:'staff',    name:'骨の杖',     atk:8, mp:20, desc:'魔力を宿した杖。MP+20'},
-  dagger:   {id:'dagger',   name:'影の短剣',   atk:7, mp:0,  desc:'連撃しやすい。盗賊向き'},
-  mageblade:{id:'mageblade',name:'魔剣',       atk:14,mp:10, desc:'魔力を帯びた剣。強力',lvReq:5},
-  holyspear:{id:'holyspear',name:'聖槍',       atk:12,mp:0,  desc:'光を宿す槍。会心+5%',crit:5,lvReq:15}
+  sword:    {id:'sword',    name:'錆びた剣',   atk:5, mp:0,  desc:'古びた剣。基本の一撃', anim:'slash'},
+  axe:      {id:'axe',      name:'呪われた斧', atk:10,mp:0,  desc:'重い一撃。クリット時+15', anim:'smash', special:'critBonus15'},
+  staff:    {id:'staff',    name:'骨の杖',     atk:8, mp:20, desc:'魔力を宿した杖。MP+20', anim:'strike'},
+  dagger:   {id:'dagger',   name:'影の短剣',   atk:7, mp:0,  desc:'連撃しやすい。盗賊向き', anim:'pierce'},
+  mageblade:{id:'mageblade',name:'魔剣',       atk:14,mp:10, desc:'魔力を帯びた剣。強力',lvReq:5, anim:'slash'},
+  holyspear:{id:'holyspear',name:'聖槍',       atk:12,mp:0,  desc:'光を宿す槍。会心+5%',crit:5,lvReq:15, anim:'pierce'}
 };
 const ARMORS={
   leather:   {id:'leather',   name:'粗末な革鎧',    def:3, hp:0,  mp:0,  desc:'最低限の防護'},
@@ -594,8 +607,6 @@ const UNIQUE_SKILLS={
 };
 
 // ─── 達成報酬定義 ─────────────────────────────────────────
-// kind: totalRun / bossKill(charId) / floorClear(charId) / skillUse / dodgeCount / killCount
-// reward: {type:'uniqueSkill'|'unlockItem'|'unlockSkill', id}
 const ACHIEVEMENTS=[
   {id:'ach_w_floor3',   title:'戦士の試練',     cond:{kind:'floorClear', val:3,  charId:'warrior'},     reward:{type:'uniqueSkill', id:'warrior_fortress'},  icon:'⚔', desc:'戦士で地下3階をクリア'},
   {id:'ach_w_boss5',    title:'戦士の覚醒',     cond:{kind:'bossKill',   val:5,  charId:'warrior'},     reward:{type:'uniqueSkill', id:'warrior_counter'},   icon:'⚔', desc:'戦士でボスを5回撃破'},
@@ -1048,9 +1059,16 @@ function startRun(){
   GS.run.uniqueSkills = Object.values(UNIQUE_SKILLS)
     .filter(u=>u.charId===GS.run.charId && (u.initial || GS.unlockedUniqueSkills.includes(u.id)))
     .map(u=>u.id);
-  // ユニークスキル効果: 難攻不落（DEF → ATKボーナス）
-  if(GS.run.uniqueSkills.includes('warrior_judgement')||GS.run.uniqueSkills.includes('paladin_judgement'))
+
+  // ユニークスキル効果: 難攻不落（DEFにATKの20%上乗せ）
+  if(GS.run.uniqueSkills.includes('warrior_fortress')){
+    GS.run.def += Math.floor(GS.run.atk * 0.2);
+  }
+  // ユニークスキル効果: 神罰（ATKにDEFの50%上乗せ）
+  if(GS.run.uniqueSkills.includes('paladin_judgement')){
     GS.run.atk += Math.floor(GS.run.def * 0.5);
+  }
+
   GS.run.lichUsed = false; // リッチの目覚め発動済みフラグ
   GS.run.nextSkillDiscount = 0; // 連鎖魔法によるMPコスト割引
   GS.run.counterReady = false; // 鉄の反撃フラグ
@@ -1217,7 +1235,10 @@ function skillHitEnemy(bs,baseDmg,skillName){
   const critBonus=passives.includes('critup')?20:0;
   const critChance=(GS.run.crit+critBonus)/100;
   const isCrit=Math.random()<critChance;
-  const rawDmg=isCrit?Math.floor(baseDmg*1.5):baseDmg;
+  
+  let rawDmg=isCrit?Math.floor(baseDmg*1.5):baseDmg;
+  if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
+
   const dmg=randVar(Math.floor(rawDmg*(GS.run.dmgBonus||1)));
 
   const el=document.getElementById('enemy-sprite');
@@ -1275,7 +1296,13 @@ function showDmg(targetId,val,isHeal,isSkill,isCrit){
   setTimeout(()=>el.remove(),900);
 }
 
-function animAttack(spriteId,onHit){const el=document.getElementById(spriteId);el.classList.add('attack');setTimeout(()=>{el.classList.remove('attack');onHit();},300);}
+function animAttack(spriteId, type, onHit){
+  const el=document.getElementById(spriteId);
+  const isEnemy = spriteId === 'enemy-sprite';
+  const animClass = isEnemy ? 'enemy-attack' : (type ? 'attack-' + type : 'attack');
+  el.classList.add(animClass);
+  setTimeout(()=>{el.classList.remove(animClass);if(onHit)onHit();}, type==='smash'?400:300);
+}
 function animShake(spriteId){const el=document.getElementById(spriteId);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),300);}
 
 function updateBattleUI(){
@@ -1344,10 +1371,14 @@ function autoBattleTick(){
   heroAtk=Math.floor(heroAtk*(GS.run.dmgBonus||1));
   const critChance=(GS.run.crit+(hasCritUp?20:0))/100;
   const isCrit=shadowbladeActive||Math.random()<critChance;
-  const rawDmg=heroAtk+(isCrit?Math.floor(heroAtk*0.5):0);
+  
+  let rawDmg=heroAtk+(isCrit?Math.floor(heroAtk*0.5):0);
+  if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
+
   let heroDmg=randVar(Math.max(1,rawDmg-bState.enemy.def));
 
-  animAttack('hero-sprite',()=>{
+  const wAnim = WEAPONS[GS.run.weaponId]?.anim || 'slash';
+  animAttack('hero-sprite', wAnim, ()=>{
     animShake('enemy-sprite');
     // アクセサリ: onHit（連撃の指輪）
     let extraHit=false;
@@ -1405,7 +1436,7 @@ function autoBattleTick(){
       if(dodgeResult==='full')  dmgToHero=0;
       else if(dodgeResult==='half') dmgToHero=Math.max(1,Math.floor(dmgToHero/2));
 
-      animAttack('enemy-sprite',()=>{
+      animAttack('enemy-sprite', '', ()=>{
         if(dodgeResult==='full'){
           showTextPop('hero-sprite','回避！','dodge-txt');
           addLog('敵の攻撃を完全回避！','log-dodge');
@@ -1589,15 +1620,13 @@ function endRun(won){
 function showChoice(type){
   const cl=document.getElementById('choice-list');cl.innerHTML='';
   if(type==='treasure'){
-    document.getElementById('choice-desc').textContent='宝の間 — 一つを選べ';
-    [{label:'攻撃+5',fn:()=>{GS.run.atk+=5;addChoiceResult('攻撃力が上がった！');}},
+    document.getElementById('choice-desc').textContent='宝の間 — 一つを選べ';[{label:'攻撃+5',fn:()=>{GS.run.atk+=5;addChoiceResult('攻撃力が上がった！');}},
      {label:'防御+4',fn:()=>{GS.run.def+=4;addChoiceResult('防御力が上がった！');}},
      {label:'最大MP+20',fn:()=>{GS.run.maxMp+=20;GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+20);addChoiceResult('最大MPが増えた！');}},
      {label:'HP+20回復',fn:()=>{GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+20);addChoiceResult('HPを20回復した！');}},
     ].forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div>`;d.onclick=o.fn;cl.appendChild(d);});
   } else {
-    document.getElementById('choice-desc').textContent='休息の間 — 焚き火の前で';
-    [{label:'HP全回復',fn:()=>{GS.run.hp=GS.run.maxHp;addChoiceResult('完全に回復した');}},
+    document.getElementById('choice-desc').textContent='休息の間 — 焚き火の前で';[{label:'HP全回復',fn:()=>{GS.run.hp=GS.run.maxHp;addChoiceResult('完全に回復した');}},
      {label:'最大HP+15',fn:()=>{GS.run.maxHp+=15;GS.run.hp+=15;addChoiceResult('最大HPが増えた！');}},
      {label:'MP全回復',fn:()=>{GS.run.mp=GS.run.maxMp;addChoiceResult('MPが全回復した！');}},
     ].forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div>`;d.onclick=o.fn;cl.appendChild(d);});
