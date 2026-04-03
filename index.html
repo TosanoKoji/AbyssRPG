@@ -179,6 +179,9 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 /* リセットボタン */
 .btn-danger{border-color:#A32D2D;color:#F09595}
 .btn-danger:hover{background:#2c1010}
+/* 強化倍率ボタン */
+.lv-mult-btn{border-color:#3a3a38;color:#888780}
+.lv-mult-btn.active-mult{border-color:#534AB7;color:#AFA9EC;background:#26215C}
 
 /* タイトル画面 */
 .title-hero{text-align:center;padding:28px 0 16px;position:relative}
@@ -332,6 +335,11 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <button class="btn" onclick="goTo('s-title')">戻る</button>
     <button class="btn btn-danger" onclick="confirmResetBonus()">強化をリセット</button>
+    <div style="display:flex;gap:4px;margin-left:auto">
+      <button id="lv-mult-1"   class="btn lv-mult-btn active-mult" onclick="setLvMult(1)"   style="padding:5px 10px;font-size:12px">×1</button>
+      <button id="lv-mult-10"  class="btn lv-mult-btn"             onclick="setLvMult(10)"  style="padding:5px 10px;font-size:12px">×10</button>
+      <button id="lv-mult-100" class="btn lv-mult-btn"             onclick="setLvMult(100)" style="padding:5px 10px;font-size:12px">×100</button>
+    </div>
   </div>
 </div>
 
@@ -661,7 +669,8 @@ const WEAPONS={
   dagger:   {id:'dagger',   name:'影の短剣',   icon:'🔪', atk:7, mp:0,  crit:0, desc:'連撃しやすい。盗賊向き', anim:'pierce'},
   mageblade:{id:'mageblade',name:'魔剣',       icon:'⚡', atk:14,mp:10, crit:0, desc:'魔力を帯びた剣。強力',lvReq:5, anim:'slash'},
   holyspear:{id:'holyspear',name:'聖槍',       icon:'✨', atk:12,mp:0,  crit:5, desc:'光を宿す槍。会心+5%',lvReq:15, anim:'pierce'},
-  katana:   {id:'katana',   name:'日本刀',     icon:'⚔️', atk:30,mp:0,  crit:5, desc:'魂を吸う伝説の刀。侍装備時に反撃確率2倍',lvReq:100, anim:'slash', special:'samuraiDoubleCounter', unlockCond:'achievement'}
+  katana:   {id:'katana',   name:'日本刀',     icon:'⚔️', atk:30,mp:0,  crit:5, desc:'魂を吸う伝説の刀。侍装備時に反撃確率2倍',lvReq:100, anim:'slash', special:'samuraiDoubleCounter', unlockCond:'achievement'},
+  dumbbell: {id:'dumbbell',name:'鉄アレイ',   icon:'🏋️', atk:0, mp:0,  crit:0, desc:'装備者の攻撃力を1/3にする代わりに戦闘後の取得EXPが1.2倍', anim:'smash', special:'dumbbellEffect', unlockCond:'achievement'}
 };
 const ARMORS={
   leather:   {id:'leather',   name:'粗末な革鎧',    icon:'🥋', def:3, hp:0,  mp:0,  desc:'最低限の防護'},
@@ -699,7 +708,8 @@ const UNLOCK_GROUPS={
     {id:'holyspear', label:'聖槍',          cost:30, sub:'攻撃+12 会心+5%',       lvReq:15},
     {id:'cursedmail',label:'呪術鎧',        cost:25, sub:'防御+10 HP+15',         lvReq:5},
     {id:'bonemantle',label:'骸骨外套',      cost:30, sub:'防御+3 HP+8 MP+30',     lvReq:15},
-    {id:'katana',    label:'日本刀',         cost:3000,sub:'攻撃+30 会心+5% 侍専用特殊効果', achReq:'ach_katana_unlock', lvReq:100}
+    {id:'katana',    label:'日本刀',         cost:3000,sub:'攻撃+30 会心+5% 侍専用特殊効果', achReq:'ach_katana_unlock', lvReq:100},
+    {id:'dumbbell',  label:'鉄アレイ',       cost:0,   sub:'ATK×1/3 戦闘後EXP×1.2', achReq:'ach_kill100'}
   ],
   accessory:[
     {id:'amulet_mp',       label:'魔力の首飾り', cost:0,   sub:'戦闘開始時MP+20 — デフォルト解放'},
@@ -784,6 +794,7 @@ const UNIQUE_SKILLS={
   samurai_counter:   {id:'samurai_counter',   charId:'samurai',     name:'反撃',          icon:'⚔️', initial:true,  desc:'被弾時10%の確率で攻撃を無効化しATK×2のダメージを与える'},
   angel_miracle:     {id:'angel_miracle',     charId:'angel',       name:'繰り返しの奇跡',icon:'✨', initial:true,  desc:'スキル発動時50%の確率でそのスキルを2回追加発動（MP消費1.5回分）'},
   traveler_journey:  {id:'traveler_journey',  charId:'traveler',    name:'旅',            icon:'🌍', initial:false, desc:'アクティブ・パッシブスキルが各6枠に、装飾品8つ装備可能、アイコン変化'},
+  traveler_growth:   {id:'traveler_growth',   charId:'traveler',    name:'成長',           icon:'🌱', initial:true,  desc:'敵撃破時の取得魂とEXPが1.1倍になる'},
 };
 
 // ─── システム開放定義 ─────────────────────────────────────
@@ -798,6 +809,10 @@ const SYSTEM_UNLOCKS=[
    desc:'パッシブスキルの装備枠がさらに1増加する（最大4枠）', achReq:'ach_floor3_passive'},
   {id:'active_slot_up2', name:'終焉の刃',      icon:'⚡', cost:600,  lvReq:0,
    desc:'アクティブスキルの装備枠が全キャラさらに+1増加する', achReq:'ach_floor5_active'},
+  {id:'acc_slot_up',     name:'宝物の縁',      icon:'💍', cost:400,  lvReq:0,
+   desc:'装飾品の装備枠が1増加する', achReq:'ach_floor3_acc'},
+  {id:'acc_slot_up2',    name:'秘宝の覚醒',    icon:'💎', cost:500,  lvReq:0,
+   desc:'装飾品の装備枠がさらに1増加する', achReq:'ach_floor5_acc'},
 ];
 
 const ACHIEVEMENTS=[
@@ -813,13 +828,15 @@ const ACHIEVEMENTS=[
   {id:'ach_n_floor3',     title:'死霊術師の試練', cond:{kind:'floorClear', val:3,  charId:'necromancer'}, reward:{type:'uniqueSkill', id:'necro_lich'},        icon:'💀', desc:'死霊術師で地下3階「灼熱の熔岩窟」をクリア'},
   {id:'ach_total10',      title:'奈落の探索者',   cond:{kind:'totalRun',   val:10},                       reward:{type:'unlockAccessory',id:'hayabusa_feather'},icon:'🌑', desc:'合計10回ランを完了'},
   {id:'ach_total50',      title:'奈落の住人',     cond:{kind:'totalRun',   val:50},                       reward:{type:'unlockItem',  id:'未定'},              icon:'🌑', desc:'合計50回ランを完了'},
-  {id:'ach_kill100',      title:'殲滅者',         cond:{kind:'killCount',  val:100},                      reward:{type:'unlockItem',  id:'未定'},              icon:'💀', desc:'累計100体撃破'},
+  {id:'ach_kill100',      title:'殲滅者',         cond:{kind:'killCount',  val:100},                      reward:{type:'unlockWeapon',id:'dumbbell'},           icon:'💀', desc:'累計100体撃破'},
   {id:'ach_samurai_unlock',title:'武士道の自覚',  cond:{kind:'floorClearId',val:2},                       reward:{type:'unlockChar',  id:'samurai'},           icon:'⚔️', desc:'地下2階「腐食の回廊」クリア＋総Lv25でアンロックショップに侍が登場'},
   {id:'ach_katana_unlock', title:'刀匠の統べ',    cond:{kind:'floorClear', val:4,  charId:'samurai'},     reward:{type:'unlockWeapon',id:'katana'},             icon:'⚔️', desc:'侍で地下4階「虚無の深淵」クリア＋総Lv100でアンロックショップに日本刀が登場'},
   {id:'ach_floor2_clear',  title:'腐食の征服',    cond:{kind:'floorClearId',val:2},                       reward:{type:'unlockSystem',id:'passive_slot_up'},    icon:'🌿', desc:'地下2階「腐食の回廊」クリア'},
   {id:'ach_floor4_clear',  title:'虚無の克服',    cond:{kind:'floorClearId',val:4},                       reward:{type:'unlockSystem',id:'active_slot_up'},     icon:'🌑', desc:'地下4階「虚無の深淵」クリア'},
   {id:'ach_floor3_passive',title:'灼熱の突破',    cond:{kind:'floorClearId',val:3},                       reward:{type:'unlockSystem',id:'passive_slot_up2'},   icon:'🔥', desc:'地下3階「灼熱の熔岩窟」クリアでパッシブ枠+1'},
   {id:'ach_floor5_active', title:'終焉の踏破',    cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockSystem',id:'active_slot_up2'},    icon:'💀', desc:'地下5階「終焉の間」クリアでアクティブ枠+1'},
+  {id:'ach_floor3_acc',    title:'溶岩の収穫者',  cond:{kind:'floorClearId',val:3},                       reward:{type:'unlockSystem',id:'acc_slot_up'},         icon:'💍', desc:'地下3階「灼熱の熔岩窟」クリアで装飾品枠+1'},
+  {id:'ach_floor5_acc',    title:'終焉の装飾者',  cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockSystem',id:'acc_slot_up2'},        icon:'💎', desc:'地下5階「終焉の間」クリアで装飾品枠+1'},
 ];
 
 const ENEMIES=[
@@ -857,19 +874,19 @@ const FLOORS=[
     bosses:[{name:'終焉の神',icon:'☠️',hp:9000,atk:380,def:180,souls:300,exp:500},{name:'奈落の創造主',icon:'🌀',hp:12000,atk:350,def:220,souls:400,exp:700}]},
   // ─── 地上以降は天使で全5階クリアが条件 ─────────────────
   {id:6,name:'地上',sub:'光の平原',icon:'🌅',color:'#facc15',
-   unlockReq:{angelAllFloors:true},areaMode:true,soulsMult:8.0,expMult:8.0,
+   unlockReq:{angelAllFloors:true},areaMode:true,soulsMult:6.0,expMult:6.0,
     enemies:[{name:'光の番人',icon:'🌟',hp:1800,atk:280,def:90,souls:50,exp:70},{name:'聖なる騎士',icon:'⚡',hp:2200,atk:260,def:110,souls:55,exp:75},{name:'祈りの精霊',icon:'🕊️',hp:1600,atk:300,def:80,souls:48,exp:68},{name:'天空の衛士',icon:'☁️',hp:2400,atk:245,def:120,souls:58,exp:78},{name:'光翼の戦士',icon:'🦅',hp:2000,atk:270,def:100,souls:52,exp:72},{name:'聖域の守護者',icon:'🏛️',hp:2600,atk:240,def:130,souls:60,exp:80}],
     bosses:[{name:'光の王',icon:'👑',hp:35000,atk:600,def:280,souls:800,exp:1200},{name:'天使長',icon:'😇',hp:45000,atk:560,def:320,souls:1000,exp:1500}]},
   {id:7,name:'空中都市',sub:'雲上の楽園',icon:'🌆',color:'#38bdf8',
-   unlockReq:{clearedFloor:6},areaMode:true,soulsMult:14.0,expMult:14.0,
+   unlockReq:{clearedFloor:6},areaMode:true,soulsMult:7.0,expMult:7.0,
     enemies:[{name:'雲の守人',icon:'⛅',hp:5000,atk:500,def:160,souls:90,exp:130},{name:'風の精霊王',icon:'🌬️',hp:4500,atk:550,def:140,souls:85,exp:125},{name:'雷鳥',icon:'⚡',hp:4800,atk:520,def:150,souls:88,exp:128},{name:'空中騎士',icon:'🪁',hp:5200,atk:490,def:170,souls:92,exp:132},{name:'浮遊ゴーレム',icon:'🪨',hp:6000,atk:460,def:200,souls:98,exp:140},{name:'楽園の番人',icon:'🌈',hp:5500,atk:480,def:180,souls:95,exp:136}],
     bosses:[{name:'天空皇',icon:'🌤️',hp:90000,atk:1000,def:500,souls:2000,exp:3000},{name:'神鳥ロック',icon:'🦅',hp:110000,atk:950,def:550,souls:2500,exp:3500}]},
   {id:8,name:'宇宙',sub:'星々の果て',icon:'🌌',color:'#a78bfa',
-   unlockReq:{clearedFloor:7},areaMode:true,soulsMult:25.0,expMult:25.0,
+   unlockReq:{clearedFloor:7},areaMode:true,soulsMult:8.0,expMult:8.0,
     enemies:[{name:'星の亡霊',icon:'💫',hp:15000,atk:1200,def:350,souls:180,exp:260},{name:'銀河の番人',icon:'🌠',hp:18000,atk:1100,def:400,souls:195,exp:280},{name:'暗黒物質',icon:'🕳️',hp:20000,atk:1000,def:450,souls:210,exp:300},{name:'超新星の化身',icon:'💥',hp:16000,atk:1300,def:320,souls:188,exp:270},{name:'宇宙の支配者',icon:'👾',hp:22000,atk:950,def:480,souls:220,exp:315},{name:'時空の歪み',icon:'🌀',hp:17000,atk:1150,def:380,souls:200,exp:288}],
     bosses:[{name:'宇宙神',icon:'🌌',hp:250000,atk:2500,def:1000,souls:6000,exp:9000},{name:'ビッグバンの化身',icon:'💥',hp:350000,atk:2200,def:1200,souls:8000,exp:12000}]},
   {id:9,name:'地獄',sub:'最終審判の地',icon:'🔥',color:'#ef4444',
-   unlockReq:{clearedFloor:8},areaMode:true,soulsMult:50.0,expMult:50.0,
+   unlockReq:{clearedFloor:8},areaMode:true,soulsMult:10.0,expMult:10.0,
     enemies:[{name:'地獄の使者',icon:'😈',hp:60000,atk:3500,def:1500,souls:400,exp:600},{name:'業火の悪魔',icon:'🔥',hp:70000,atk:3200,def:1600,souls:420,exp:630},{name:'地獄の番犬',icon:'🐕',hp:55000,atk:3800,def:1400,souls:390,exp:585},{name:'魂食らい',icon:'💀',hp:75000,atk:3000,def:1800,souls:440,exp:660},{name:'混沌の神',icon:'🌑',hp:80000,atk:2800,def:2000,souls:460,exp:690},{name:'終末の天使',icon:'⚰️',hp:65000,atk:3400,def:1700,souls:430,exp:645}],
     bosses:[{name:'魔王',icon:'👿',hp:800000,atk:8000,def:3500,souls:20000,exp:30000},{name:'地獄の創造主',icon:'🌑',hp:1200000,atk:7000,def:4500,souls:30000,exp:50000}]}
 ];
@@ -965,6 +982,7 @@ function getAchProgress(a){
 function goTo(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
   if(id==='s-title')   renderTitle();
   if(id==='s-floor')   renderFloors();
   if(id==='s-unlock')  {unlockTab='char';['char','equip','accessory','skill','system'].forEach(t=>{const el=document.getElementById('utab-'+t);if(el)el.classList.toggle('active',t==='char');});renderUnlock();}
@@ -1116,23 +1134,41 @@ function renderLevel(){
     const bonus=cur*s.valPer;
     const atCap=s.cap!==null&&bonus>=s.cap;
     const canUp=GS.exp>=s.costPer&&!atCap;
+    const canUpFull=GS.exp>=s.costPer*lvMult&&!atCap;
     const capNote=s.cap!==null?` <span style="color:#5f5e5a">(上限+${s.cap}${s.unit})</span>`:'';
+    const multLabel=lvMult>1?` ×${lvMult}`:'';
     list.innerHTML+=`<div class="lv-stat-row">
       <div class="lv-stat-name">${s.label}${capNote}</div>
       <div class="lv-stat-cur">${atCap?`<span style="color:#F09595">+${bonus}${s.unit} MAX</span>`:`+${bonus}${s.unit}`}</div>
-      <button class="lv-stat-btn" ${canUp?'':'disabled'} onclick="lvUp('${s.key}',${s.costPer})">強化</button>
-      <span class="lv-stat-cost">${s.costPer} EXP</span>
+      <button class="lv-stat-btn" ${canUp?'':'disabled'} onclick="lvUp('${s.key}',${s.costPer})">${'強化'}${multLabel}</button>
+      <span class="lv-stat-cost">${s.costPer*lvMult} EXP</span>
       <span style="font-size:11px;color:#5f5e5a;margin-left:auto">${cur}回</span>
     </div>`;
   });
 }
-function lvUp(key,cost){
-  if(GS.exp<cost) return;
+let lvMult=1; // 強化倍率（×1/×10/×100）
+function setLvMult(n){
+  lvMult=n;
+  [1,10,100].forEach(v=>{
+    const btn=document.getElementById('lv-mult-'+v);
+    if(btn) btn.classList.toggle('active-mult',v===n);
+  });
+  renderLevel();
+}
+function lvUp(key,costPer){
   const s=LV_STATS.find(x=>x.key===key);
-  const cur=GS.lvBonus[key]||0;
-  if(s.cap!==null&&cur*s.valPer>=s.cap) return;
-  GS.exp-=cost;GS.lvBonus[key]=cur+1;GS.totalLv=(GS.totalLv||0)+1;
-  save();renderLevel();renderTitle();
+  // 倍率分だけ一括強化（上限・EXP不足で途中停止）
+  let applied=0;
+  for(let i=0;i<lvMult;i++){
+    if(GS.exp<costPer) break;
+    const cur=GS.lvBonus[key]||0;
+    if(s.cap!==null&&cur*s.valPer>=s.cap) break;
+    GS.exp-=costPer;
+    GS.lvBonus[key]=cur+1;
+    GS.totalLv=(GS.totalLv||0)+1;
+    applied++;
+  }
+  if(applied>0){save();renderLevel();renderTitle();}
 }
 
 // ─── アクティブスキルツールチップ ────────────────────────
@@ -1515,7 +1551,9 @@ function renderEquip(){
     .filter(u=>u.charId===(GS.run.charId||'') && (u.initial || (GS.unlockedUniqueSkills||[]).includes(u.id)))
     .map(u=>u.id);
   const hasJourney=previewUniques.includes('traveler_journey');
-  const slots=hasJourney?8:(c?c.accSlots:1);
+  const accSlotBonus=(GS.systemUnlocked||[]).includes('acc_slot_up')?1:0;
+  const accSlotBonus2=(GS.systemUnlocked||[]).includes('acc_slot_up2')?1:0;
+  const slots=hasJourney?8:(c?c.accSlots:1)+accSlotBonus+accSlotBonus2;
   document.getElementById('acc-slots-label').textContent=slots;
   const wl=document.getElementById('weapon-list'),al=document.getElementById('armor-list'),acl=document.getElementById('accessory-list');
   wl.innerHTML='';al.innerHTML='';acl.innerHTML='';
@@ -1524,7 +1562,11 @@ function renderEquip(){
     wl.innerHTML+=`<div class="card ${GS.run.weaponId===w.id?'selected':''} ${ok?'':'locked'}" onclick="${ok?`selWeapon('${w.id}')`:''}">
       <div class="row" style="justify-content:space-between">
         <div><div class="card-title">${w.icon||'🗡️'} ${w.name}</div><div class="card-sub">${w.desc}</div></div>
-        ${ok?`<span class="badge badge-amber">攻撃+${w.atk}${w.mp?` MP+${w.mp}`:''}${w.crit?` 会心+${w.crit}%`:''}</span>`:'<span class="badge badge-red" style="font-weight:bold;">未解放</span>'}
+        ${ok
+          ? w.special==='dumbbellEffect'
+            ? `<span class="badge badge-amber">ATK×1/3 EXP×1.2</span>`
+            : `<span class="badge badge-amber">攻撃+${w.atk}${w.mp?` MP+${w.mp}`:''}${w.crit?` 会心+${w.crit}%`:''}</span>`
+          : '<span class="badge badge-red" style="font-weight:bold;">未解放</span>'}
       </div></div>`;
   });
   Object.values(ARMORS).forEach(a=>{
@@ -1662,6 +1704,11 @@ function startRun(){
   GS.run.hdodge = c.hdodge + Math.floor((lb.dodge||0)*1.5) + (passives.includes('godspeed')?15:0);
   GS.run.dmgBonus  = passives.includes('demonblessing')?1.20:1.0;
   GS.run.defBonus  = passives.includes('demonblessing')?0.85:1.0;
+  // 鉄アレイ: ATKを1/3に（ただし最低1）、EXP×1.2フラグを立てる
+  GS.run.dumbbellEquipped = (GS.run.weaponId==='dumbbell');
+  if(GS.run.dumbbellEquipped){
+    GS.run.atk = Math.max(1, Math.floor(GS.run.atk / 3));
+  }
   GS.run.undyingUsed = false;
   GS.run.icon=c.icon; GS.run.name=c.name;
   GS.run.room=0; GS.run.kills=0; GS.run.runSouls=0; GS.run.runExp=0;
@@ -1856,10 +1903,11 @@ function checkLostSoulsRecovery_boss(enemy, finalHp){
   if(!ls||!ls.isBoss) return false;
   if((GS.run.floorId||1)!==ls.floorId) return false;
   if(ls.bossId&&ls.bossId!==(enemy.id||enemy.name)) return false;
-  const prevHpRatio=ls.bossHpRatio; // 前回倒れた時の敵残HP割合
+  // ボス撃破（finalHp===0）なら無条件回収。それ以外は前回より多くダメージで回収
+  const bossDefeated = finalHp===0;
+  const prevHpRatio=ls.bossHpRatio;
   const curHpRatio=Math.max(0,finalHp)/(ls.bossMaxHp||enemy.hp||1);
-  if(curHpRatio<prevHpRatio){
-    // 前回より低いHPまで削った（より多くダメージを与えた）
+  if(bossDefeated||curHpRatio<prevHpRatio){
     const recovered=ls.souls;
     GS.lostSouls=null;
     GS.run.runSouls+=recovered;
@@ -1871,8 +1919,11 @@ function checkLostSoulsRecovery_boss(enemy, finalHp){
   return false;
 }
 function showLostSoulsRecovered(amt){
-  addLog(`💠 失われた魂を回収した！ +${amt}魂の欠片`,'log-heal');
-  showSkillFlash();
+  // バトル画面でのみログ/フラッシュを呼ぶ（それ以外では呼ばない→choiceバグ防止）
+  if(document.getElementById('s-battle').classList.contains('active')){
+    addLog(`💠 失われた魂を回収した！ +${amt}魂の欠片`,'log-heal');
+    showSkillFlash();
+  }
   const el=document.createElement('div');
   el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:1px solid #534AB7;border-radius:12px;padding:14px 22px;font-size:14px;color:#AFA9EC;z-index:9999;text-align:center;pointer-events:none;animation:achPop .4s ease-out';
   el.innerHTML=`💠 魂を回収した！<br><strong style="color:#c084fc;font-size:18px">+${amt}</strong>`;
@@ -2391,8 +2442,12 @@ function endBattle(won){
     const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
     const sm=floor?floor.soulsMult:1;
     const em=floor?floor.expMult:1;
-    let souls=Math.floor((bState.enemy.souls||0)*sm);
-    const exp=Math.floor((bState.enemy.exp||(bState.isBoss?20:4))*em);
+    // 成長スキル: 魂・EXP×1.1
+    const growthMult=(GS.run.uniqueSkills||[]).includes('traveler_growth')?1.1:1.0;
+    // 鉄アレイ: EXP×1.2
+    const dumbbellMult=GS.run.dumbbellEquipped?1.2:1.0;
+    let souls=Math.floor((bState.enemy.souls||0)*sm*growthMult);
+    const exp=Math.floor((bState.enemy.exp||(bState.isBoss?20:4))*em*growthMult*dumbbellMult);
 
     // アクセサリ: onKill（魂喰いの護符）
     (GS.run.accessories||[]).forEach(id=>{
@@ -2668,6 +2723,8 @@ function showRetreatConfirm(){
 }
 
 // 初期化
+// マイグレーション: travelerは初期キャラなので常に解放済み扱い
+if(!GS.unlocked.includes('traveler')){GS.unlocked.push('traveler');save();}
 checkAchievements(); // 既存データから達成済みの解放を確実に反映
 renderTitle();
 </script>
