@@ -1105,8 +1105,14 @@ function renderFloors(){
     el.appendChild(div);
   });
   const floorLabel=FLOORS.find(f=>f.id===currentFloorId)?.areaMode?'エリア':'階層';
-  el.innerHTML+=`<div style="margin-top:4px"><button class="btn btn-primary" id="proceed-to-char-btn">この${floorLabel}で探索する</button></div>`;
-  document.getElementById('proceed-to-char-btn').addEventListener('click', proceedToChar);
+  const wrap=document.createElement('div');
+  wrap.style.marginTop='4px';
+  const proceedBtn=document.createElement('button');
+  proceedBtn.className='btn btn-primary';
+  proceedBtn.textContent=`この${floorLabel}で探索する`;
+  proceedBtn.addEventListener('click', proceedToChar);
+  wrap.appendChild(proceedBtn);
+  el.appendChild(wrap);
 }
 function selectFloor(id){currentFloorId=id;renderFloors();}
 function proceedToChar(){GS.run.floorId=currentFloorId;goTo('s-char');}
