@@ -2565,8 +2565,10 @@ function endBattle(won){
       GS.achStats.bossKills[cid]=(GS.achStats.bossKills[cid]||0)+1;
       GS.souls+=GS.run.runSouls;GS.exp+=GS.run.runExp;
       checkAchievements();save();
-      resEl.innerHTML=`<div class="row"><button class="btn btn-primary" id="boss-win-btn">ボスを倒した！結果へ</button></div>`;
-      document.getElementById('boss-win-btn').addEventListener('click',()=>endRun(true));
+      const bossWinRow=document.createElement('div');bossWinRow.className='row';
+      const bossWinBtn=document.createElement('button');bossWinBtn.className='btn btn-primary';bossWinBtn.textContent='ボスを倒した！結果へ';
+      bossWinBtn.addEventListener('click',()=>endRun(true));
+      bossWinRow.appendChild(bossWinBtn);resEl.innerHTML='';resEl.appendChild(bossWinRow);
     } else {
       save();
       // pause-btnを「次の部屋へ」に変える（SafariのUI被り対策）
@@ -2604,14 +2606,15 @@ function endBattle(won){
     GS.souls+=partial;GS.exp+=partialExp;
     checkAchievements();save();
     addLog(`戦闘不能... 魂の欠片${partial}個・EXP${partialExp}を回収`,'log-hero-dmg');
-    resEl.innerHTML=`
-      <div style="background:#2c1010;border:0.5px solid #A32D2D;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#F09595">
-        💀 戦闘不能 — 報酬が半分になりました<br>
-        <span style="color:#888780">魂の欠片: ${partial} / EXP: ${partialExp}</span>
-        ${lostAmt>0?`<br><span style="color:#534AB7">💠 ${lostAmt}の魂が奈落に残された...</span>`:''}
-      </div>
-      <div class="row"><button class="btn" id="defeat-result-btn">結果へ</button></div>`;
-    document.getElementById('defeat-result-btn').addEventListener('click',()=>endRun(false));
+    resEl.innerHTML='';
+    const defeatInfo=document.createElement('div');
+    defeatInfo.style.cssText='background:#2c1010;border:0.5px solid #A32D2D;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#F09595';
+    defeatInfo.innerHTML=`💀 戦闘不能 — 報酬が半分になりました<br><span style="color:#888780">魂の欠片: ${partial} / EXP: ${partialExp}</span>${lostAmt>0?`<br><span style="color:#534AB7">💠 ${lostAmt}の魂が奈落に残された...</span>`:''}`;
+    const defeatRow=document.createElement('div');defeatRow.className='row';
+    const defeatBtn=document.createElement('button');defeatBtn.className='btn';defeatBtn.textContent='結果へ';
+    defeatBtn.addEventListener('click',()=>endRun(false));
+    defeatRow.appendChild(defeatBtn);
+    resEl.appendChild(defeatInfo);resEl.appendChild(defeatRow);
   }
 }
 
@@ -2717,7 +2720,7 @@ function showChoice(type){
     );
     // ランダム3択
     const picks=options.sort(()=>Math.random()-0.5).slice(0,3);
-    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.onclick=o.fn;cl.appendChild(d);});
+    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.addEventListener('click',o.fn);cl.appendChild(d);});
   } else {
     document.getElementById('choice-desc').textContent='🔥 休息の間 — 焚き火の前で';
     const options=[
@@ -2741,7 +2744,7 @@ function showChoice(type){
       {label:'💀 死の淵から這い戻る',           desc:'不死の意志で全てを取り戻す',     fn:()=>{GS.run.hp=GS.run.maxHp;GS.run.mp=GS.run.maxMp;GS.run.atk+=s;GS.run.def+=s;addChoiceResult('HP・MP全回復＋全ステータスが僅かに上昇した！');}},
     );
     const picks=options.sort(()=>Math.random()-0.5).slice(0,3);
-    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.onclick=o.fn;cl.appendChild(d);});
+    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.addEventListener('click',o.fn);cl.appendChild(d);});
   }
   goTo('s-choice');
 }
@@ -2750,28 +2753,40 @@ function addChoiceResult(msg){
   // 宝・休息部屋クリアでも魂回収チェック
   checkLostSoulsRecovery_normal();
   const cl=document.getElementById('choice-list');
-  cl.innerHTML=`
-    <div class="card"><div class="card-title">${msg}</div></div>
-    <div style="margin-top:10px"><button class="btn btn-primary" id="choice-next-btn">次の部屋へ</button></div>`;
-  document.getElementById('choice-next-btn').addEventListener('click',()=>{renderDungeon();goTo('s-dungeon');});
+  cl.innerHTML='';
+  const resultCard=document.createElement('div');
+  resultCard.className='card';
+  resultCard.innerHTML=`<div class="card-title">${msg}</div>`;
+  cl.appendChild(resultCard);
+  const wrap=document.createElement('div');
+  wrap.style.marginTop='10px';
+  const nextBtn=document.createElement('button');
+  nextBtn.className='btn btn-primary';
+  nextBtn.textContent='次の部屋へ';
+  nextBtn.addEventListener('click',()=>{renderDungeon();goTo('s-dungeon');});
+  wrap.appendChild(nextBtn);
+  cl.appendChild(wrap);
 }
 function showRetreatConfirm(){
   const partial=Math.floor(GS.run.runSouls*0.5);
   const partialExp=Math.floor((GS.run.runExp||0)*0.5);
   document.getElementById('choice-desc').textContent='引き返す — 本当に撤退しますか？';
   const cl=document.getElementById('choice-list');
-  cl.innerHTML=`
-    <div style="background:#26211a;border:0.5px solid #5f5e5a;border-radius:10px;padding:12px 14px;font-size:13px;color:#888780;line-height:1.7">
-      ⚠️ 報酬は半分になります<br>
-      現在の魂の欠片: <strong style="color:#e0ddd8">${GS.run.runSouls}</strong> → <strong style="color:#AFA9EC">${partial}</strong><br>
-      現在の経験値: <strong style="color:#e0ddd8">${GS.run.runExp||0}</strong> → <strong style="color:#AFA9EC">${partialExp}</strong>
-    </div>
-    <div style="margin-top:10px;display:flex;gap:8px">
-      <button class="btn" style="color:#F09595;border-color:#A32D2D" id="retreat-confirm-btn">撤退する</button>
-      <button class="btn btn-primary" id="retreat-cancel-btn">やっぱり続ける</button>
-    </div>`;
-  document.getElementById('retreat-confirm-btn').addEventListener('click', retreatRun);
-  document.getElementById('retreat-cancel-btn').addEventListener('click', ()=>{renderDungeon();goTo('s-dungeon');});
+  cl.innerHTML='';
+  const info=document.createElement('div');
+  info.style.cssText='background:#26211a;border:0.5px solid #5f5e5a;border-radius:10px;padding:12px 14px;font-size:13px;color:#888780;line-height:1.7';
+  info.innerHTML=`⚠️ 報酬は半分になります<br>現在の魂の欠片: <strong style="color:#e0ddd8">${GS.run.runSouls}</strong> → <strong style="color:#AFA9EC">${partial}</strong><br>現在の経験値: <strong style="color:#e0ddd8">${GS.run.runExp||0}</strong> → <strong style="color:#AFA9EC">${partialExp}</strong>`;
+  const btnRow=document.createElement('div');
+  btnRow.style.cssText='margin-top:10px;display:flex;gap:8px';
+  const confirmBtn=document.createElement('button');
+  confirmBtn.className='btn';confirmBtn.style.color='#F09595';confirmBtn.style.borderColor='#A32D2D';
+  confirmBtn.textContent='撤退する';
+  confirmBtn.addEventListener('click',retreatRun);
+  const cancelBtn=document.createElement('button');
+  cancelBtn.className='btn btn-primary';cancelBtn.textContent='やっぱり続ける';
+  cancelBtn.addEventListener('click',()=>{renderDungeon();goTo('s-dungeon');});
+  btnRow.appendChild(confirmBtn);btnRow.appendChild(cancelBtn);
+  cl.appendChild(info);cl.appendChild(btnRow);
   goTo('s-choice');
 }
 
