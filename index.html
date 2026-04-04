@@ -686,7 +686,8 @@ const WEAPONS={
   mageblade:{id:'mageblade',name:'魔剣',       icon:'⚡', atk:14,mp:10, crit:0, desc:'魔力を帯びた剣。強力',lvReq:5, anim:'slash'},
   holyspear:{id:'holyspear',name:'聖槍',       icon:'✨', atk:12,mp:0,  crit:5, desc:'光を宿す槍。会心+5%',lvReq:15, anim:'pierce'},
   katana:   {id:'katana',   name:'日本刀',     icon:'⚔️', atk:30,mp:0,  crit:5, desc:'魂を吸う伝説の刀。侍装備時に反撃確率2倍',lvReq:100, anim:'slash', special:'samuraiDoubleCounter', unlockCond:'achievement'},
-  dumbbell: {id:'dumbbell',name:'鉄アレイ',   icon:'🏋️', atk:0, mp:0,  crit:0, desc:'装備者の攻撃力を1/3にする代わりに戦闘後の取得EXPが1.2倍', anim:'smash', special:'dumbbellEffect', unlockCond:'achievement'}
+  dumbbell: {id:'dumbbell',name:'鉄アレイ',   icon:'🏋️', atk:0, mp:0,  crit:0, desc:'装備者の攻撃力を1/3にする代わりに戦闘後の取得EXPが1.2倍', anim:'smash', special:'dumbbellEffect', unlockCond:'achievement'},
+  companion:{id:'companion',name:'相棒',       icon:'🗡️', atk:300,mp:0, crit:10,desc:'トラベラー専用。スキル使用時20%の確率で消費MP半分', anim:'slash', unlockCond:'achievement'}
 };
 const ARMORS={
   leather:   {id:'leather',   name:'粗末な革鎧',    icon:'🥋', def:3, hp:0,  mp:0,  desc:'最低限の防護'},
@@ -703,6 +704,12 @@ const ACCESSORIES={
   ring_double:     {id:'ring_double',     name:'連撃の指輪',     icon:'💍', desc:'10%の確率で通常攻撃を2回実行',            kind:'onHit',         effect:{doubleHit:0.1}},
   charm_souls:     {id:'charm_souls',     name:'魂喰いの護符',   icon:'🪶', desc:'敵撃破時5%の確率で魂+5追加',             kind:'onKill',         effect:{bonusSouls:5, chance:0.05}},
   hayabusa_feather:{id:'hayabusa_feather',name:'はやぶさの羽',   icon:'🪶', desc:'行動時5%の確率でその行動を2回繰り返す。スキルのMPは1回分', kind:'onAction', effect:{doubleAction:0.05}},
+  earring_mp:      {id:'earring_mp',      name:'イヤリング',     icon:'💠', desc:'スキル使用時の消費MPを−20%',                             kind:'skillCost',  effect:{mpDiscount:0.20}},
+  headband_atk:    {id:'headband_atk',    name:'鉢巻',           icon:'🎽', desc:'攻撃力1.2倍',                                            kind:'statMult',   effect:{atkMult:1.2}},
+  barrier_def:     {id:'barrier_def',     name:'バリア',         icon:'🔵', desc:'防御力1.2倍',                                            kind:'statMult',   effect:{defMult:1.2}},
+  cat_whisker:     {id:'cat_whisker',     name:'猫のヒゲ',       icon:'🐱', desc:'HP1.2倍',                                               kind:'statMult',   effect:{hpMult:1.2}},
+  ssd_mp:          {id:'ssd_mp',          name:'SSD',            icon:'💾', desc:'MP1.2倍',                                               kind:'statMult',   effect:{mpMult:1.2}},
+  ribbon_souls:    {id:'ribbon_souls',    name:'リボン',         icon:'🎀', desc:'戦闘で得られる魂+10%',                                   kind:'soulsMult',  effect:{soulsMult:0.10}},
 };
 const UNLOCK_GROUPS={
   char:[
@@ -725,13 +732,20 @@ const UNLOCK_GROUPS={
     {id:'cursedmail',label:'呪術鎧',        cost:25, sub:'防御+10 HP+15',         lvReq:5},
     {id:'bonemantle',label:'骸骨外套',      cost:30, sub:'防御+3 HP+8 MP+30',     lvReq:15},
     {id:'katana',    label:'日本刀',         cost:3000,sub:'攻撃+30 会心+5% 侍専用特殊効果', achReq:'ach_katana_unlock', lvReq:100},
-    {id:'dumbbell',  label:'鉄アレイ',       cost:0,   sub:'ATK×1/3 戦闘後EXP×1.2', achReq:'ach_kill100'}
+    {id:'dumbbell',  label:'鉄アレイ',       cost:0,   sub:'ATK×1/3 戦闘後EXP×1.2', achReq:'ach_kill100'},
+    {id:'companion', label:'相棒',            cost:50000,sub:'ATK+300 会心+10% スキルMP20%で半分', achReq:'ach_traveler_3clear'}
   ],
   accessory:[
     {id:'amulet_mp',       label:'魔力の首飾り', cost:0,   sub:'戦闘開始時MP+20 — デフォルト解放'},
     {id:'ring_double',     label:'連撃の指輪',   cost:0,   sub:'10%で2連撃 — デフォルト解放'},
     {id:'charm_souls',     label:'魂喰いの護符', cost:0,   sub:'撃破時5%で魂+5 — デフォルト解放'},
-    {id:'hayabusa_feather',label:'はやぶさの羽', cost:150, sub:'行動時5%で行動2回繰り返し', achReq:'ach_hayabusa_unlock'},
+    {id:'hayabusa_feather',label:'はやぶさの羽', cost:150,   sub:'行動時5%で行動2回繰り返し', achReq:'ach_hayabusa_unlock'},
+    {id:'earring_mp',      label:'イヤリング',   cost:5000,  sub:'スキル消費MP -20%'},
+    {id:'headband_atk',    label:'鉢巻',         cost:30000, sub:'攻撃力1.2倍'},
+    {id:'barrier_def',     label:'バリア',       cost:30000, sub:'防御力1.2倍'},
+    {id:'cat_whisker',     label:'猫のヒゲ',     cost:30000, sub:'HP1.2倍'},
+    {id:'ssd_mp',          label:'SSD',          cost:30000, sub:'MP1.2倍'},
+    {id:'ribbon_souls',    label:'リボン',       cost:100000,sub:'戦闘獲得魂+10%'},
   ],
   skill:[
     {id:'blaze',         label:'地獄炎',     cost:18, sub:'攻撃×4の爆発',           kind:'active'},
@@ -739,7 +753,7 @@ const UNLOCK_GROUPS={
     {id:'rallycry',      label:'鬨の声',     cost:20, sub:'3ターン攻撃+50%',        kind:'active'},
     {id:'soulburst',     label:'魂の爆発',   cost:35, sub:'HP消費で攻撃×6',         kind:'active', lvReq:15},
     {id:'timestop',      label:'時間停止',   cost:40, sub:'敵攻撃2回無効化',         kind:'active', lvReq:30},
-    {id:'divinewrath',   label:'天罰',       cost:55, sub:'防御無視・攻撃×7',       kind:'active', lvReq:60},
+    {id:'divinewrath',   label:'天罰',       cost:55, sub:'防御無視・攻撃×5・MP100',  kind:'active', lvReq:60},
     {id:'apocalypse',    label:'終焉',       cost:80, sub:'最大MPの半分消費で残HP30%ダメージ', kind:'active', lvReq:100},
     {id:'critup',        label:'急所穿ち',   cost:15, sub:'クリティカル率+20%',     kind:'passive'},
     {id:'rage',          label:'血の怒り',   cost:15, sub:'HP50%以下で攻撃+30%',   kind:'passive'},
@@ -772,8 +786,8 @@ const ACTIVE_SKILLS={
       skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*6)-bs.enemy.def),'魂の爆発');updateBattleUI();}},
   timestop:   {id:'timestop',   name:'時間停止',    icon:'⏳', mpCost:50, desc:'敵の次の攻撃を2回無効化',lvReq:30,
     fn(bs){bs.stunTurns=(bs.stunTurns||0)+2;addLog('時間停止！ 敵の攻撃を2回無効化','log-skill');showSkillFlash();renderActiveBtns();}},
-  divinewrath:{id:'divinewrath',name:'天罰',        icon:'⚡', mpCost:60, desc:'防御無視で攻撃×7の光ダメージ',lvReq:60,
-    fn(bs){skillHitEnemy(bs,Math.floor(GS.run.atk*7),'天罰');}},
+  divinewrath:{id:'divinewrath',name:'天罰',        icon:'⚡', mpCost:100, desc:'防御無視で攻撃×5の光ダメージ',lvReq:60,
+    fn(bs){skillHitEnemy(bs,Math.floor(GS.run.atk*5),'天罰');}},
   apocalypse: {id:'apocalypse', name:'終焉',        icon:'🌑', mpCost:0,  desc:'最大MPの半分を消費して敵残HP30%分ダメージ',lvReq:100,
     fn(bs){const cost=Math.floor(bs.heroMaxMp*0.5);bs.heroMp=Math.max(0,bs.heroMp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(bs.enemyHp*0.3)),'終焉');updateBattleUI();}}
 };
@@ -808,7 +822,7 @@ const UNIQUE_SKILLS={
   necro_lich:        {id:'necro_lich',        charId:'necromancer', name:'リッチの目覚め', icon:'👾', initial:false, desc:'HP10%以下で全ステータス+40%（1回限り）'},
   necro_curse:       {id:'necro_curse',       charId:'necromancer', name:'死の呪縛',      icon:'🌑', initial:false, desc:'戦闘開始時に敵にHP最大値の5%の呪い付与'},
   samurai_counter:   {id:'samurai_counter',   charId:'samurai',     name:'反撃',          icon:'⚔️', initial:true,  desc:'被弾時10%の確率で攻撃を無効化しATK×2のダメージを与える'},
-  angel_miracle:     {id:'angel_miracle',     charId:'angel',       name:'繰り返しの奇跡',icon:'✨', initial:true,  desc:'スキル発動時50%の確率でそのスキルを2回追加発動（MP消費1.5回分）'},
+  angel_miracle:     {id:'angel_miracle',     charId:'angel',       name:'奇跡',            icon:'✨', initial:true,  desc:'スキル発動時50%の確率でそのスキルを1回追加発動（MP消費1.5回分）'},
   traveler_journey:  {id:'traveler_journey',  charId:'traveler',    name:'旅',            icon:'🌍', initial:false, desc:'アクティブ・パッシブスキルが各6枠に、装飾品8つ装備可能、アイコン変化'},
   traveler_growth:   {id:'traveler_growth',   charId:'traveler',    name:'成長',           icon:'🌱', initial:true,  desc:'敵撃破時の取得魂とEXPが1.1倍になる'},
 };
@@ -853,6 +867,7 @@ const ACHIEVEMENTS=[
   {id:'ach_floor5_active', title:'終焉の踏破',    cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockSystem',id:'active_slot_up2'},    icon:'💀', desc:'地下5階「終焉の間」クリアでアクティブ枠+1'},
   {id:'ach_floor3_acc',    title:'溶岩の収穫者',  cond:{kind:'floorClearId',val:3},                       reward:{type:'unlockSystem',id:'acc_slot_up'},         icon:'💍', desc:'地下3階「灼熱の熔岩窟」クリアで装飾品枠+1'},
   {id:'ach_floor5_acc',    title:'終焉の装飾者',  cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockSystem',id:'acc_slot_up2'},        icon:'💎', desc:'地下5階「終焉の間」クリアで装飾品枠+1'},
+  {id:'ach_traveler_3clear',title:'旅の証',       cond:{kind:'floorClear',  val:3, charId:'traveler'},    reward:{type:'unlockWeapon',id:'companion'},           icon:'🧭', desc:'トラベラーで任意のステージを3回クリア — アンロックショップに「相棒」が登場'},
 ];
 
 const ENEMIES=[
@@ -885,24 +900,24 @@ const FLOORS=[
   {id:4,name:'地下4階',sub:'虚無の深淵',icon:'🌑',color:'#8b5cf6',unlockReq:{clearedFloor:3},soulsMult:3.5,expMult:4.0,
     enemies:[{name:'虚無の亡霊',icon:'👾',hp:380,atk:90,def:25,souls:15,exp:22},{name:'深淵の狩人',icon:'🦇',hp:320,atk:110,def:15,souls:16,exp:24},{name:'奈落の騎士',icon:'⚔',hp:450,atk:85,def:35,souls:18,exp:26},{name:'魂の収奪者',icon:'💜',hp:340,atk:105,def:20,souls:17,exp:25},{name:'虚空の番人',icon:'🌑',hp:500,atk:80,def:40,souls:20,exp:28},{name:'深淵の魔女',icon:'🧙',hp:300,atk:120,def:12,souls:18,exp:27}],
     bosses:[{name:'虚無の支配者',icon:'👾',hp:4500,atk:190,def:80,souls:120,exp:200},{name:'深淵神',icon:'🌑',hp:5500,atk:175,def:100,souls:150,exp:250}]},
-  {id:5,name:'地下5階',sub:'終焉の間',icon:'💀',color:'#ef4444',unlockReq:{clearedFloor:4},soulsMult:5.0,expMult:5.0,
+  {id:5,name:'地下5階',sub:'終焉の間',icon:'💀',color:'#ef4444',unlockReq:{clearedFloor:4},soulsMult:4.0,expMult:4.5,
     enemies:[{name:'終焉の使者',icon:'☠️',hp:700,atk:200,def:55,souls:28,exp:40},{name:'滅びの化身',icon:'💀',hp:800,atk:185,def:65,souls:30,exp:44},{name:'黙示録の騎士',icon:'🗡️',hp:900,atk:175,def:75,souls:32,exp:46},{name:'混沌の神官',icon:'🌀',hp:650,atk:220,def:45,souls:30,exp:42},{name:'終末の番兵',icon:'⛧',hp:1000,atk:165,def:85,souls:35,exp:50},{name:'奈落の女神',icon:'👸',hp:750,atk:210,def:60,souls:33,exp:48}],
     bosses:[{name:'終焉の神',icon:'☠️',hp:9000,atk:380,def:180,souls:300,exp:500},{name:'奈落の創造主',icon:'🌀',hp:12000,atk:350,def:220,souls:400,exp:700}]},
   // ─── 地上以降は天使で全5階クリアが条件 ─────────────────
   {id:6,name:'地上',sub:'光の平原',icon:'🌅',color:'#facc15',
-   unlockReq:{angelAllFloors:true},areaMode:true,soulsMult:6.0,expMult:6.0,
+   unlockReq:{angelAllFloors:true},areaMode:true,soulsMult:4.5,expMult:5.0,
     enemies:[{name:'光の番人',icon:'🌟',hp:1800,atk:280,def:90,souls:50,exp:70},{name:'聖なる騎士',icon:'⚡',hp:2200,atk:260,def:110,souls:55,exp:75},{name:'祈りの精霊',icon:'🕊️',hp:1600,atk:300,def:80,souls:48,exp:68},{name:'天空の衛士',icon:'☁️',hp:2400,atk:245,def:120,souls:58,exp:78},{name:'光翼の戦士',icon:'🦅',hp:2000,atk:270,def:100,souls:52,exp:72},{name:'聖域の守護者',icon:'🏛️',hp:2600,atk:240,def:130,souls:60,exp:80}],
     bosses:[{name:'光の王',icon:'👑',hp:35000,atk:600,def:280,souls:800,exp:1200},{name:'天使長',icon:'😇',hp:45000,atk:560,def:320,souls:1000,exp:1500}]},
   {id:7,name:'空中都市',sub:'雲上の楽園',icon:'🌆',color:'#38bdf8',
-   unlockReq:{clearedFloor:6},areaMode:true,soulsMult:7.0,expMult:7.0,
+   unlockReq:{clearedFloor:6},areaMode:true,soulsMult:5.0,expMult:5.5,
     enemies:[{name:'雲の守人',icon:'⛅',hp:5000,atk:500,def:160,souls:90,exp:130},{name:'風の精霊王',icon:'🌬️',hp:4500,atk:550,def:140,souls:85,exp:125},{name:'雷鳥',icon:'⚡',hp:4800,atk:520,def:150,souls:88,exp:128},{name:'空中騎士',icon:'🪁',hp:5200,atk:490,def:170,souls:92,exp:132},{name:'浮遊ゴーレム',icon:'🪨',hp:6000,atk:460,def:200,souls:98,exp:140},{name:'楽園の番人',icon:'🌈',hp:5500,atk:480,def:180,souls:95,exp:136}],
     bosses:[{name:'天空皇',icon:'🌤️',hp:90000,atk:1000,def:500,souls:2000,exp:3000},{name:'神鳥ロック',icon:'🦅',hp:110000,atk:950,def:550,souls:2500,exp:3500}]},
   {id:8,name:'宇宙',sub:'星々の果て',icon:'🌌',color:'#a78bfa',
-   unlockReq:{clearedFloor:7},areaMode:true,soulsMult:8.0,expMult:8.0,
+   unlockReq:{clearedFloor:7},areaMode:true,soulsMult:5.5,expMult:6.0,
     enemies:[{name:'星の亡霊',icon:'💫',hp:15000,atk:1200,def:350,souls:180,exp:260},{name:'銀河の番人',icon:'🌠',hp:18000,atk:1100,def:400,souls:195,exp:280},{name:'暗黒物質',icon:'🕳️',hp:20000,atk:1000,def:450,souls:210,exp:300},{name:'超新星の化身',icon:'💥',hp:16000,atk:1300,def:320,souls:188,exp:270},{name:'宇宙の支配者',icon:'👾',hp:22000,atk:950,def:480,souls:220,exp:315},{name:'時空の歪み',icon:'🌀',hp:17000,atk:1150,def:380,souls:200,exp:288}],
     bosses:[{name:'宇宙神',icon:'🌌',hp:250000,atk:2500,def:1000,souls:6000,exp:9000},{name:'ビッグバンの化身',icon:'💥',hp:350000,atk:2200,def:1200,souls:8000,exp:12000}]},
   {id:9,name:'地獄',sub:'最終審判の地',icon:'🔥',color:'#ef4444',
-   unlockReq:{clearedFloor:8},areaMode:true,soulsMult:10.0,expMult:10.0,
+   unlockReq:{clearedFloor:8},areaMode:true,soulsMult:6.0,expMult:7.0,
     enemies:[{name:'地獄の使者',icon:'😈',hp:60000,atk:3500,def:1500,souls:400,exp:600},{name:'業火の悪魔',icon:'🔥',hp:70000,atk:3200,def:1600,souls:420,exp:630},{name:'地獄の番犬',icon:'🐕',hp:55000,atk:3800,def:1400,souls:390,exp:585},{name:'魂食らい',icon:'💀',hp:75000,atk:3000,def:1800,souls:440,exp:660},{name:'混沌の神',icon:'🌑',hp:80000,atk:2800,def:2000,souls:460,exp:690},{name:'終末の天使',icon:'⚰️',hp:65000,atk:3400,def:1700,souls:430,exp:645}],
     bosses:[{name:'魔王',icon:'👿',hp:800000,atk:8000,def:3500,souls:20000,exp:30000},{name:'地獄の創造主',icon:'🌑',hp:1200000,atk:7000,def:4500,souls:30000,exp:50000}]}
 ];
@@ -945,8 +960,16 @@ function checkAchievements(){
       const r=a.reward;
       if(r.type==='uniqueSkill'){
         if(!GS.unlockedUniqueSkills.includes(r.id)) GS.unlockedUniqueSkills.push(r.id);
-      } else if(r.type==='unlockSkill'||r.type==='unlockItem'||r.type==='unlockWeapon'){
+      } else if(r.type==='unlockSkill'||r.type==='unlockItem'){
         if(r.id!=='未定'&&!GS.unlocked.includes(r.id)) GS.unlocked.push(r.id);
+      } else if(r.type==='unlockWeapon'){
+        // 購入コストが0の武器（鉄アレイ等）は自動解放、コストありはショップ登場のみ
+        const wDef=WEAPONS[r.id];
+        const shopEntry=UNLOCK_GROUPS.equip.find(e=>e.id===r.id);
+        if(r.id!=='未定'&&!GS.unlocked.includes(r.id)){
+          if(!shopEntry||shopEntry.cost===0) GS.unlocked.push(r.id);
+          // コストありはショップに登場させるだけ（achDoneに入るのでachReqチェックが通る）
+        }
       } else if(r.type==='unlockChar'){
         // キャラはアンロックショップに登場させるだけ（自動解放はしない）
       } else if(r.type==='unlockAccessory'){
@@ -1403,7 +1426,7 @@ function renderLibrary(){
           <span class="badge badge-red">HP ${c.hp+(lb.hp||0)*10}</span>
           <span class="badge badge-amber">ATK ${c.atk+(lb.atk||0)*2}</span>
           <span class="badge badge-blue">DEF ${c.def+(lb.def||0)}</span>
-          <span class="badge badge-purple">MP ${c.mp}</span>
+          <span class="badge badge-purple">MP ${c.maxMp+(lb.mp||0)*8}</span>
           <span class="badge badge-teal">会心 ${c.crit+(lb.crit||0)}%</span>
           ${c.dodge>0?`<span class="badge badge-gray">回避 ${c.dodge+(lb.dodge||0)}%</span>`:''}
         </div>
@@ -1474,8 +1497,9 @@ function renderLibrary(){
       if(chance>=0.1) return '稀に';
       return '極稀に';
     };
+    const allBossNames=new Set(FLOORS.flatMap(f=>f.bosses.map(b=>b.id||b.name)));
     seen.forEach(e=>{
-      const isBoss=e.souls>=15;
+      const isBoss=allBossNames.has(e.id||e.name);
       const specialsHtml=(e.specials||[]).map(sp=>
         `<div style="font-size:10px;color:#AFA9EC;margin-top:2px">
           ⚡ ${freqLabel(sp.chance)}「${sp.label}」— ${sp.desc}
@@ -1572,6 +1596,7 @@ function renderChars(){
     const effDef=c.def+(lb.def||0)*1;
     const effCrit=c.crit+(lb.crit||0);
     const effDodge=c.dodge+(lb.dodge||0);
+    const effMp=c.maxMp+(lb.mp||0)*8;
     // このキャラの所持ユニークスキル
     const myUniques=Object.values(UNIQUE_SKILLS).filter(u=>
       u.charId===c.id&&(u.initial||GS.unlockedUniqueSkills.includes(u.id))
@@ -1592,7 +1617,7 @@ function renderChars(){
           <div class="card-sub">${c.desc}</div>
           <div class="row" style="margin-top:4px;gap:4px;flex-wrap:wrap">
             <span class="badge badge-red">HP ${effHp}</span>
-            <span class="badge badge-purple">MP ${c.mp}</span>
+            <span class="badge badge-purple">MP ${effMp}</span>
             <span class="badge badge-amber">攻撃 ${effAtk}</span>
             <span class="badge badge-blue">防御 ${effDef}</span>
             <span class="badge badge-teal">会心 ${effCrit}%</span>
@@ -1821,6 +1846,14 @@ function startRun(){
   GS.run.hdodge = c.hdodge + Math.floor((lb.dodge||0)*1.5) + (passives.includes('godspeed')?15:0);
   GS.run.dmgBonus  = passives.includes('demonblessing')?1.20:1.0;
   GS.run.defBonus  = passives.includes('demonblessing')?0.85:1.0;
+  // statMult系アクセサリ: 鉢巻・バリア・猫のヒゲ・SSD
+  accs.forEach(id=>{
+    const acc=ACCESSORIES[id];if(!acc||acc.kind!=='statMult')return;
+    if(acc.effect.atkMult) GS.run.atk  =Math.floor(GS.run.atk  *acc.effect.atkMult);
+    if(acc.effect.defMult) GS.run.def  =Math.floor(GS.run.def  *acc.effect.defMult);
+    if(acc.effect.hpMult)  {GS.run.maxHp=Math.floor(GS.run.maxHp*acc.effect.hpMult);GS.run.hp=GS.run.maxHp;}
+    if(acc.effect.mpMult)  {GS.run.maxMp=Math.floor(GS.run.maxMp*acc.effect.mpMult);GS.run.mp=GS.run.maxMp;}
+  });
   // 鉄アレイ: ATKを1/3に（ただし最低1）、EXP×1.2フラグを立てる
   GS.run.dumbbellEquipped = (GS.run.weaponId==='dumbbell');
   if(GS.run.dumbbellEquipped){
@@ -2159,12 +2192,14 @@ function triggerPassiveBadge(id){
 
 function renderActiveBtns(){
   const el=document.getElementById('active-skill-btns');el.innerHTML='';
+  const earringDisc=(GS.run.accessories||[]).some(a=>{const ac=ACCESSORIES[a];return ac&&ac.kind==='skillCost'&&ac.effect.mpDiscount;})?0.20:0;
   (GS.run.activeSkills||[]).forEach(id=>{
     const s=ACTIVE_SKILLS[id];
     // 終焉は最大MPの半分消費（表示用コスト）
-    const displayCost = id==='apocalypse' ? Math.floor((bState.heroMaxMp||GS.run.maxMp)*0.5) : Math.max(0,s.mpCost-(GS.run.nextSkillDiscount||0));
-    const cost=Math.max(0,s.mpCost-(GS.run.nextSkillDiscount||0));
-    const canUse=!bState.over&&bState.heroMp>=(id==='apocalypse'?displayCost:cost);
+    const baseCostDisp=Math.max(0,s.mpCost-(GS.run.nextSkillDiscount||0));
+    const displayCost = id==='apocalypse' ? Math.floor((bState.heroMaxMp||GS.run.maxMp)*0.5) : Math.max(0,Math.floor(baseCostDisp*(1-earringDisc)));
+    const cost=id==='apocalypse' ? displayCost : displayCost;
+    const canUse=!bState.over&&bState.heroMp>=cost;
     const btn=document.createElement('button');
     btn.className='active-btn';btn.disabled=!canUse;
     btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><span class="sk-cost">MP ${id==='apocalypse'?displayCost+'(半分)':cost}</span><span class="sk-desc">${s.desc}</span>`;
@@ -2175,21 +2210,26 @@ function renderActiveBtns(){
 function useActiveSkill(id){
   if(bState.over)return;
   const s=ACTIVE_SKILLS[id];
-  const cost=Math.max(0,s.mpCost-(GS.run.nextSkillDiscount||0));
+  // イヤリング: skillCost -20%
+  const earringDiscount=(GS.run.accessories||[]).some(a=>{const ac=ACCESSORIES[a];return ac&&ac.kind==='skillCost'&&ac.effect.mpDiscount;})?0.20:0;
+  // 相棒: 20%確率でMP半分
+  const companionHalf=isUnlocked('companion')&&GS.run.weaponId==='companion'&&Math.random()<0.20?0.5:1.0;
+  const baseCost=s.mpCost-(GS.run.nextSkillDiscount||0);
+  const cost=Math.max(0,Math.floor(baseCost*(1-earringDiscount)*companionHalf));
   GS.run.nextSkillDiscount=0;
   if(bState.heroMp<cost){addLog('MPが足りない！','log-hero-dmg');return;}
   bState.heroMp-=cost;
   addLog(`【${s.name}】発動！`,'log-skill');
   s.fn(bState);
-  // 天使の繰り返しの奇跡: 50%の確率で最大2回追加発動（MP消費0.5回分×2=合計1.5回分）
+  // 天使の奇跡: 50%の確率で1回追加発動（MP消費0.5回分追加=合計1.5回分）
   if(!bState.over&&(GS.run.uniqueSkills||[]).includes('angel_miracle')){
-    const miracleCount=2;
+    const miracleCount=1;
     let triggered=0;
     for(let i=0;i<miracleCount;i++){
       if(!bState.over&&Math.random()<0.5){
         const extraCost=Math.floor(cost*0.5);
         bState.heroMp=Math.max(0,bState.heroMp-extraCost);
-        addLog(`✨ 繰り返しの奇跡！ ${s.name}再発動！`,'log-skill');
+        addLog(`✨ 奇跡！ ${s.name}再発動！`,'log-skill');
         showSkillFlash();
         s.fn(bState);
         triggered++;
@@ -2566,7 +2606,9 @@ function endBattle(won){
     const growthMult=(GS.run.uniqueSkills||[]).includes('traveler_growth')?1.1:1.0;
     // 鉄アレイ: EXP×1.2
     const dumbbellMult=GS.run.dumbbellEquipped?1.2:1.0;
-    let souls=Math.floor((bState.enemy.souls||0)*sm*growthMult);
+    // リボン: 魂+10%
+    const ribbonMult=(GS.run.accessories||[]).some(a=>{const ac=ACCESSORIES[a];return ac&&ac.kind==='soulsMult';})?1.10:1.0;
+    let souls=Math.floor((bState.enemy.souls||0)*sm*growthMult*ribbonMult);
     const exp=Math.floor((bState.enemy.exp||(bState.isBoss?20:4))*em*growthMult*dumbbellMult);
 
     // アクセサリ: onKill（魂喰いの護符）
@@ -2621,8 +2663,8 @@ function endBattle(won){
           setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .6s';setTimeout(()=>el.remove(),600);},3500);
         },500);
       }
-      // 地獄クリアでトラベラーの「旅」スキル解放
-      if(fid===9&&!GS.unlockedUniqueSkills.includes('traveler_journey')){
+      // 宇宙クリアでトラベラーの「旅」スキル解放
+      if(fid===8&&!GS.unlockedUniqueSkills.includes('traveler_journey')){
         GS.unlockedUniqueSkills.push('traveler_journey');
         addLog('🌍 旅の力が目覚めた！ トラベラーのユニークスキル「旅」が解放されました','log-heal');
         setTimeout(()=>{
