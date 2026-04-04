@@ -1536,6 +1536,7 @@ function quickStartRun() {
   GS.run.charId = lr.charId;
   GS.run.weaponId = lr.weaponId;
   GS.run.armorId = lr.armorId;
+  GS.run.floorId = lr.floorId || currentFloorId || 1;
   // 配列が確実にコピーされるようフォールバック
   GS.run.accessories = Array.isArray(lr.accessories) ? [...lr.accessories] : [];
   GS.run.activeSkills = Array.isArray(lr.activeSkills) ? [...lr.activeSkills] : [];
@@ -1674,7 +1675,11 @@ function togglePassiveSkill(id){
 
 // ─── ラン開始 ─────────────────────────────────────────────
 function startRun(){
+  if(!GS.run.charId){showInlineAlert('キャラクターを選択してください');return;}
+  if(!GS.run.weaponId){showInlineAlert('武器を選択してください');return;}
+  if(!GS.run.armorId){showInlineAlert('防具を選択してください');return;}
   const c=CHARS[GS.run.charId], w=WEAPONS[GS.run.weaponId], a=ARMORS[GS.run.armorId];
+  if(!c||!w||!a){showInlineAlert('装備データが見つかりません');return;}
   const lb=GS.lvBonus;
   const passives=GS.run.passiveSkills||[];
   const accs=GS.run.accessories||[];
@@ -2720,6 +2725,19 @@ function showRetreatConfirm(){
       <button class="btn btn-primary" onclick="renderDungeon();goTo('s-dungeon')">やっぱり続ける</button>
     </div>`;
   goTo('s-choice');
+}
+
+// ─── インラインアラート ───────────────────────────────────
+function showInlineAlert(msg){
+  // 既存のアラートがあれば除去
+  const old=document.getElementById('inline-alert');
+  if(old)old.remove();
+  const el=document.createElement('div');
+  el.id='inline-alert';
+  el.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2c1010;border:0.5px solid #A32D2D;border-radius:8px;padding:10px 18px;font-size:13px;color:#F09595;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.5)';
+  el.textContent='⚠️ '+msg;
+  document.body.appendChild(el);
+  setTimeout(()=>{if(el.parentNode)el.remove();},2500);
 }
 
 // 初期化
