@@ -1105,7 +1105,7 @@ function renderFloors(){
     div.innerHTML=`
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div>
-          <div class="floor-name"><span style="font-size:20px;margin-right:6px">${f.icon}</span><span style="color:${f.color}">${f.name}</span>${f.areaMode?'<span class="badge badge-gold" style="margin-left:6px;font-size:10px">エリア制</span>':''}</div>
+          <div class="floor-name"><span style="font-size:20px;margin-right:6px">${f.icon}</span><span style="color:${f.color}">${f.name}</span></div>
           <div class="floor-desc">${f.sub}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             <span class="badge badge-amber">魂×${f.soulsMult}</span>
@@ -1129,7 +1129,19 @@ function renderFloors(){
   el.appendChild(wrap);
 }
 function selectFloor(id){currentFloorId=id;renderFloors();}
-function proceedToChar(){GS.run.floorId=currentFloorId;goTo('s-char');}
+function proceedToChar(){
+  // 前回ランの装備・キャラ選択状態をリセット（新しい階層で選び直し）
+  GS.run={
+    floorId: currentFloorId,
+    activeSkills: [],
+    passiveSkills: [],
+    accessories: []
+  };
+  // btn-to-equipをdisabledに戻す
+  const btnEquip=document.getElementById('btn-to-equip');
+  if(btnEquip) btnEquip.disabled=true;
+  goTo('s-char');
+}
 
 // ─── 強化リセット ─────────────────────────────────────────
 function confirmResetBonus(){
