@@ -2720,7 +2720,7 @@ function showChoice(type){
     );
     // ランダム3択
     const picks=options.sort(()=>Math.random()-0.5).slice(0,3);
-    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.addEventListener('click',o.fn);cl.appendChild(d);});
+    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.addEventListener('click',o.fn);d.addEventListener('touchstart',o.fn,{passive:true});cl.appendChild(d);});
   } else {
     document.getElementById('choice-desc').textContent='🔥 休息の間 — 焚き火の前で';
     const options=[
@@ -2744,28 +2744,31 @@ function showChoice(type){
       {label:'💀 死の淵から這い戻る',           desc:'不死の意志で全てを取り戻す',     fn:()=>{GS.run.hp=GS.run.maxHp;GS.run.mp=GS.run.maxMp;GS.run.atk+=s;GS.run.def+=s;addChoiceResult('HP・MP全回復＋全ステータスが僅かに上昇した！');}},
     );
     const picks=options.sort(()=>Math.random()-0.5).slice(0,3);
-    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.addEventListener('click',o.fn);cl.appendChild(d);});
+    picks.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div><div class="card-sub">${o.desc}</div>`;d.addEventListener('click',o.fn);d.addEventListener('touchstart',o.fn,{passive:true});cl.appendChild(d);});
   }
   goTo('s-choice');
 }
 function addChoiceResult(msg){
   GS.run.room++;
-  // 宝・休息部屋クリアでも魂回収チェック
   checkLostSoulsRecovery_normal();
   const cl=document.getElementById('choice-list');
   cl.innerHTML='';
   const resultCard=document.createElement('div');
   resultCard.className='card';
-  resultCard.innerHTML=`<div class="card-title">${msg}</div>`;
+  resultCard.style.cssText='border-color:#4ade80;background:#0f1f12;cursor:pointer;text-align:center;padding:20px 16px;';
+  const title=document.createElement('div');
+  title.className='card-title';
+  title.style.cssText='color:#4ade80;margin-bottom:6px';
+  title.textContent=msg;
+  const hint=document.createElement('div');
+  hint.style.cssText='font-size:12px;color:#5f5e5a';
+  hint.textContent='タップして次の部屋へ →';
+  resultCard.appendChild(title);
+  resultCard.appendChild(hint);
+  const goNext=()=>{renderDungeon();goTo('s-dungeon');};
+  resultCard.addEventListener('click',goNext);
+  resultCard.addEventListener('touchstart',goNext,{passive:true});
   cl.appendChild(resultCard);
-  const wrap=document.createElement('div');
-  wrap.style.marginTop='10px';
-  const nextBtn=document.createElement('button');
-  nextBtn.className='btn btn-primary';
-  nextBtn.textContent='次の部屋へ';
-  nextBtn.addEventListener('click',()=>{renderDungeon();goTo('s-dungeon');});
-  wrap.appendChild(nextBtn);
-  cl.appendChild(wrap);
 }
 function showRetreatConfirm(){
   const partial=Math.floor(GS.run.runSouls*0.5);
