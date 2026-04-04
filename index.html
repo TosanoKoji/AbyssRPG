@@ -991,7 +991,8 @@ function getAchProgress(a){
 }
 
 // ─── 画面遷移 ─────────────────────────────────────────────
-function goTo(id){
+// retryMode=true のとき s-char へ行っても resetRunState() を呼ばない（リトライ用）
+function goTo(id, retryMode){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'instant'});
@@ -1000,7 +1001,19 @@ function goTo(id){
   if(id==='s-unlock')  {unlockTab='char';['char','equip','accessory','skill','system'].forEach(t=>{const el=document.getElementById('utab-'+t);if(el)el.classList.toggle('active',t==='char');});renderUnlock();}
   if(id==='s-level')   renderLevel();
   if(id==='s-achieve') renderAchievements();
-  if(id==='s-char')    {resetRunState();renderChars();}
+  if(id==='s-char'){
+    if(retryMode){
+      // リトライ：前回の charId/weaponId/armorId を保持したままキャラ画面へ
+      // btn-to-equip は charId があれば有効にする
+      const btnEquip=document.getElementById('btn-to-equip');
+      if(btnEquip) btnEquip.disabled=!GS.run.charId;
+      const btnSkill=document.getElementById('btn-to-skill');
+      if(btnSkill) btnSkill.disabled=!(GS.run.weaponId&&GS.run.armorId);
+      renderChars();
+    } else {
+      resetRunState();renderChars();
+    }
+  }
   if(id==='s-equip')   renderEquip();
   if(id==='s-skill')   renderSkills();
   if(id==='s-library') {libTab='char';['char','equip','skill','enemy'].forEach(t=>document.getElementById('ltab-'+t).classList.toggle('active',t==='char'));renderLibrary();}
@@ -1145,7 +1158,10 @@ function resetRunState(){
 
 function proceedToChar(){
   GS.run.floorId = currentFloorId;
-  resetRunState();
+  resetRunState(); // 新規探索：完全リセット
+  // goTo('s-char') 内の resetRunState を避けるため retryMode=false で呼ぶ
+  // → retryMode未指定(undefined=falsy)でも resetRunState が走るので問題ないが
+  //   ここで既にリセット済みなので goTo 側で再度走っても無害
   goTo('s-char');
 }
 
@@ -3000,7 +3016,7 @@ function initButtons(){
   const btnResultTitle=document.getElementById('btn-result-title');
   if(btnResultTitle) btnResultTitle.addEventListener('click',()=>goTo('s-title'));
   const btnResultRetry=document.getElementById('btn-result-retry');
-  if(btnResultRetry) btnResultRetry.addEventListener('click',()=>goTo('s-char'));
+  if(btnResultRetry) btnResultRetry.addEventListener('click',()=>goTo('s-char', true));
 
   // ハードリセットモーダル
   const btnRmCancel1=document.getElementById('btn-rm-cancel1');
