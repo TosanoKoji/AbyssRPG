@@ -991,8 +991,7 @@ function getAchProgress(a){
 }
 
 // ─── 画面遷移 ─────────────────────────────────────────────
-// retryMode=true のとき s-char へ行っても resetRunState() を呼ばない（リトライ用）
-function goTo(id, retryMode){
+function goTo(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'instant'});
@@ -1001,19 +1000,7 @@ function goTo(id, retryMode){
   if(id==='s-unlock')  {unlockTab='char';['char','equip','accessory','skill','system'].forEach(t=>{const el=document.getElementById('utab-'+t);if(el)el.classList.toggle('active',t==='char');});renderUnlock();}
   if(id==='s-level')   renderLevel();
   if(id==='s-achieve') renderAchievements();
-  if(id==='s-char'){
-    if(retryMode){
-      // リトライ：前回の charId/weaponId/armorId を保持したままキャラ画面へ
-      // btn-to-equip は charId があれば有効にする
-      const btnEquip=document.getElementById('btn-to-equip');
-      if(btnEquip) btnEquip.disabled=!GS.run.charId;
-      const btnSkill=document.getElementById('btn-to-skill');
-      if(btnSkill) btnSkill.disabled=!(GS.run.weaponId&&GS.run.armorId);
-      renderChars();
-    } else {
-      resetRunState();renderChars();
-    }
-  }
+  if(id==='s-char')    {resetRunState();renderChars();}
   if(id==='s-equip')   renderEquip();
   if(id==='s-skill')   renderSkills();
   if(id==='s-library') {libTab='char';['char','equip','skill','enemy'].forEach(t=>document.getElementById('ltab-'+t).classList.toggle('active',t==='char'));renderLibrary();}
@@ -1158,10 +1145,7 @@ function resetRunState(){
 
 function proceedToChar(){
   GS.run.floorId = currentFloorId;
-  resetRunState(); // 新規探索：完全リセット
-  // goTo('s-char') 内の resetRunState を避けるため retryMode=false で呼ぶ
-  // → retryMode未指定(undefined=falsy)でも resetRunState が走るので問題ないが
-  //   ここで既にリセット済みなので goTo 側で再度走っても無害
+  resetRunState();
   goTo('s-char');
 }
 
@@ -1634,6 +1618,7 @@ function selectChar(id){
 }
 
 function quickStartRun() {
+  bState={over:true};paused=true;
   if(!GS.lastRun||!GS.lastRun.config){showInlineAlert('前回データがありません');return;}
   const lr = GS.lastRun.config;
   if(!lr.charId||!lr.weaponId||!lr.armorId){showInlineAlert('前回の装備データが不完全です');return;}
@@ -1795,6 +1780,7 @@ function togglePassiveSkill(id){
 
 // ─── ラン開始 ─────────────────────────────────────────────
 function startRun(){
+  bState={over:true};paused=true;
   if(!GS.run.charId){showInlineAlert('キャラクターを選択してください');return;}
   if(!GS.run.weaponId){showInlineAlert('武器を選択してください');return;}
   if(!GS.run.armorId){showInlineAlert('防具を選択してください');return;}
@@ -2302,10 +2288,12 @@ function animAttack(spriteId, animType, onHit){
 function animShake(spriteId){const el=document.getElementById(spriteId);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),300);}
 
 function updateBattleUI(){
+  const heroHpBar=document.getElementById('b-hero-hp');
+  if(!heroHpBar)return; // バトル画面が存在しない場合は何もしない
   const hPct=Math.max(0,bState.heroHp/bState.heroMaxHp*100);
   const ePct=Math.max(0,bState.enemyHp/bState.enemyMaxHp*100);
   const mPct=Math.max(0,bState.heroMp/bState.heroMaxMp*100);
-  document.getElementById('b-hero-hp').style.width=hPct+'%';
+  heroHpBar.style.width=hPct+'%';
   document.getElementById('b-enemy-hp').style.width=ePct+'%';
   document.getElementById('b-hero-mp').style.width=mPct+'%';
   document.getElementById('b-hero-hp-text').textContent=`${Math.max(0,bState.heroHp)}/${bState.heroMaxHp}`;
@@ -2317,7 +2305,10 @@ function randVar(dmg){return Math.max(1,Math.floor(dmg*(0.85+Math.random()*0.3))
 
 // ─── オートバトル ─────────────────────────────────────────
 function autoBattleTick(){
+  // バトル画面が非アクティブ、またはbState.overならループを止める
   if(bState.over||paused)return;
+  const battleScreen=document.getElementById('s-battle');
+  if(!battleScreen||!battleScreen.classList.contains('active')){bState.over=true;return;}
   bState.turn++;
   const passives=GS.run.passiveSkills||[];
   const hasCritUp=passives.includes('critup');
@@ -2700,6 +2691,8 @@ function endBattle(won){
 }
 
 function retreatRun(){
+  bState.over=true;
+  paused=true;
   const partial=Math.floor((GS.run.runSouls||0)*0.5);
   const partialExp=Math.floor((GS.run.runExp||0)*0.5);
   GS.run.runSouls = partial;
@@ -3016,7 +3009,7 @@ function initButtons(){
   const btnResultTitle=document.getElementById('btn-result-title');
   if(btnResultTitle) btnResultTitle.addEventListener('click',()=>goTo('s-title'));
   const btnResultRetry=document.getElementById('btn-result-retry');
-  if(btnResultRetry) btnResultRetry.addEventListener('click',()=>goTo('s-char', true));
+  if(btnResultRetry) btnResultRetry.addEventListener('click',()=>goTo('s-char'));
 
   // ハードリセットモーダル
   const btnRmCancel1=document.getElementById('btn-rm-cancel1');
