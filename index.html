@@ -1518,38 +1518,44 @@ function renderChars(){
       const c = CHARS[lr.charId];
       const w = WEAPONS[lr.weaponId];
       const a = ARMORS[lr.armorId];
-      
+
       const aSkillDetails=aSkills.map(id=>{const s=ACTIVE_SKILLS[id];return s?`${s.icon} ${s.name}`:'';}).filter(Boolean);
       const pSkillDetails=pSkills.map(id=>{const s=PASSIVE_SKILLS[id];return s?`${s.icon} ${s.name}`:'';}).filter(Boolean);
       const accDetails=accs.map(id=>{const acc=ACCESSORIES[id];return acc?`${acc.icon} ${acc.name}`:'';}).filter(Boolean);
 
-      lastContainer.innerHTML = `
-        <div class="sub">前回と同じ設定で挑む</div>
-        <div class="card last-run-card" id="btn-quick-start">
-          <div style="display:flex;gap:12px;align-items:flex-start">
-            <div style="font-size:28px">${c.icon}</div>
-            <div style="flex:1;min-width:0">
-              <div class="card-title">${c.name} — クイック再挑戦</div>
-              <div style="font-size:11px;color:#888780;margin-top:4px;line-height:1.7">
-                <div>🗡️ <span style="color:#EF9F27">${w.icon||''}${w.name}</span>
-                  <span style="color:#5f5e5a;font-size:10px"> ATK+${w.atk}${w.mp?` MP+${w.mp}`:''}${w.crit?` 会心+${w.crit}%`:''}</span>
-                </div>
-                <div>🛡 <span style="color:#85B7EB">${a.icon||''}${a.name}</span>
-                  <span style="color:#5f5e5a;font-size:10px"> DEF+${a.def}${a.hp?` HP+${a.hp}`:''}${a.mp?` MP+${a.mp}`:''}</span>
-                </div>
-                ${accDetails.length?`<div>💍 <span style="color:#fb923c">${accDetails.join(' / ')}</span></div>`:''}
-                ${aSkillDetails.length?`<div>⚡ アクティブ: <span style="color:#AFA9EC">${aSkillDetails.join(' / ')}</span></div>`:''}
-                ${pSkillDetails.length?`<div>🛡 パッシブ: <span style="color:#6ee7b7">${pSkillDetails.join(' / ')}</span></div>`:''}
+      const subLabel=document.createElement('div');
+      subLabel.className='sub';subLabel.textContent='前回と同じ設定で挑む';
+      lastContainer.appendChild(subLabel);
+
+      const card=document.createElement('div');
+      card.className='card last-run-card';
+      card.innerHTML=`
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="font-size:28px">${c.icon}</div>
+          <div style="flex:1;min-width:0">
+            <div class="card-title">${c.name} — クイック再挑戦</div>
+            <div style="font-size:11px;color:#888780;margin-top:4px;line-height:1.7">
+              <div>🗡️ <span style="color:#EF9F27">${w.icon||''}${w.name}</span>
+                <span style="color:#5f5e5a;font-size:10px"> ATK+${w.atk}${w.mp?` MP+${w.mp}`:''}${w.crit?` 会心+${w.crit}%`:''}</span>
               </div>
-              <div style="font-size:10px;color:#534AB7;margin-top:4px;border-top:0.5px solid #3a3a38;padding-top:4px">
-                前回: ${res.icon||''} 撃破 ${res.kills||0} / 魂 ${res.souls||0} / EXP ${res.exp||0}
+              <div>🛡 <span style="color:#85B7EB">${a.icon||''}${a.name}</span>
+                <span style="color:#5f5e5a;font-size:10px"> DEF+${a.def}${a.hp?` HP+${a.hp}`:''}${a.mp?` MP+${a.mp}`:''}</span>
               </div>
+              ${accDetails.length?`<div>💍 <span style="color:#fb923c">${accDetails.join(' / ')}</span></div>`:''}
+              ${aSkillDetails.length?`<div>⚡ アクティブ: <span style="color:#AFA9EC">${aSkillDetails.join(' / ')}</span></div>`:''}
+              ${pSkillDetails.length?`<div>🛡 パッシブ: <span style="color:#6ee7b7">${pSkillDetails.join(' / ')}</span></div>`:''}
+            </div>
+            <div style="font-size:10px;color:#534AB7;margin-top:4px;border-top:0.5px solid #3a3a38;padding-top:4px">
+              前回: ${res.icon||''} 撃破 ${res.kills||0} / 魂 ${res.souls||0} / EXP ${res.exp||0}
             </div>
           </div>
-        </div>
-        <div class="sub">新しくキャラクターを選択</div>
-      `;
-      document.getElementById('btn-quick-start').addEventListener('click', quickStartRun);
+        </div>`;
+      card.addEventListener('click', quickStartRun);
+      lastContainer.appendChild(card);
+
+      const subLabel2=document.createElement('div');
+      subLabel2.className='sub';subLabel2.textContent='新しくキャラクターを選択';
+      lastContainer.appendChild(subLabel2);
     }
   }
 
@@ -1612,12 +1618,14 @@ function selectChar(id){
 }
 
 function quickStartRun() {
+  if(!GS.lastRun||!GS.lastRun.config){showInlineAlert('前回データがありません');return;}
   const lr = GS.lastRun.config;
+  if(!lr.charId||!lr.weaponId||!lr.armorId){showInlineAlert('前回の装備データが不完全です');return;}
+  if(!isUnlocked(lr.charId)||!isUnlocked(lr.weaponId)||!isUnlocked(lr.armorId)){showInlineAlert('前回の装備がアンロックされていません');return;}
   GS.run.charId = lr.charId;
   GS.run.weaponId = lr.weaponId;
   GS.run.armorId = lr.armorId;
   GS.run.floorId = lr.floorId || currentFloorId || 1;
-  // 配列が確実にコピーされるようフォールバック
   GS.run.accessories = Array.isArray(lr.accessories) ? [...lr.accessories] : [];
   GS.run.activeSkills = Array.isArray(lr.activeSkills) ? [...lr.activeSkills] : [];
   GS.run.passiveSkills = Array.isArray(lr.passiveSkills) ? [...lr.passiveSkills] : [];
@@ -1787,6 +1795,7 @@ function startRun(){
       charId: GS.run.charId,
       weaponId: GS.run.weaponId,
       armorId: GS.run.armorId,
+      floorId: GS.run.floorId || currentFloorId || 1,
       accessories: [...accs],
       activeSkills: [...(GS.run.activeSkills||[])],
       passiveSkills: [...passives]
@@ -2675,17 +2684,25 @@ function endBattle(won){
 }
 
 function retreatRun(){
-  const partial=Math.floor(GS.run.runSouls*0.5);
+  const partial=Math.floor((GS.run.runSouls||0)*0.5);
   const partialExp=Math.floor((GS.run.runExp||0)*0.5);
   GS.run.runSouls = partial;
   GS.run.runExp = partialExp;
-  // 撤退時は魂を失わない（自発的退場）
-  GS.souls+=partial;GS.exp+=partialExp;
-  checkAchievements();save();
+  GS.souls+=partial; GS.exp+=partialExp;
+  // lastRun.resultを撤退結果で更新
+  if(GS.lastRun){
+    GS.lastRun.result = {
+      kills: GS.run.kills||0,
+      souls: partial,
+      exp: partialExp,
+      icon: '🚪'
+    };
+  }
+  checkAchievements(); save();
   document.getElementById('result-icon').textContent='🚪';
   document.getElementById('result-title').textContent='撤退';
   document.getElementById('result-sub').textContent='奈落から這い出た... 報酬は半分になった';
-  document.getElementById('r-kills').textContent=GS.run.kills;
+  document.getElementById('r-kills').textContent=GS.run.kills||0;
   document.getElementById('r-souls').textContent=partial;
   document.getElementById('r-exp').textContent=partialExp;
   document.getElementById('result-ach').style.display='none';
