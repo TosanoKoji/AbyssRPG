@@ -239,6 +239,20 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 
 /* pause-btn「次の部屋へ」グロー */
 @keyframes pauseGlow{0%,100%{box-shadow:0 0 6px rgba(74,222,128,.3)}50%{box-shadow:0 0 14px rgba(74,222,128,.7)}}
+
+/* ─── 選択モーダル ─────────────────────────── */
+#choice-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;padding:16px}
+#choice-modal.open{display:flex}
+#choice-box{background:#1a1a1f;border:0.5px solid #3a3a38;border-radius:16px;padding:20px 16px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
+#choice-box .c-title{font-size:16px;font-weight:500;margin-bottom:4px}
+#choice-box .c-sub{font-size:12px;color:#888780;margin-bottom:14px}
+#choice-box .c-card{background:#1f1f24;border:0.5px solid #3a3a38;border-radius:10px;padding:13px 14px;margin-bottom:9px;cursor:pointer;transition:border-color .15s,background .15s}
+#choice-box .c-card:hover{border-color:#888780;background:#252528}
+#choice-box .c-card-title{font-size:14px;font-weight:500;margin-bottom:2px}
+#choice-box .c-card-sub{font-size:11px;color:#888780}
+#choice-box .c-result{background:#0f1f12;border:0.5px solid #4ade80;border-radius:10px;padding:20px 14px;text-align:center;cursor:pointer}
+#choice-box .c-result-msg{font-size:15px;font-weight:500;color:#4ade80;margin-bottom:6px}
+#choice-box .c-result-hint{font-size:12px;color:#5f5e5a}
 </style>
 </head>
 <body>
@@ -2685,123 +2699,138 @@ function endRun(won){
   goTo('s-result');
 }
 
-// ─── 選択肢 ───────────────────────────────────────────────
-// choice-list を完全にcreateElementで管理。innerHTML一切使わない。
-function showChoice(type){
-  goTo('s-choice'); // 先に画面を表示してからDOMを操作
-  const cl=document.getElementById('choice-list');
-  while(cl.firstChild) cl.removeChild(cl.firstChild);
+// ─── 選択肢（モーダル方式） ─────────────────────────────
+function openChoiceModal(type){
+  const modal=document.getElementById('choice-modal');
+  const list=document.getElementById('cm-list');
+  while(list.firstChild) list.removeChild(list.firstChild);
+
   const floorId=GS.run.floorId||1;
   const s=floorId;
   let options=[];
+
   if(type==='treasure'){
-    document.getElementById('choice-desc').textContent='💎 宝の間 — 一つを選べ';
+    document.getElementById('cm-title').textContent='💎 宝の間';
+    document.getElementById('cm-sub').textContent='一つを選べ';
     options=[
-      {label:`⚔️ 攻撃力 +${4+s}`,         desc:'刃が研ぎ澄まされる',              fn:()=>{GS.run.atk+=4+s;showChoiceResult(`攻撃力が+${4+s}上がった！`);}},
-      {label:`🛡 防御力 +${3+Math.floor(s*0.8)}`, desc:'鎧が強化される', fn:()=>{const v=3+Math.floor(s*0.8);GS.run.def+=v;showChoiceResult(`防御力が+${v}上がった！`);}},
-      {label:`💜 最大MP +${15+s*5}`,       desc:'魔力の源泉が広がる',              fn:()=>{const v=15+s*5;GS.run.maxMp+=v;GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+v);showChoiceResult(`最大MPが+${v}増えた！`);}},
-      {label:`❤️ HP +${20+s*5}回復`,       desc:'傷が癒える',                      fn:()=>{const v=20+s*5;GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+v);showChoiceResult(`HPを+${v}回復した！`);}},
-      {label:`✨ 会心率 +${2+s}%`,          desc:'急所を見極める眼が冴える',         fn:()=>{const v=2+s;GS.run.crit+=v;showChoiceResult(`会心率が+${v}%上がった！`);}},
-      {label:`👟 回避率 +${2+s}%`,          desc:'身のこなしが軽くなる',             fn:()=>{const v=2+s;GS.run.dodge+=v;showChoiceResult(`回避率が+${v}%上がった！`);}},
+      {label:`⚔️ 攻撃力 +${4+s}`,desc:'刃が研ぎ澄まされる',fn:()=>{GS.run.atk+=4+s;showModalResult(`攻撃力が+${4+s}上がった！`);}},
+      {label:`🛡 防御力 +${3+Math.floor(s*0.8)}`,desc:'鎧が強化される',fn:()=>{const v=3+Math.floor(s*0.8);GS.run.def+=v;showModalResult(`防御力が+${v}上がった！`);}},
+      {label:`💜 最大MP +${15+s*5}`,desc:'魔力の源泉が広がる',fn:()=>{const v=15+s*5;GS.run.maxMp+=v;GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+v);showModalResult(`最大MPが+${v}増えた！`);}},
+      {label:`❤️ HP +${20+s*5}回復`,desc:'傷が癒える',fn:()=>{const v=20+s*5;GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+v);showModalResult(`HPを+${v}回復した！`);}},
+      {label:`✨ 会心率 +${2+s}%`,desc:'急所を見極める眼が冴える',fn:()=>{const v=2+s;GS.run.crit+=v;showModalResult(`会心率が+${v}%上がった！`);}},
+      {label:`👟 回避率 +${2+s}%`,desc:'身のこなしが軽くなる',fn:()=>{const v=2+s;GS.run.dodge+=v;showModalResult(`回避率が+${v}%上がった！`);}},
     ];
-    if(s>=2) options.push(
-      {label:`⬆ 最大HP +${10+s*5}`,        desc:'生命力の器が広がる',              fn:()=>{const v=10+s*5;GS.run.maxHp+=v;GS.run.hp+=v;showChoiceResult(`最大HPが+${v}増えた！`);}},
-      {label:`⚡ MP全回復 + ATK +${s}`,      desc:'魔力を充填し力も増す',            fn:()=>{GS.run.mp=GS.run.maxMp;GS.run.atk+=s;showChoiceResult(`MP全回復＋攻撃力+${s}！`);}},
+    if(s>=2)options.push(
+      {label:`⬆ 最大HP +${10+s*5}`,desc:'生命力の器が広がる',fn:()=>{const v=10+s*5;GS.run.maxHp+=v;GS.run.hp+=v;showModalResult(`最大HPが+${v}増えた！`);}},
+      {label:`⚡ MP全回復 + ATK +${s}`,desc:'魔力を充填し力も増す',fn:()=>{GS.run.mp=GS.run.maxMp;GS.run.atk+=s;showModalResult(`MP全回復＋攻撃力+${s}！`);}},
     );
-    if(s>=3) options.push(
-      {label:`💥 攻撃+防御 +${2+s}`,        desc:'攻守が同時に強化される',          fn:()=>{const v=2+s;GS.run.atk+=v;GS.run.def+=v;showChoiceResult(`攻撃と防御が+${v}上がった！`);}},
-      {label:`🌑 全ステータス +${s}`,        desc:'奈落の力が体に宿る',              fn:()=>{GS.run.atk+=s;GS.run.def+=s;GS.run.crit+=s;showChoiceResult(`全ステータスが+${s}上がった！`);}},
+    if(s>=3)options.push(
+      {label:`💥 攻撃+防御 +${2+s}`,desc:'攻守が同時に強化される',fn:()=>{const v=2+s;GS.run.atk+=v;GS.run.def+=v;showModalResult(`攻撃と防御が+${v}上がった！`);}},
+      {label:`🌑 全ステータス +${s}`,desc:'奈落の力が体に宿る',fn:()=>{GS.run.atk+=s;GS.run.def+=s;GS.run.crit+=s;showModalResult(`全ステータスが+${s}上がった！`);}},
     );
-    if(s>=4) options.push(
-      {label:`💢 HP消費でATK+${s*5}（HP-${Math.floor(GS.run.maxHp*0.2)}）`, desc:'命を削り力を得る',
-        fn:()=>{const cost=Math.floor(GS.run.maxHp*0.2);if(GS.run.hp<=cost){showChoiceResult('HPが足りず断念した...');return;}GS.run.hp-=cost;GS.run.atk+=s*5;showChoiceResult(`HP-${cost}と引き換えに攻撃+${s*5}を得た！`);}},
-      {label:`🔮 ランダム強化×3`,             desc:'奈落の気まぐれに身を委ねる',
-        fn:()=>{let log=[];for(let i=0;i<3;i++){const r=Math.floor(Math.random()*4);if(r===0){GS.run.atk+=s;log.push(`ATK+${s}`);}else if(r===1){GS.run.def+=s;log.push(`DEF+${s}`);}else if(r===2){GS.run.maxHp+=s*5;GS.run.hp+=s*5;log.push(`MaxHP+${s*5}`);}else{GS.run.maxMp+=s*5;GS.run.mp+=s*5;log.push(`MaxMP+${s*5}`);}}showChoiceResult(`ランダム強化: ${log.join(' / ')}`);}},
+    if(s>=4)options.push(
+      {label:`💢 HP消費でATK+${s*5}（HP-${Math.floor(GS.run.maxHp*0.2)}）`,desc:'命を削り力を得る',fn:()=>{const cost=Math.floor(GS.run.maxHp*0.2);if(GS.run.hp<=cost){showModalResult('HPが足りず断念した...');return;}GS.run.hp-=cost;GS.run.atk+=s*5;showModalResult(`HP-${cost}と引き換えに攻撃+${s*5}を得た！`);}},
+      {label:`🔮 ランダム強化×3`,desc:'奈落の気まぐれに身を委ねる',fn:()=>{let log=[];for(let i=0;i<3;i++){const r=Math.floor(Math.random()*4);if(r===0){GS.run.atk+=s;log.push(`ATK+${s}`);}else if(r===1){GS.run.def+=s;log.push(`DEF+${s}`);}else if(r===2){GS.run.maxHp+=s*5;GS.run.hp+=s*5;log.push(`MaxHP+${s*5}`);}else{GS.run.maxMp+=s*5;GS.run.mp+=s*5;log.push(`MaxMP+${s*5}`);}}showModalResult(`ランダム強化: ${log.join(' / ')}`);}},
     );
-    if(s>=5) options.push(
-      {label:`☠️ 全HP消費でATK+${s*10}（1HPで生存）`, desc:'命を賭けた究極の取引',
-        fn:()=>{if(GS.run.hp<=1){showChoiceResult('すでに瀕死...');return;}GS.run.atk+=s*10;GS.run.hp=1;showChoiceResult(`HPを1まで削りATK+${s*10}を得た！`);}},
+    if(s>=5)options.push(
+      {label:`☠️ 全HP消費でATK+${s*10}（1HPで生存）`,desc:'命を賭けた究極の取引',fn:()=>{if(GS.run.hp<=1){showModalResult('すでに瀕死...');return;}GS.run.atk+=s*10;GS.run.hp=1;showModalResult(`HPを1まで削りATK+${s*10}を得た！`);}},
     );
   } else {
-    document.getElementById('choice-desc').textContent='🔥 休息の間 — 焚き火の前で';
+    document.getElementById('cm-title').textContent='🔥 休息の間';
+    document.getElementById('cm-sub').textContent='焚き火の前で';
     options=[
-      {label:'❤️ HP全回復',                  desc:'傷を完全に癒す',                fn:()=>{GS.run.hp=GS.run.maxHp;showChoiceResult('完全に回復した！');}},
-      {label:'💜 MP全回復',                   desc:'魔力を完全に充填する',           fn:()=>{GS.run.mp=GS.run.maxMp;showChoiceResult('MPが全回復した！');}},
-      {label:`❤️ 最大HP +${10+s*5}`,          desc:'生命力の器が広がる',             fn:()=>{const v=10+s*5;GS.run.maxHp+=v;GS.run.hp+=v;showChoiceResult(`最大HPが+${v}増えた！`);}},
-      {label:'❤️💜 HP+MP両方70%回復',         desc:'心身を整える',                   fn:()=>{GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+Math.floor(GS.run.maxHp*0.7));GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+Math.floor(GS.run.maxMp*0.7));showChoiceResult('HP・MPを70%回復した！');}},
+      {label:'❤️ HP全回復',desc:'傷を完全に癒す',fn:()=>{GS.run.hp=GS.run.maxHp;showModalResult('完全に回復した！');}},
+      {label:'💜 MP全回復',desc:'魔力を完全に充填する',fn:()=>{GS.run.mp=GS.run.maxMp;showModalResult('MPが全回復した！');}},
+      {label:`❤️ 最大HP +${10+s*5}`,desc:'生命力の器が広がる',fn:()=>{const v=10+s*5;GS.run.maxHp+=v;GS.run.hp+=v;showModalResult(`最大HPが+${v}増えた！`);}},
+      {label:'❤️💜 HP+MP両方70%回復',desc:'心身を整える',fn:()=>{GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+Math.floor(GS.run.maxHp*0.7));GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+Math.floor(GS.run.maxMp*0.7));showModalResult('HP・MPを70%回復した！');}},
     ];
-    if(s>=2) options.push(
-      {label:`⚔️ ATK +${2+s} ＆ HP半回復`,    desc:'研鑽と休息を両立する',           fn:()=>{const v=2+s;GS.run.atk+=v;GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+Math.floor(GS.run.maxHp*0.5));showChoiceResult(`ATK+${v}、HP半回復した！`);}},
-      {label:`💜 最大MP +${10+s*5}`,           desc:'魔力の器が広がる',               fn:()=>{const v=10+s*5;GS.run.maxMp+=v;GS.run.mp=GS.run.maxMp;showChoiceResult(`最大MPが+${v}増えた！`);}},
+    if(s>=2)options.push(
+      {label:`⚔️ ATK +${2+s} ＆ HP半回復`,desc:'研鑽と休息を両立する',fn:()=>{const v=2+s;GS.run.atk+=v;GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+Math.floor(GS.run.maxHp*0.5));showModalResult(`ATK+${v}、HP半回復した！`);}},
+      {label:`💜 最大MP +${10+s*5}`,desc:'魔力の器が広がる',fn:()=>{const v=10+s*5;GS.run.maxMp+=v;GS.run.mp=GS.run.maxMp;showModalResult(`最大MPが+${v}増えた！`);}},
     );
-    if(s>=3) options.push(
-      {label:`🛡 DEF +${2+s} ＆ HP全回復`,     desc:'防御を固め満を持して進む',       fn:()=>{const v=2+s;GS.run.def+=v;GS.run.hp=GS.run.maxHp;showChoiceResult(`DEF+${v}、HP全回復した！`);}},
-      {label:`✨ 会心 +${1+s}% ＆ MP全回復`,   desc:'静寂の中で集中力を研ぎ澄ます',  fn:()=>{const v=1+s;GS.run.crit+=v;GS.run.mp=GS.run.maxMp;showChoiceResult(`会心率+${v}%、MP全回復した！`);}},
+    if(s>=3)options.push(
+      {label:`🛡 DEF +${2+s} ＆ HP全回復`,desc:'防御を固め満を持して進む',fn:()=>{const v=2+s;GS.run.def+=v;GS.run.hp=GS.run.maxHp;showModalResult(`DEF+${v}、HP全回復した！`);}},
+      {label:`✨ 会心 +${1+s}% ＆ MP全回復`,desc:'静寂の中で集中力を研ぎ澄ます',fn:()=>{const v=1+s;GS.run.crit+=v;GS.run.mp=GS.run.maxMp;showModalResult(`会心率+${v}%、MP全回復した！`);}},
     );
-    if(s>=4) options.push(
-      {label:'🔥 HP1消費で最大HP+50 ＆ 全回復',desc:'命を燃やして限界を突破する',     fn:()=>{if(GS.run.hp<=1){showChoiceResult('HPが足りず...');return;}GS.run.maxHp+=50;GS.run.hp=GS.run.maxHp;showChoiceResult('HP1消費し最大HP+50、全回復した！');}},
+    if(s>=4)options.push(
+      {label:'🔥 HP1消費で最大HP+50 ＆ 全回復',desc:'命を燃やして限界を突破する',fn:()=>{if(GS.run.hp<=1){showModalResult('HPが足りず...');return;}GS.run.maxHp+=50;GS.run.hp=GS.run.maxHp;showModalResult('HP1消費し最大HP+50、全回復した！');}},
     );
-    if(s>=5) options.push(
-      {label:'💀 死の淵から這い戻る',           desc:'不死の意志で全てを取り戻す',     fn:()=>{GS.run.hp=GS.run.maxHp;GS.run.mp=GS.run.maxMp;GS.run.atk+=s;GS.run.def+=s;showChoiceResult('HP・MP全回復＋全ステータスが僅かに上昇した！');}},
+    if(s>=5)options.push(
+      {label:'💀 死の淵から這い戻る',desc:'不死の意志で全てを取り戻す',fn:()=>{GS.run.hp=GS.run.maxHp;GS.run.mp=GS.run.maxMp;GS.run.atk+=s;GS.run.def+=s;showModalResult('HP・MP全回復＋全ステータスが僅かに上昇した！');}},
     );
   }
+
   const picks=options.sort(()=>Math.random()-0.5).slice(0,3);
   picks.forEach(o=>{
     const d=document.createElement('div');
-    d.className='card';
-    const t=document.createElement('div');t.className='card-title';t.textContent=o.label;
-    const s2=document.createElement('div');s2.className='card-sub';s2.textContent=o.desc;
+    d.className='c-card';
+    const t=document.createElement('div');t.className='c-card-title';t.textContent=o.label;
+    const s2=document.createElement('div');s2.className='c-card-sub';s2.textContent=o.desc;
     d.appendChild(t);d.appendChild(s2);
     d.addEventListener('click',o.fn);
-    cl.appendChild(d);
+    list.appendChild(d);
   });
+  modal.classList.add('open');
 }
-// 選択後の結果表示 — choice-listをreplaceChildで差し替え、innerHTML禁止
-function showChoiceResult(msg){
+
+function showModalResult(msg){
   GS.run.room++;
   checkLostSoulsRecovery_normal();
-  // s-choice画面はすでにactive。choice-listの中身をremoveChildで全消去してから再構築
-  const cl=document.getElementById('choice-list');
-  while(cl.firstChild) cl.removeChild(cl.firstChild);
-  document.getElementById('choice-desc').textContent='';
-  const resultCard=document.createElement('div');
-  resultCard.className='card';
-  resultCard.style.cssText='border-color:#4ade80;background:#0f1f12;cursor:pointer;text-align:center;padding:20px 16px;';
-  const titleEl=document.createElement('div');
-  titleEl.className='card-title';
-  titleEl.style.cssText='color:#4ade80;margin-bottom:8px';
-  titleEl.textContent=msg;
-  const hintEl=document.createElement('div');
-  hintEl.style.cssText='font-size:13px;color:#888780;margin-top:4px';
-  hintEl.textContent='▶ タップして次の部屋へ';
-  resultCard.appendChild(titleEl);
-  resultCard.appendChild(hintEl);
-  resultCard.addEventListener('click',()=>{renderDungeon();goTo('s-dungeon');});
-  cl.appendChild(resultCard);
+  const list=document.getElementById('cm-list');
+  while(list.firstChild) list.removeChild(list.firstChild);
+  document.getElementById('cm-sub').textContent='';
+  document.getElementById('cm-title').textContent='';
+
+  const r=document.createElement('div');
+  r.className='c-result';
+  const m=document.createElement('div');m.className='c-result-msg';m.textContent=msg;
+  const h=document.createElement('div');h.className='c-result-hint';h.textContent='▶ タップして次の部屋へ';
+  r.appendChild(m);r.appendChild(h);
+  r.addEventListener('click',closeChoiceModal);
+  list.appendChild(r);
 }
-// 旧名で呼ばれても動くよう別名を残す
-function addChoiceResult(msg){showChoiceResult(msg);}
+
+function closeChoiceModal(){
+  document.getElementById('choice-modal').classList.remove('open');
+  renderDungeon();
+  goTo('s-dungeon');
+}
+
+// 旧来の呼び出し口（enterRoomから使われている）
+function showChoice(type){ openChoiceModal(type); }
+function addChoiceResult(msg){ showModalResult(msg); }
+function showChoiceResult(msg){ showModalResult(msg); }
+
 function showRetreatConfirm(){
   const partial=Math.floor(GS.run.runSouls*0.5);
   const partialExp=Math.floor((GS.run.runExp||0)*0.5);
-  document.getElementById('choice-desc').textContent='引き返す — 本当に撤退しますか？';
-  const cl=document.getElementById('choice-list');
-  cl.innerHTML='';
+  // モーダルを流用
+  const list=document.getElementById('cm-list');
+  while(list.firstChild) list.removeChild(list.firstChild);
+  document.getElementById('cm-title').textContent='引き返す';
+  document.getElementById('cm-sub').textContent='本当に撤退しますか？';
+
   const info=document.createElement('div');
-  info.style.cssText='background:#26211a;border:0.5px solid #5f5e5a;border-radius:10px;padding:12px 14px;font-size:13px;color:#888780;line-height:1.7';
-  info.innerHTML=`⚠️ 報酬は半分になります<br>現在の魂の欠片: <strong style="color:#e0ddd8">${GS.run.runSouls}</strong> → <strong style="color:#AFA9EC">${partial}</strong><br>現在の経験値: <strong style="color:#e0ddd8">${GS.run.runExp||0}</strong> → <strong style="color:#AFA9EC">${partialExp}</strong>`;
+  info.style.cssText='background:#26211a;border:0.5px solid #5f5e5a;border-radius:10px;padding:12px 14px;font-size:13px;color:#888780;line-height:1.8;margin-bottom:10px';
+  info.innerHTML=`⚠️ 報酬は半分になります<br>魂の欠片: <strong style="color:#e0ddd8">${GS.run.runSouls}</strong> → <strong style="color:#AFA9EC">${partial}</strong><br>経験値: <strong style="color:#e0ddd8">${GS.run.runExp||0}</strong> → <strong style="color:#AFA9EC">${partialExp}</strong>`;
+
   const btnRow=document.createElement('div');
-  btnRow.style.cssText='margin-top:10px;display:flex;gap:8px';
+  btnRow.style.cssText='display:flex;gap:8px';
   const confirmBtn=document.createElement('button');
   confirmBtn.className='btn';confirmBtn.style.color='#F09595';confirmBtn.style.borderColor='#A32D2D';
   confirmBtn.textContent='撤退する';
-  confirmBtn.addEventListener('click',retreatRun);
+  confirmBtn.addEventListener('click',()=>{
+    document.getElementById('choice-modal').classList.remove('open');
+    retreatRun();
+  });
   const cancelBtn=document.createElement('button');
   cancelBtn.className='btn btn-primary';cancelBtn.textContent='やっぱり続ける';
-  cancelBtn.addEventListener('click',()=>{renderDungeon();goTo('s-dungeon');});
+  cancelBtn.addEventListener('click',()=>{
+    document.getElementById('choice-modal').classList.remove('open');
+  });
   btnRow.appendChild(confirmBtn);btnRow.appendChild(cancelBtn);
-  cl.appendChild(info);cl.appendChild(btnRow);
-  goTo('s-choice');
+  list.appendChild(info);list.appendChild(btnRow);
+  document.getElementById('choice-modal').classList.add('open');
 }
 
 // ─── インラインアラート ───────────────────────────────────
@@ -2823,5 +2852,14 @@ if(!GS.unlocked.includes('traveler')){GS.unlocked.push('traveler');save();}
 checkAchievements(); // 既存データから達成済みの解放を確実に反映
 renderTitle();
 </script>
+
+<!-- 宝の間・休息の間 モーダル -->
+<div id="choice-modal">
+  <div id="choice-box">
+    <div class="c-title" id="cm-title"></div>
+    <div class="c-sub" id="cm-sub"></div>
+    <div id="cm-list"></div>
+  </div>
+</div>
 </body>
 </html>
