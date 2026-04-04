@@ -285,23 +285,21 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     </div>
     <!-- 達成報酬通知バー -->
     <div id="title-ach-bar" style="display:none;margin-bottom:14px">
-      <div style="background:#1a1500;border:0.5px solid #FCD34D;border-radius:10px;padding:8px 14px;font-size:12px;color:#FCD34D;cursor:pointer" onclick="goTo('s-achieve')">
+      <div id="title-ach-bar-inner" style="background:#1a1500;border:0.5px solid #FCD34D;border-radius:10px;padding:8px 14px;font-size:12px;color:#FCD34D;cursor:pointer">
         🏆 <span id="title-ach-msg">達成報酬が解放されました！</span>
       </div>
     </div>
     <div class="title-btn-grid">
-      <button class="title-btn-explore" onclick="goTo('s-floor')">⚔ 探索する</button>
-      <button class="title-btn-sub" onclick="goTo('s-unlock')">🔓 アンロック</button>
-      <button class="title-btn-sub" onclick="goTo('s-level')">⬆ キャラ強化</button>
-      <button class="title-btn-sub" onclick="goTo('s-achieve')">🏆 達成報酬</button>
-      <button class="title-btn-sub" onclick="goTo('s-library')">📖 ライブラリ</button>
+      <button class="title-btn-explore" id="btn-title-explore">⚔ 探索する</button>
+      <button class="title-btn-sub" id="btn-title-unlock">🔓 アンロック</button>
+      <button class="title-btn-sub" id="btn-title-level">⬆ キャラ強化</button>
+      <button class="title-btn-sub" id="btn-title-achieve">🏆 達成報酬</button>
+      <button class="title-btn-sub" id="btn-title-library">📖 ライブラリ</button>
     </div>
   </div>
   <div style="font-size:11px;color:#3a3a38;text-align:center;padding-bottom:8px">ランを重ねるごとに新たな力が解放される</div>
-  
-  <!-- 全てをリセット（小さく配置） -->
   <div style="text-align:center; margin-top:24px;">
-    <span style="font-size:10px; color:#4a4a4a; cursor:pointer; text-decoration:underline;" onclick="openResetModal()">全ての状態をリセット</span>
+    <span id="btn-hard-reset" style="font-size:10px; color:#4a4a4a; cursor:pointer; text-decoration:underline;">全ての状態をリセット</span>
   </div>
 </div>
 
@@ -311,7 +309,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="sub">どの深さへ潜る？</div>
   <div id="floor-list"></div>
   <hr class="divider">
-  <button class="btn" onclick="goTo('s-title')">戻る</button>
+  <button class="btn" id="btn-floor-back">戻る</button>
 </div>
 
 <!-- アンロック -->
@@ -319,18 +317,18 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title">アンロックショップ</div>
   <div class="sub">魂の欠片を消費して力を解放する</div>
   <div class="tab-bar">
-    <button class="tab active" id="utab-char" onclick="switchUnlockTab('char')">キャラ</button>
-    <button class="tab" id="utab-equip" onclick="switchUnlockTab('equip')">装備</button>
-    <button class="tab" id="utab-accessory" onclick="switchUnlockTab('accessory')">装飾品</button>
-    <button class="tab" id="utab-skill" onclick="switchUnlockTab('skill')">スキル</button>
-    <button class="tab" id="utab-system" onclick="switchUnlockTab('system')">⚙</button>
+    <button class="tab active" id="utab-char">キャラ</button>
+    <button class="tab" id="utab-equip">装備</button>
+    <button class="tab" id="utab-accessory">装飾品</button>
+    <button class="tab" id="utab-skill">スキル</button>
+    <button class="tab" id="utab-system">⚙</button>
   </div>
   <div style="font-size:12px;color:#888780;margin-bottom:8px">
     所持: <strong id="unlock-souls-disp" style="color:#e0ddd8">0</strong> 魂の欠片 &nbsp;／&nbsp; 総レベル: <strong id="totallv-unlock" style="color:#AFA9EC">0</strong>
   </div>
   <div id="unlock-list"></div>
   <hr class="divider">
-  <button class="btn" onclick="goTo('s-title')">戻る</button>
+  <button class="btn" id="btn-unlock-back">戻る</button>
 </div>
 
 <!-- キャラ強化（レベル） -->
@@ -347,12 +345,12 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div id="lv-stat-list"></div>
   <hr class="divider">
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <button class="btn" onclick="goTo('s-title')">戻る</button>
-    <button class="btn btn-danger" onclick="confirmResetBonus()">強化をリセット</button>
+    <button class="btn" id="btn-level-back">戻る</button>
+    <button class="btn btn-danger" id="btn-reset-bonus">強化をリセット</button>
     <div style="display:flex;gap:4px;margin-left:auto">
-      <button id="lv-mult-1"   class="btn lv-mult-btn active-mult" onclick="setLvMult(1)"   style="padding:5px 10px;font-size:12px">×1</button>
-      <button id="lv-mult-10"  class="btn lv-mult-btn"             onclick="setLvMult(10)"  style="padding:5px 10px;font-size:12px">×10</button>
-      <button id="lv-mult-100" class="btn lv-mult-btn"             onclick="setLvMult(100)" style="padding:5px 10px;font-size:12px">×100</button>
+      <button id="lv-mult-1"   class="btn lv-mult-btn active-mult" style="padding:5px 10px;font-size:12px">×1</button>
+      <button id="lv-mult-10"  class="btn lv-mult-btn"             style="padding:5px 10px;font-size:12px">×10</button>
+      <button id="lv-mult-100" class="btn lv-mult-btn"             style="padding:5px 10px;font-size:12px">×100</button>
     </div>
   </div>
 </div>
@@ -363,7 +361,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="sub">条件を満たすと永続的な力が解放される</div>
   <div id="achieve-list"></div>
   <hr class="divider">
-  <button class="btn" onclick="goTo('s-title')">戻る</button>
+  <button class="btn" id="btn-achieve-back">戻る</button>
 </div>
 
 <!-- キャラ選択 -->
@@ -373,8 +371,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div id="last-run-container"></div> <!-- 前回設定用 -->
   <div id="char-list"></div>
   <hr class="divider">
-  <button class="btn btn-primary" id="btn-to-equip" onclick="goTo('s-equip')" disabled>装備を選ぶ</button>
-  <button class="btn" onclick="goTo('s-title')" style="margin-left:8px">戻る</button>
+  <button class="btn btn-primary" id="btn-to-equip" disabled>装備を選ぶ</button>
+  <button class="btn" id="btn-char-back" style="margin-left:8px">戻る</button>
 </div>
 
 <!-- 装備選択 -->
@@ -388,8 +386,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div style="font-size:13px;font-weight:500;margin:10px 0 6px">💍 装飾品 <span style="font-size:11px;color:#888780">（<span id="acc-slots-label">1</span>枠）</span></div>
   <div id="accessory-list"></div>
   <hr class="divider">
-  <button class="btn btn-primary" id="btn-to-skill" onclick="goTo('s-skill')" disabled>スキルを設定する</button>
-  <button class="btn" onclick="goTo('s-char')" style="margin-left:8px">戻る</button>
+  <button class="btn btn-primary" id="btn-to-skill" disabled>スキルを設定する</button>
+  <button class="btn" id="btn-equip-back" style="margin-left:8px">戻る</button>
 </div>
 
 <!-- スキル設定 -->
@@ -397,8 +395,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title">スキル設定</div>
   <div class="sub" id="skill-screen-sub"></div>
   <div class="tab-bar">
-    <button class="tab active" id="tab-active" onclick="switchSkillTab('active')">⚡ アクティブ</button>
-    <button class="tab" id="tab-passive" onclick="switchSkillTab('passive')">🛡 パッシブ</button>
+    <button class="tab active" id="tab-active">⚡ アクティブ</button>
+    <button class="tab" id="tab-passive">🛡 パッシブ</button>
   </div>
   <div id="skill-tab-active">
     <div style="font-size:12px;color:#888780;margin-bottom:6px">MPを消費して発動する必殺技</div>
@@ -411,8 +409,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <div style="font-size:12px;color:#888780;margin-top:4px">選択中: <span id="passive-skill-count">0</span>/<span id="passive-skill-max">2</span></div>
   </div>
   <hr class="divider">
-  <button class="btn btn-primary" onclick="startRun()">ダンジョンへ</button>
-  <button class="btn" onclick="goTo('s-equip')" style="margin-left:8px">戻る</button>
+  <button class="btn btn-primary" id="btn-start-run">ダンジョンへ</button>
+  <button class="btn" id="btn-skill-back" style="margin-left:8px">戻る</button>
 </div>
 
 <!-- ダンジョン -->
@@ -472,8 +470,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   </div>
 
   <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-    <button class="btn btn-primary" onclick="enterRoom()">部屋に入る</button>
-    <button class="btn" style="font-size:13px;color:#888780" onclick="showRetreatConfirm()">引き返す</button>
+    <button class="btn btn-primary" id="btn-enter-room">部屋に入る</button>
+    <button class="btn" id="btn-retreat" style="font-size:13px;color:#888780">引き返す</button>
   </div>
 </div>
 
@@ -518,7 +516,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <!-- スキルボタンとポーズボタンをログの上に配置 -->
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0">
     <div id="active-skill-btns" style="display:flex;gap:8px;flex-wrap:wrap;flex:1"></div>
-    <button id="pause-btn" onclick="togglePause()" style="background:#2c2c2a;border:0.5px solid #5f5e5a;border-radius:8px;padding:6px 12px;font-size:12px;color:#888780;cursor:pointer;font-family:inherit;white-space:nowrap">⏸ 一時停止</button>
+    <button id="pause-btn" style="background:#2c2c2a;border:0.5px solid #5f5e5a;border-radius:8px;padding:6px 12px;font-size:12px;color:#888780;cursor:pointer;font-family:inherit;white-space:nowrap">⏸ 一時停止</button>
   </div>
   
   <div class="log" id="battle-log"></div>
@@ -545,8 +543,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     </div>
     <!-- 達成報酬解放表示 -->
     <div id="result-ach" style="display:none;margin-bottom:12px"></div>
-    <button class="btn btn-primary" onclick="goTo('s-title')" style="margin-right:8px">タイトルへ</button>
-    <button class="btn" onclick="goTo('s-char')">もう一度</button>
+    <button class="btn btn-primary" id="btn-result-title" style="margin-right:8px">タイトルへ</button>
+    <button class="btn" id="btn-result-retry">もう一度</button>
   </div>
 </div>
 
@@ -557,14 +555,14 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title">📖 ライブラリ</div>
   <div class="sub">取得済みのデータを確認する</div>
   <div class="lib-tab-bar">
-    <button class="lib-tab active" id="ltab-char"   onclick="switchLibTab('char')">キャラ</button>
-    <button class="lib-tab"        id="ltab-equip"  onclick="switchLibTab('equip')">装備</button>
-    <button class="lib-tab"        id="ltab-skill"  onclick="switchLibTab('skill')">スキル</button>
-    <button class="lib-tab"        id="ltab-enemy"  onclick="switchLibTab('enemy')">敵</button>
+    <button class="lib-tab active" id="ltab-char">キャラ</button>
+    <button class="lib-tab"        id="ltab-equip">装備</button>
+    <button class="lib-tab"        id="ltab-skill">スキル</button>
+    <button class="lib-tab"        id="ltab-enemy">敵</button>
   </div>
   <div id="library-list"></div>
   <hr class="divider">
-  <button class="btn" onclick="goTo('s-title')">戻る</button>
+  <button class="btn" id="btn-library-back">戻る</button>
 </div>
 
 <!-- ツールチップ系 -->
@@ -579,16 +577,16 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
       <h3 style="color:#F09595;margin-bottom:10px;">⚠️ 進行状況の初期化</h3>
       <p style="font-size:13px;color:#e0ddd8;margin-bottom:16px;line-height:1.5;">本当に全てのセーブデータを削除して初期化しますか？<br>この操作は取り消せません。</p>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button class="btn" onclick="closeResetModal()">キャンセル</button>
-        <button class="btn btn-danger" onclick="nextResetStep()">はい、初期化します</button>
+        <button class="btn" id="btn-rm-cancel1">キャンセル</button>
+        <button class="btn btn-danger" id="btn-rm-next">はい、初期化します</button>
       </div>
     </div>
     <div id="rm-step2" style="display:none;">
       <h3 style="color:#E24B4A;margin-bottom:10px;font-weight:bold;">🚨 最終確認</h3>
       <p style="font-size:13px;color:#F09595;margin-bottom:16px;line-height:1.5;">今まで集めた魂の欠片、アンロック状況、達成報酬など<strong>全てが完全に消去</strong>されます。<br><br>本当によろしいですか？</p>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button class="btn" onclick="closeResetModal()">キャンセル</button>
-        <button class="btn btn-danger" style="background:#A32D2D;color:#fff;" onclick="executeHardReset()">完全に消去する</button>
+        <button class="btn" id="btn-rm-cancel2">キャンセル</button>
+        <button class="btn btn-danger" id="btn-rm-execute" style="background:#A32D2D;color:#fff;">完全に消去する</button>
       </div>
     </div>
   </div>
@@ -1146,11 +1144,25 @@ function proceedToChar(){
 // ─── 強化リセット ─────────────────────────────────────────
 function confirmResetBonus(){
   const totalSpent=LV_STATS.reduce((sum,s)=>sum+(GS.lvBonus[s.key]||0)*s.costPer,0);
-  if(totalSpent === 0) return;
-  if(!confirm(`強化をすべてリセットして経験値 ${totalSpent} を返還しますか？`)) return;
-  LV_STATS.forEach(s=>GS.lvBonus[s.key]=0);
-  GS.totalLv=0;GS.exp+=totalSpent;
-  save();renderLevel();renderTitle();
+  if(totalSpent===0){showInlineAlert('強化がまだありません');return;}
+  // モーダルを流用して確認
+  const list=document.getElementById('cm-list');
+  while(list.firstChild)list.removeChild(list.firstChild);
+  document.getElementById('cm-title').textContent='強化をリセット';
+  document.getElementById('cm-sub').textContent=`経験値 ${totalSpent} を返還します。よろしいですか？`;
+  const btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:8px;margin-top:8px';
+  const okBtn=document.createElement('button');okBtn.className='btn btn-danger';okBtn.textContent='リセットする';
+  okBtn.addEventListener('click',()=>{
+    document.getElementById('choice-modal').classList.remove('open');
+    LV_STATS.forEach(s=>GS.lvBonus[s.key]=0);
+    GS.totalLv=0;GS.exp+=totalSpent;
+    save();renderLevel();renderTitle();
+  });
+  const cancelBtn=document.createElement('button');cancelBtn.className='btn btn-primary';cancelBtn.textContent='キャンセル';
+  cancelBtn.addEventListener('click',()=>document.getElementById('choice-modal').classList.remove('open'));
+  btnRow.appendChild(okBtn);btnRow.appendChild(cancelBtn);
+  list.appendChild(btnRow);
+  document.getElementById('choice-modal').classList.add('open');
 }
 
 // ─── レベル強化画面 ───────────────────────────────────────
@@ -1171,16 +1183,20 @@ function renderLevel(){
     const bonus=cur*s.valPer;
     const atCap=s.cap!==null&&bonus>=s.cap;
     const canUp=GS.exp>=s.costPer&&!atCap;
-    const canUpFull=GS.exp>=s.costPer*lvMult&&!atCap;
     const capNote=s.cap!==null?` <span style="color:#5f5e5a">(上限+${s.cap}${s.unit})</span>`:'';
     const multLabel=lvMult>1?` ×${lvMult}`:'';
-    list.innerHTML+=`<div class="lv-stat-row">
+    const row=document.createElement('div');
+    row.className='lv-stat-row';
+    row.innerHTML=`
       <div class="lv-stat-name">${s.label}${capNote}</div>
       <div class="lv-stat-cur">${atCap?`<span style="color:#F09595">+${bonus}${s.unit} MAX</span>`:`+${bonus}${s.unit}`}</div>
-      <button class="lv-stat-btn" ${canUp?'':'disabled'} onclick="lvUp('${s.key}',${s.costPer})">${'強化'}${multLabel}</button>
+      <button class="lv-stat-btn" ${canUp?'':'disabled'}>${'強化'}${multLabel}</button>
       <span class="lv-stat-cost">${s.costPer*lvMult} EXP</span>
-      <span style="font-size:11px;color:#5f5e5a;margin-left:auto">${cur}回</span>
-    </div>`;
+      <span style="font-size:11px;color:#5f5e5a;margin-left:auto">${cur}回</span>`;
+    if(canUp){
+      row.querySelector('.lv-stat-btn').addEventListener('click',()=>lvUp(s.key,s.costPer));
+    }
+    list.appendChild(row);
   });
 }
 let lvMult=1; // 強化倍率（×1/×10/×100）
@@ -1501,7 +1517,7 @@ function renderChars(){
 
       lastContainer.innerHTML = `
         <div class="sub">前回と同じ設定で挑む</div>
-        <div class="card last-run-card" onclick="quickStartRun()">
+        <div class="card last-run-card" id="btn-quick-start">
           <div style="display:flex;gap:12px;align-items:flex-start">
             <div style="font-size:28px">${c.icon}</div>
             <div style="flex:1;min-width:0">
@@ -1525,6 +1541,7 @@ function renderChars(){
         </div>
         <div class="sub">新しくキャラクターを選択</div>
       `;
+      document.getElementById('btn-quick-start').addEventListener('click', quickStartRun);
     }
   }
 
@@ -2861,7 +2878,111 @@ function showInlineAlert(msg){
 // 初期化
 // マイグレーション: travelerは初期キャラなので常に解放済み扱い
 if(!GS.unlocked.includes('traveler')){GS.unlocked.push('traveler');save();}
-checkAchievements(); // 既存データから達成済みの解放を確実に反映
+checkAchievements();
+
+// ─── ボタンイベント一括登録 ───────────────────────────────
+function initButtons(){
+  // タイトル画面
+  const btnExplore=document.getElementById('btn-title-explore');
+  if(btnExplore) btnExplore.addEventListener('click',()=>goTo('s-floor'));
+  const btnUnlock=document.getElementById('btn-title-unlock');
+  if(btnUnlock) btnUnlock.addEventListener('click',()=>goTo('s-unlock'));
+  const btnLevel=document.getElementById('btn-title-level');
+  if(btnLevel) btnLevel.addEventListener('click',()=>goTo('s-level'));
+  const btnAchieve=document.getElementById('btn-title-achieve');
+  if(btnAchieve) btnAchieve.addEventListener('click',()=>goTo('s-achieve'));
+  const btnLibrary=document.getElementById('btn-title-library');
+  if(btnLibrary) btnLibrary.addEventListener('click',()=>goTo('s-library'));
+  const btnHardReset=document.getElementById('btn-hard-reset');
+  if(btnHardReset) btnHardReset.addEventListener('click',openResetModal);
+  const titleAchBar=document.getElementById('title-ach-bar-inner');
+  if(titleAchBar) titleAchBar.addEventListener('click',()=>goTo('s-achieve'));
+
+  // 階層選択画面
+  const btnFloorBack=document.getElementById('btn-floor-back');
+  if(btnFloorBack) btnFloorBack.addEventListener('click',()=>goTo('s-title'));
+
+  // アンロック画面
+  const btnUnlockBack=document.getElementById('btn-unlock-back');
+  if(btnUnlockBack) btnUnlockBack.addEventListener('click',()=>goTo('s-title'));
+  ['char','equip','accessory','skill','system'].forEach(t=>{
+    const el=document.getElementById('utab-'+t);
+    if(el) el.addEventListener('click',()=>switchUnlockTab(t));
+  });
+
+  // レベル強化画面
+  const btnLevelBack=document.getElementById('btn-level-back');
+  if(btnLevelBack) btnLevelBack.addEventListener('click',()=>goTo('s-title'));
+  const btnResetBonus=document.getElementById('btn-reset-bonus');
+  if(btnResetBonus) btnResetBonus.addEventListener('click',confirmResetBonus);
+  const btnMult1=document.getElementById('lv-mult-1');
+  if(btnMult1) btnMult1.addEventListener('click',()=>setLvMult(1));
+  const btnMult10=document.getElementById('lv-mult-10');
+  if(btnMult10) btnMult10.addEventListener('click',()=>setLvMult(10));
+  const btnMult100=document.getElementById('lv-mult-100');
+  if(btnMult100) btnMult100.addEventListener('click',()=>setLvMult(100));
+
+  // 達成報酬画面
+  const btnAchieveBack=document.getElementById('btn-achieve-back');
+  if(btnAchieveBack) btnAchieveBack.addEventListener('click',()=>goTo('s-title'));
+
+  // キャラ選択画面
+  const btnToEquip=document.getElementById('btn-to-equip');
+  if(btnToEquip) btnToEquip.addEventListener('click',()=>goTo('s-equip'));
+  const btnCharBack=document.getElementById('btn-char-back');
+  if(btnCharBack) btnCharBack.addEventListener('click',()=>goTo('s-title'));
+
+  // 装備選択画面
+  const btnToSkill=document.getElementById('btn-to-skill');
+  if(btnToSkill) btnToSkill.addEventListener('click',()=>goTo('s-skill'));
+  const btnEquipBack=document.getElementById('btn-equip-back');
+  if(btnEquipBack) btnEquipBack.addEventListener('click',()=>goTo('s-char'));
+
+  // スキル設定画面
+  const tabActive=document.getElementById('tab-active');
+  if(tabActive) tabActive.addEventListener('click',()=>switchSkillTab('active'));
+  const tabPassive=document.getElementById('tab-passive');
+  if(tabPassive) tabPassive.addEventListener('click',()=>switchSkillTab('passive'));
+  const btnStartRun=document.getElementById('btn-start-run');
+  if(btnStartRun) btnStartRun.addEventListener('click',startRun);
+  const btnSkillBack=document.getElementById('btn-skill-back');
+  if(btnSkillBack) btnSkillBack.addEventListener('click',()=>goTo('s-equip'));
+
+  // ダンジョン画面
+  const btnEnterRoom=document.getElementById('btn-enter-room');
+  if(btnEnterRoom) btnEnterRoom.addEventListener('click',enterRoom);
+  const btnRetreat=document.getElementById('btn-retreat');
+  if(btnRetreat) btnRetreat.addEventListener('click',showRetreatConfirm);
+
+  // 一時停止ボタン
+  const pauseBtn=document.getElementById('pause-btn');
+  if(pauseBtn) pauseBtn.addEventListener('click',togglePause);
+
+  // ライブラリ画面
+  const btnLibraryBack=document.getElementById('btn-library-back');
+  if(btnLibraryBack) btnLibraryBack.addEventListener('click',()=>goTo('s-title'));
+  ['char','equip','skill','enemy'].forEach(t=>{
+    const el=document.getElementById('ltab-'+t);
+    if(el) el.addEventListener('click',()=>switchLibTab(t));
+  });
+
+  // 結果画面
+  const btnResultTitle=document.getElementById('btn-result-title');
+  if(btnResultTitle) btnResultTitle.addEventListener('click',()=>goTo('s-title'));
+  const btnResultRetry=document.getElementById('btn-result-retry');
+  if(btnResultRetry) btnResultRetry.addEventListener('click',()=>goTo('s-char'));
+
+  // ハードリセットモーダル
+  const btnRmCancel1=document.getElementById('btn-rm-cancel1');
+  if(btnRmCancel1) btnRmCancel1.addEventListener('click',closeResetModal);
+  const btnRmNext=document.getElementById('btn-rm-next');
+  if(btnRmNext) btnRmNext.addEventListener('click',nextResetStep);
+  const btnRmCancel2=document.getElementById('btn-rm-cancel2');
+  if(btnRmCancel2) btnRmCancel2.addEventListener('click',closeResetModal);
+  const btnRmExecute=document.getElementById('btn-rm-execute');
+  if(btnRmExecute) btnRmExecute.addEventListener('click',executeHardReset);
+}
+initButtons();
 renderTitle();
 </script>
 
