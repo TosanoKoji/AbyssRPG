@@ -263,7 +263,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title-hero">
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604051232</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604051322</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1339,6 +1339,8 @@ function renderUnlock(){
   }
   UNLOCK_GROUPS[unlockTab].forEach(u=>{
     const done=isUnlocked(u.id);
+    // キャラタブ: achReqが未達成かつ未解放のキャラはネタバレ防止のため非表示
+    if(unlockTab==='char'&&u.achReq&&!GS.achDone.includes(u.achReq)&&!done) return;
     const lvOk=!u.lvReq||GS.totalLv>=u.lvReq;
     // 達成報酬条件チェック
     const achOk=!u.achReq||GS.achDone.includes(u.achReq);
@@ -2317,6 +2319,7 @@ function addLog(msg,cls=''){
   if(lg.children.length>25)lg.removeChild(lg.lastChild);
 }
 
+const _activeDmg={'enemy-sprite':0,'hero-sprite':0};
 function showDmg(targetId,val,isHeal,isSkill,isCrit){
   const area=document.getElementById('battle-area');
   const el=document.createElement('div');
@@ -2326,9 +2329,15 @@ function showDmg(targetId,val,isHeal,isSkill,isCrit){
   const tgt=document.getElementById(targetId);
   const rect=tgt.getBoundingClientRect();
   const aRect=area.getBoundingClientRect();
-  const jitter=(Math.random()-0.5)*20;
-  el.style.left=(rect.left-aRect.left+rect.width/2-16+jitter)+'px';
-  el.style.top=(rect.top-aRect.top-10)+'px';
+  // 連続攻撃時の重なり防止: カウントに応じてX/Yをずらす
+  const n=_activeDmg[targetId]||0;
+  _activeDmg[targetId]=n+1;
+  setTimeout(()=>{_activeDmg[targetId]=Math.max(0,(_activeDmg[targetId]||1)-1);},950);
+  const xOff=(n%3-1)*26;      // -26 / 0 / +26 で横方向にずらす
+  const yOff=Math.floor(n/3)*(-22);  // 3つごとに上にずらす
+  const jitter=(Math.random()-0.5)*10;
+  el.style.left=(rect.left-aRect.left+rect.width/2-16+jitter+xOff)+'px';
+  el.style.top=(rect.top-aRect.top-10+yOff)+'px';
   area.appendChild(el);
   setTimeout(()=>el.remove(),900);
 }
