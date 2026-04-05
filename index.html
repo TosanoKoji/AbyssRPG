@@ -676,7 +676,8 @@ const CHARS={
   paladin:    {id:'paladin',    name:'聖騎士',   icon:'🛡', hp:150,atk:20,def:11,mp:70, maxMp:70,  crit:8, dodge:5,  hdodge:10, activeSlots:2, accSlots:2, desc:'超高耐久。装飾品2枠',lvReq:5},
   necromancer:{id:'necromancer',name:'死霊術師', icon:'💀', hp:65, atk:32,def:2, mp:140,maxMp:140, crit:18,dodge:8,  hdodge:12, activeSlots:3, accSlots:1, desc:'最高MP・高火力。アクティブ3枠',lvReq:15},
   samurai:    {id:'samurai',    name:'侍',       icon:'⚔️', hp:105,atk:26,def:7, mp:50, maxMp:50,  crit:15,dodge:10, hdodge:15, activeSlots:3, accSlots:1, desc:'反撃の達人。被弾時に反撃する武士。アクティブ3枠',lvReq:25,unlockCond:'achievement'},
-  angel:      {id:'angel',      name:'天使',     icon:'👼', hp:100,atk:18,def:6, mp:90, maxMp:90,  crit:12,dodge:8,  hdodge:10, activeSlots:3, accSlots:1, desc:'地下5階クリアで突然降臨。スキル連鎖の奇跡を持つ',unlockCond:'achievement'}
+  angel:      {id:'angel',      name:'天使',     icon:'👼', hp:100,atk:18,def:6, mp:90, maxMp:90,  crit:12,dodge:8,  hdodge:10, activeSlots:3, accSlots:1, desc:'地下5階クリアで突然降臨。スキル連鎖の奇跡を持つ',unlockCond:'achievement'},
+  ninja:      {id:'ninja',      name:'忍者',     icon:'🥷', hp:75, atk:18,def:2, mp:65, maxMp:65,  crit:20,dodge:25, hdodge:35, activeSlots:3, accSlots:1, desc:'二刀流の暗殺者。通常攻撃2回・高回避',unlockCond:'achievement'}
 };
 const WEAPONS={
   sword:    {id:'sword',    name:'錆びた剣',   icon:'🗡️', atk:5, mp:0,  crit:0, desc:'古びた剣。基本の一撃', anim:'slash'},
@@ -718,7 +719,8 @@ const UNLOCK_GROUPS={
     {id:'rogue',       label:'盗賊',     cost:20,   sub:'会心・回避最高・アクティブ3枠'},
     {id:'paladin',     label:'聖騎士',   cost:30,   sub:'超高耐久・装飾品2枠',      lvReq:5},
     {id:'necromancer', label:'死霊術師', cost:40,   sub:'最高MP・高火力スペシャリスト',lvReq:15},
-    {id:'samurai',     label:'侍',       cost:1000, sub:'反撃の達人・被弾時反撃',    achReq:'ach_samurai_unlock', lvReq:25}
+    {id:'samurai',     label:'侍',       cost:1000, sub:'反撃の達人・被弾時反撃',    achReq:'ach_samurai_unlock', lvReq:25},
+    {id:'ninja',       label:'忍者',     cost:50000,sub:'二刀流で2連撃・高回避',      achReq:'ach_ninja_unlock'}
   ],
   equip:[
     {id:'axe',       label:'呪われた斧',    cost:12, sub:'攻撃+10'},
@@ -825,6 +827,8 @@ const UNIQUE_SKILLS={
   angel_miracle:     {id:'angel_miracle',     charId:'angel',       name:'奇跡',            icon:'✨', initial:true,  desc:'スキル発動時50%の確率でそのスキルを1回追加発動（MP消費1.5回分）'},
   traveler_journey:  {id:'traveler_journey',  charId:'traveler',    name:'旅',            icon:'🌍', initial:false, desc:'アクティブ・パッシブスキルが各6枠に、装飾品8つ装備可能、アイコン変化'},
   traveler_growth:   {id:'traveler_growth',   charId:'traveler',    name:'成長',           icon:'🌱', initial:true,  desc:'敵撃破時の取得魂とEXPが1.1倍になる'},
+  ninja_dual:        {id:'ninja_dual',        charId:'ninja',       name:'二刀流',         icon:'🥷', initial:true,  desc:'通常攻撃が必ず2回（各75%威力）。それぞれ会心判定あり'},
+  ninja_deathblow:   {id:'ninja_deathblow',   charId:'ninja',       name:'必殺',           icon:'💀', initial:false, desc:'会心ダメージ時1%で敵を即死（ボス無効）'}
 };
 
 // ─── システム開放定義 ─────────────────────────────────────
@@ -868,6 +872,8 @@ const ACHIEVEMENTS=[
   {id:'ach_floor3_acc',    title:'溶岩の収穫者',  cond:{kind:'floorClearId',val:3},                       reward:{type:'unlockSystem',id:'acc_slot_up'},         icon:'💍', desc:'地下3階「灼熱の熔岩窟」クリアで装飾品枠+1'},
   {id:'ach_floor5_acc',    title:'終焉の装飾者',  cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockSystem',id:'acc_slot_up2'},        icon:'💎', desc:'地下5階「終焉の間」クリアで装飾品枠+1'},
   {id:'ach_traveler_3clear',title:'旅の証',       cond:{kind:'floorClear',  val:3, charId:'traveler'},    reward:{type:'unlockWeapon',id:'companion'},           icon:'🧭', desc:'トラベラーで任意のステージを3回クリア — アンロックショップに「相棒」が登場'},
+  {id:'ach_ninja_unlock',   title:'忍者の覚醒',   cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockChar',  id:'ninja'},               icon:'🥷', desc:'地下5階「終焉の間」クリアでアンロックショップに忍者が登場'},
+  {id:'ach_ninja_5clear',   title:'忍の道',       cond:{kind:'floorClear',  val:5, charId:'ninja'},       reward:{type:'uniqueSkill', id:'ninja_deathblow'},      icon:'🥷', desc:'忍者で任意のステージを5回クリア'},
 ];
 
 const ENEMIES=[
@@ -2398,6 +2404,9 @@ function autoBattleTick(){
   const shadowbladeActive=GS.run.shadowbladeReady||false;
   if(shadowbladeActive) GS.run.shadowbladeReady=false;
   heroAtk=Math.floor(heroAtk*(GS.run.dmgBonus||1));
+  // 二刀流: 各攻撃を75%威力に調整
+  const hasDual=(GS.run.uniqueSkills||[]).includes('ninja_dual');
+  if(hasDual) heroAtk=Math.floor(heroAtk*0.75);
   const critChance=(GS.run.crit+(hasCritUp?20:0))/100;
   const isCrit=shadowbladeActive||Math.random()<critChance;
   
@@ -2438,6 +2447,26 @@ function autoBattleTick(){
     if(isCrit)showCritFlash();
     addLog((isCrit?'💥会心！':'')+`${heroDmg}ダメージ`,isCrit?'log-crit':'log-enemy-dmg');
     applyVampiric(heroDmg,bState);
+    // 必殺: 会心時1%で即死（ボス無効）
+    if(isCrit&&!bState.isBoss&&(GS.run.uniqueSkills||[]).includes('ninja_deathblow')&&Math.random()<0.01){
+      bState.enemyHp=0;addLog('💀 必殺発動！ 即死！','log-skill');showSkillFlash();
+    }
+    // 二刀流: 2回目の攻撃
+    if(!bState.over&&bState.enemyHp>0&&hasDual){
+      const isCrit2=Math.random()<critChance;
+      let rawDmg2=heroAtk+(isCrit2?Math.floor(heroAtk*0.5):0);
+      if(isCrit2&&GS.run.weaponId==='axe') rawDmg2+=15;
+      const heroDmg2=randVar(Math.max(1,rawDmg2-bState.enemy.def));
+      bState.enemyHp-=heroDmg2;
+      showDmg('enemy-sprite',heroDmg2,false,false,isCrit2);
+      if(isCrit2)showCritFlash();
+      addLog((isCrit2?'💥会心！':'')+'二刀流 2撃目 '+heroDmg2+'ダメージ',isCrit2?'log-crit':'log-enemy-dmg');
+      applyVampiric(heroDmg2,bState);
+      // 必殺判定（2回目）
+      if(isCrit2&&!bState.isBoss&&(GS.run.uniqueSkills||[]).includes('ninja_deathblow')&&Math.random()<0.01){
+        bState.enemyHp=0;addLog('💀 必殺発動！ 即死！','log-skill');showSkillFlash();
+      }
+    }
 
     // はやぶさの羽: 通常攻撃で発動チェック
     if(!bState.over&&bState.enemyHp>0){

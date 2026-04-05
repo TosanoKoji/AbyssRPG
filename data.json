@@ -11,7 +11,8 @@
     "paladin":     {"id":"paladin",    "name":"聖騎士",   "icon":"🛡", "hp":150,"atk":20,"def":11,"mp":70, "maxMp":70,  "crit":8, "dodge":5, "hdodge":10,"activeSlots":2,"accSlots":2,"desc":"超高耐久。装飾品2枠","unlockCost":30,"lvReq":5},
     "necromancer": {"id":"necromancer","name":"死霊術師", "icon":"💀", "hp":65, "atk":32,"def":2, "mp":140,"maxMp":140, "crit":18,"dodge":8, "hdodge":12,"activeSlots":3,"accSlots":1,"desc":"最高MP・高火力。アクティブ3枠","unlockCost":40,"lvReq":15},
     "samurai":     {"id":"samurai",    "name":"侍",       "icon":"⚔️", "hp":105,"atk":26,"def":7, "mp":50, "maxMp":50,  "crit":15,"dodge":10,"hdodge":15,"activeSlots":3,"accSlots":1,"desc":"反撃の達人。被弾時に反撃する武士。アクティブ3枠","unlockCost":1000,"lvReq":25,"unlockCond":"achievement"},
-    "angel":       {"id":"angel",      "name":"天使",     "icon":"👼", "hp":100,"atk":18,"def":6, "mp":90, "maxMp":90,  "crit":12,"dodge":8, "hdodge":10,"activeSlots":3,"accSlots":1,"desc":"地下5階クリアで突然降臨。スキル連鎖の奇跡を持つ","unlockCond":"achievement"}
+    "angel":       {"id":"angel",      "name":"天使",     "icon":"👼", "hp":100,"atk":18,"def":6, "mp":90, "maxMp":90,  "crit":12,"dodge":8, "hdodge":10,"activeSlots":3,"accSlots":1,"desc":"地下5階クリアで突然降臨。スキル連鎖の奇跡を持つ","unlockCond":"achievement"},
+    "ninja":       {"id":"ninja",      "name":"忍者",     "icon":"🥷", "hp":75, "atk":18,"def":2, "mp":65, "maxMp":65,  "crit":20,"dodge":25,"hdodge":35,"activeSlots":3,"accSlots":1,"desc":"二刀流の暗殺者。通常攻撃2回・高回避","unlockCond":"achievement"}
   },
   "weapons": {
     "sword":    {"id":"sword",    "name":"錆びた剣",  "icon":"🗡️","atk":5,  "mp":0, "crit":0,"desc":"古びた剣。基本の一撃","anim":"slash","unlockCost":0},
@@ -87,7 +88,9 @@
     "samurai_counter":   {"id":"samurai_counter",   "charId":"samurai",     "name":"反撃",         "icon":"⚔️","initial":true, "desc":"被弾時10%の確率で攻撃を無効化しATK×2のダメージを与える"},
     "angel_miracle":     {"id":"angel_miracle",     "charId":"angel",       "name":"奇跡",         "icon":"✨","initial":true, "desc":"スキル発動時50%の確率でそのスキルを1回追加発動（MP消費1.5回分）"},
     "traveler_journey":  {"id":"traveler_journey",  "charId":"traveler",    "name":"旅",           "icon":"🌍","initial":false,"desc":"アクティブ・パッシブスキルが各6枠に、装飾品8つ装備可能、アイコン変化","unlockCond":"宇宙クリア"},
-    "traveler_growth":   {"id":"traveler_growth",   "charId":"traveler",    "name":"成長",         "icon":"🌱","initial":true, "desc":"敵撃破時の取得魂とEXPが1.1倍になる"}
+    "traveler_growth":   {"id":"traveler_growth",   "charId":"traveler",    "name":"成長",         "icon":"🌱","initial":true, "desc":"敵撃破時の取得魂とEXPが1.1倍になる"},
+    "ninja_dual":        {"id":"ninja_dual",        "charId":"ninja",       "name":"二刀流",        "icon":"🥷","initial":true, "desc":"通常攻撃が必ず2回（各75%威力）。それぞれ会心判定あり"},
+    "ninja_deathblow":   {"id":"ninja_deathblow",   "charId":"ninja",       "name":"必殺",          "icon":"💀","initial":false,"desc":"会心ダメージ時1%で敵を即死（ボス無効）"}
   },
   "floors": [
     {"id":1,"name":"地下1階","sub":"奈落の入口","icon":"🪨","color":"#888780","soulsMult":1.0,"expMult":1.0,
