@@ -263,7 +263,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title-hero">
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604051322</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604051333</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -872,7 +872,7 @@ const ACHIEVEMENTS=[
   {id:'ach_floor5_active', title:'終焉の踏破',    cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockSystem',id:'active_slot_up2'},    icon:'💀', desc:'地下5階「終焉の間」クリアでアクティブ枠+1'},
   {id:'ach_floor3_acc',    title:'溶岩の収穫者',  cond:{kind:'floorClearId',val:3},                       reward:{type:'unlockSystem',id:'acc_slot_up'},         icon:'💍', desc:'地下3階「灼熱の熔岩窟」クリアで装飾品枠+1'},
   {id:'ach_floor5_acc',    title:'終焉の装飾者',  cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockSystem',id:'acc_slot_up2'},        icon:'💎', desc:'地下5階「終焉の間」クリアで装飾品枠+1'},
-  {id:'ach_traveler_3clear',title:'旅の証',       cond:{kind:'floorClear',  val:3, charId:'traveler'},    reward:{type:'unlockWeapon',id:'companion'},           icon:'🧭', desc:'トラベラーで任意のステージを3回クリア — アンロックショップに「相棒」が登場'},
+  {id:'ach_traveler_3clear',title:'旅の証',       cond:{kind:'travelerJourneyClear',val:3},               reward:{type:'unlockWeapon',id:'companion'},           icon:'🧭', desc:'「旅」スキル習得後にトラベラーで任意のステージを3回クリア — アンロックショップに「相棒」が登場'},
   {id:'ach_ninja_unlock',   title:'忍者の覚醒',   cond:{kind:'angelAllFloors'},                            reward:{type:'unlockChar',  id:'ninja'},               icon:'🥷', desc:'天使で地下1〜5階をすべてクリアするとアンロックショップに忍者が登場'},
   {id:'ach_ninja_5clear',   title:'忍の道',       cond:{kind:'floorClear',  val:5, charId:'ninja'},       reward:{type:'uniqueSkill', id:'ninja_deathblow'},      icon:'🥷', desc:'忍者で任意のステージを5回クリア'},
 ];
@@ -958,6 +958,9 @@ function checkAchievements(){
     else if(a.cond.kind==='angelAllFloors'){
       prog=angelAllFloorsCleared()?1:0;target=1;
     }
+    else if(a.cond.kind==='travelerJourneyClear'){
+      prog=GS.achStats.travelerJourneyClears||0;
+    }
     else if(a.cond.kind==='skillUse')   prog=(st.skillUses||{})[a.cond.charId]||0;
     else if(a.cond.kind==='dodgeCount'){
       // charIdが指定されている場合はそのキャラのカウントのみ
@@ -1019,6 +1022,7 @@ function getAchProgress(a){
   }
   if(a.cond.kind==='floorClearId') return GS.clearedFloors.includes(a.cond.val)?1:0;
   if(a.cond.kind==='angelAllFloors') return angelAllFloorsCleared()?1:0;
+  if(a.cond.kind==='travelerJourneyClear') return GS.achStats.travelerJourneyClears||0;
   if(a.cond.kind==='skillUse')   return (st.skillUses||{})[a.cond.charId]||0;
   if(a.cond.kind==='dodgeCount'){
     if(a.cond.charId) return (st.dodgeByChar||{})[a.cond.charId]||0;
@@ -1082,6 +1086,8 @@ function renderAchievements(){
     }
     // 宇宙クリア前はトラベラーの「旅」スキル解放情報も非表示
     if(!done&&a.reward.type==='uniqueSkill'&&a.reward.id==='traveler_journey'&&!GS.unlockedUniqueSkills.includes('traveler_journey')) return;
+    // 「旅の証」は旅スキル習得後のみ表示
+    if(!done&&a.id==='ach_traveler_3clear'&&!GS.unlockedUniqueSkills.includes('traveler_journey')) return;
     const prog=getAchProgress(a);
     const target=a.cond.val||1;
     const pct=Math.min(100,Math.floor(prog/target*100));
@@ -1529,6 +1535,7 @@ function renderLibrary(){
           <span class="badge badge-amber">ATK ${e.atk}</span>
           <span class="badge badge-blue">DEF ${e.def}</span>
           <span class="badge badge-gray">魂 ${e.souls}</span>
+          <span class="badge badge-green">EXP ${e.exp}</span>
         </div>
         ${specialsHtml}
         ${noteHtml}
@@ -2821,6 +2828,10 @@ function endRun(won){
     if(cid==='angel'){
       GS.achStats.angelCleared=GS.achStats.angelCleared||[];
       if(!GS.achStats.angelCleared.includes(fid)) GS.achStats.angelCleared.push(fid);
+    }
+    // 旅の証: 旅スキル習得済みトラベラーのクリア数を記録
+    if(cid==='traveler'&&GS.unlockedUniqueSkills.includes('traveler_journey')){
+      GS.achStats.travelerJourneyClears=(GS.achStats.travelerJourneyClears||0)+1;
     }
   }
   GS.achStats.dodgeCount=(GS.achStats.dodgeCount||0)+(GS.run.dodgeCount||0);
