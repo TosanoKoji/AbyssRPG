@@ -873,7 +873,7 @@ const ACHIEVEMENTS=[
   {id:'ach_floor3_acc',    title:'溶岩の収穫者',  cond:{kind:'floorClearId',val:3},                       reward:{type:'unlockSystem',id:'acc_slot_up'},         icon:'💍', desc:'地下3階「灼熱の熔岩窟」クリアで装飾品枠+1'},
   {id:'ach_floor5_acc',    title:'終焉の装飾者',  cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockSystem',id:'acc_slot_up2'},        icon:'💎', desc:'地下5階「終焉の間」クリアで装飾品枠+1'},
   {id:'ach_traveler_3clear',title:'旅の証',       cond:{kind:'floorClear',  val:3, charId:'traveler'},    reward:{type:'unlockWeapon',id:'companion'},           icon:'🧭', desc:'トラベラーで任意のステージを3回クリア — アンロックショップに「相棒」が登場'},
-  {id:'ach_ninja_unlock',   title:'忍者の覚醒',   cond:{kind:'floorClearId',val:5},                       reward:{type:'unlockChar',  id:'ninja'},               icon:'🥷', desc:'地下5階「終焉の間」クリアでアンロックショップに忍者が登場'},
+  {id:'ach_ninja_unlock',   title:'忍者の覚醒',   cond:{kind:'angelAllFloors'},                            reward:{type:'unlockChar',  id:'ninja'},               icon:'🥷', desc:'天使で地下1〜5階をすべてクリアするとアンロックショップに忍者が登場'},
   {id:'ach_ninja_5clear',   title:'忍の道',       cond:{kind:'floorClear',  val:5, charId:'ninja'},       reward:{type:'uniqueSkill', id:'ninja_deathblow'},      icon:'🥷', desc:'忍者で任意のステージを5回クリア'},
 ];
 
@@ -955,6 +955,9 @@ function checkAchievements(){
       // 特定の階層IDを踏破したか（clearedFloorsを使用）
       prog=GS.clearedFloors.includes(a.cond.val)?1:0;target=1;
     }
+    else if(a.cond.kind==='angelAllFloors'){
+      prog=angelAllFloorsCleared()?1:0;target=1;
+    }
     else if(a.cond.kind==='skillUse')   prog=(st.skillUses||{})[a.cond.charId]||0;
     else if(a.cond.kind==='dodgeCount'){
       // charIdが指定されている場合はそのキャラのカウントのみ
@@ -1015,6 +1018,7 @@ function getAchProgress(a){
     return st.maxFloorCleared||0;
   }
   if(a.cond.kind==='floorClearId') return GS.clearedFloors.includes(a.cond.val)?1:0;
+  if(a.cond.kind==='angelAllFloors') return angelAllFloorsCleared()?1:0;
   if(a.cond.kind==='skillUse')   return (st.skillUses||{})[a.cond.charId]||0;
   if(a.cond.kind==='dodgeCount'){
     if(a.cond.charId) return (st.dodgeByChar||{})[a.cond.charId]||0;
@@ -1071,6 +1075,13 @@ function renderAchievements(){
   });
   sorted.forEach(a=>{
     const done=GS.achDone.includes(a.id);
+    // 未解放キャラ関連の達成はネタバレ防止のため非表示（達成済みは除く）
+    if(!done){
+      if(a.cond.charId&&!GS.unlocked.includes(a.cond.charId)) return;
+      if(a.reward.type==='unlockChar'&&!GS.unlocked.includes(a.reward.id)) return;
+    }
+    // 宇宙クリア前はトラベラーの「旅」スキル解放情報も非表示
+    if(!done&&a.reward.type==='uniqueSkill'&&a.reward.id==='traveler_journey'&&!GS.unlockedUniqueSkills.includes('traveler_journey')) return;
     const prog=getAchProgress(a);
     const target=a.cond.val||1;
     const pct=Math.min(100,Math.floor(prog/target*100));
@@ -1103,23 +1114,19 @@ function renderAchievements(){
 }
 
 // ─── 階層選択 ─────────────────────────────────────────────
+function angelAllFloorsCleared(){
+  const ac=GS.achStats?.angelCleared||[];
+  return ac.includes(1)&&ac.includes(2)&&ac.includes(3)&&ac.includes(4)&&ac.includes(5);
+}
 function isFloorVisible(f){
   if(!f.unlockReq) return true;
-  if(f.unlockReq.angelAllFloors){
-    // 天使で地下1〜5階を全クリアが条件
-    return GS.clearedFloors.includes(1)&&GS.clearedFloors.includes(2)&&
-           GS.clearedFloors.includes(3)&&GS.clearedFloors.includes(4)&&
-           GS.clearedFloors.includes(5);
-  }
+  if(f.unlockReq.angelAllFloors) return angelAllFloorsCleared();
   if(f.unlockReq.clearedFloor) return GS.clearedFloors.includes(f.unlockReq.clearedFloor);
   return true;
 }
 function isFloorUnlocked(f){
   if(!f.unlockReq) return true;
-  if(f.unlockReq.angelAllFloors){
-    // 天使で全5階クリア（現状：全5階クリア済みかつ天使が解放されているか）
-    return isFloorVisible(f);
-  }
+  if(f.unlockReq.angelAllFloors) return angelAllFloorsCleared();
   if(f.unlockReq.clearedFloor) return GS.clearedFloors.includes(f.unlockReq.clearedFloor);
   return true;
 }
@@ -2801,6 +2808,11 @@ function endRun(won){
     GS.achStats.floorClears=GS.achStats.floorClears||{};
     GS.achStats.floorClears[cid]=(GS.achStats.floorClears[cid]||0)+1;
     GS.achStats.maxFloorCleared=Math.max(GS.achStats.maxFloorCleared||0, fid);
+    // 天使でのフロアクリアを記録（地上解放条件に使用）
+    if(cid==='angel'){
+      GS.achStats.angelCleared=GS.achStats.angelCleared||[];
+      if(!GS.achStats.angelCleared.includes(fid)) GS.achStats.angelCleared.push(fid);
+    }
   }
   GS.achStats.dodgeCount=(GS.achStats.dodgeCount||0)+(GS.run.dodgeCount||0);
   GS.achStats.dodgeByChar=GS.achStats.dodgeByChar||{};
