@@ -4,310 +4,2669 @@
     "source": "Notion + index.html"
   },
   "chars": {
-    "traveler":    {"id":"traveler",   "name":"トラベラー","icon":"🧭","hp":100,"atk":16,"def":6, "mp":80, "maxMp":80,  "crit":8, "dodge":5, "hdodge":8, "activeSlots":3,"accSlots":1,"desc":"初期キャラ。平凡な能力だが旅の果てに特別な力が宿る"},
-    "warrior":     {"id":"warrior",    "name":"戦士",     "icon":"⚔", "hp":120,"atk":18,"def":8, "mp":60, "maxMp":60,  "crit":10,"dodge":0, "hdodge":0, "activeSlots":2,"accSlots":1,"desc":"高HPと防御力。アクティブ2枠"},
-    "mage":        {"id":"mage",       "name":"魔術師",   "icon":"✦", "hp":70, "atk":28,"def":3, "mp":120,"maxMp":120, "crit":15,"dodge":5, "hdodge":8, "activeSlots":3,"accSlots":1,"desc":"高火力・高MP。アクティブ3枠","unlockCost":15},
-    "rogue":       {"id":"rogue",      "name":"盗賊",     "icon":"◆", "hp":90, "atk":22,"def":5, "mp":80, "maxMp":80,  "crit":20,"dodge":20,"hdodge":30,"activeSlots":3,"accSlots":1,"desc":"会心・回避最高。アクティブ3枠","unlockCost":20},
-    "paladin":     {"id":"paladin",    "name":"聖騎士",   "icon":"🛡", "hp":150,"atk":20,"def":11,"mp":70, "maxMp":70,  "crit":8, "dodge":5, "hdodge":10,"activeSlots":2,"accSlots":2,"desc":"超高耐久。装飾品2枠","unlockCost":30,"lvReq":5},
-    "necromancer": {"id":"necromancer","name":"死霊術師", "icon":"💀", "hp":65, "atk":32,"def":2, "mp":140,"maxMp":140, "crit":18,"dodge":8, "hdodge":12,"activeSlots":3,"accSlots":1,"desc":"最高MP・高火力。アクティブ3枠","unlockCost":40,"lvReq":15},
-    "samurai":     {"id":"samurai",    "name":"侍",       "icon":"⚔️", "hp":105,"atk":26,"def":7, "mp":50, "maxMp":50,  "crit":15,"dodge":10,"hdodge":15,"activeSlots":3,"accSlots":1,"desc":"反撃の達人。被弾時に反撃する武士。アクティブ3枠","unlockCost":1000,"lvReq":25,"unlockCond":"achievement"},
-    "angel":       {"id":"angel",      "name":"天使",     "icon":"👼", "hp":100,"atk":18,"def":6, "mp":90, "maxMp":90,  "crit":12,"dodge":8, "hdodge":10,"activeSlots":3,"accSlots":1,"desc":"地下5階クリアで突然降臨。スキル連鎖の奇跡を持つ","unlockCond":"achievement"},
-    "ninja":       {"id":"ninja",      "name":"忍者",     "icon":"🥷", "hp":75, "atk":18,"def":2, "mp":65, "maxMp":65,  "crit":20,"dodge":25,"hdodge":35,"activeSlots":3,"accSlots":1,"desc":"二刀流の暗殺者。通常攻撃2回・高回避","unlockCond":"achievement"}
+    "traveler": {
+      "id": "traveler",
+      "name": "トラベラー",
+      "icon": "🧭",
+      "hp": 100,
+      "atk": 16,
+      "def": 6,
+      "mp": 80,
+      "maxMp": 80,
+      "crit": 8,
+      "dodge": 5,
+      "hdodge": 8,
+      "activeSlots": 3,
+      "accSlots": 1,
+      "desc": "初期キャラ。平凡な能力だが旅の果てに特別な力が宿る",
+      "lvGrowth": {
+        "hp": "B",
+        "atk": "B",
+        "def": "B",
+        "mp": "B",
+        "crit": "B",
+        "dodge": "B"
+      }
+    },
+    "warrior": {
+      "id": "warrior",
+      "name": "戦士",
+      "icon": "⚔",
+      "hp": 120,
+      "atk": 18,
+      "def": 8,
+      "mp": 60,
+      "maxMp": 60,
+      "crit": 10,
+      "dodge": 0,
+      "hdodge": 0,
+      "activeSlots": 2,
+      "accSlots": 1,
+      "desc": "高HPと防御力。アクティブ2枠",
+      "lvGrowth": {
+        "hp": "S",
+        "atk": "A",
+        "def": "S",
+        "mp": "D",
+        "crit": "C",
+        "dodge": "C"
+      }
+    },
+    "mage": {
+      "id": "mage",
+      "name": "魔術師",
+      "icon": "✦",
+      "hp": 70,
+      "atk": 28,
+      "def": 3,
+      "mp": 120,
+      "maxMp": 120,
+      "crit": 15,
+      "dodge": 5,
+      "hdodge": 8,
+      "activeSlots": 3,
+      "accSlots": 1,
+      "desc": "高火力・高MP。アクティブ3枠",
+      "unlockCost": 15,
+      "lvGrowth": {
+        "hp": "D",
+        "atk": "S",
+        "def": "D",
+        "mp": "S",
+        "crit": "A",
+        "dodge": "C"
+      }
+    },
+    "rogue": {
+      "id": "rogue",
+      "name": "盗賊",
+      "icon": "◆",
+      "hp": 90,
+      "atk": 22,
+      "def": 5,
+      "mp": 80,
+      "maxMp": 80,
+      "crit": 20,
+      "dodge": 20,
+      "hdodge": 30,
+      "activeSlots": 3,
+      "accSlots": 1,
+      "desc": "会心・回避最高。アクティブ3枠",
+      "unlockCost": 20,
+      "lvGrowth": {
+        "hp": "C",
+        "atk": "A",
+        "def": "C",
+        "mp": "C",
+        "crit": "S",
+        "dodge": "S"
+      }
+    },
+    "paladin": {
+      "id": "paladin",
+      "name": "聖騎士",
+      "icon": "🛡",
+      "hp": 150,
+      "atk": 20,
+      "def": 11,
+      "mp": 70,
+      "maxMp": 70,
+      "crit": 8,
+      "dodge": 5,
+      "hdodge": 10,
+      "activeSlots": 2,
+      "accSlots": 2,
+      "desc": "超高耐久。装飾品2枠",
+      "unlockCost": 30,
+      "lvReq": 5,
+      "lvGrowth": {
+        "hp": "S",
+        "atk": "C",
+        "def": "S",
+        "mp": "A",
+        "crit": "D",
+        "dodge": "C"
+      }
+    },
+    "necromancer": {
+      "id": "necromancer",
+      "name": "死霊術師",
+      "icon": "💀",
+      "hp": 65,
+      "atk": 32,
+      "def": 2,
+      "mp": 140,
+      "maxMp": 140,
+      "crit": 18,
+      "dodge": 8,
+      "hdodge": 12,
+      "activeSlots": 3,
+      "accSlots": 1,
+      "desc": "最高MP・高火力。アクティブ3枠",
+      "unlockCost": 40,
+      "lvReq": 15,
+      "lvGrowth": {
+        "hp": "C",
+        "atk": "S",
+        "def": "D",
+        "mp": "S",
+        "crit": "A",
+        "dodge": "D"
+      }
+    },
+    "samurai": {
+      "id": "samurai",
+      "name": "侍",
+      "icon": "⚔️",
+      "hp": 105,
+      "atk": 26,
+      "def": 7,
+      "mp": 50,
+      "maxMp": 50,
+      "crit": 15,
+      "dodge": 10,
+      "hdodge": 15,
+      "activeSlots": 3,
+      "accSlots": 1,
+      "desc": "反撃の達人。被弾時に反撃する武士。アクティブ3枠",
+      "unlockCost": 1000,
+      "lvReq": 25,
+      "unlockCond": "achievement",
+      "lvGrowth": {
+        "hp": "B",
+        "atk": "S",
+        "def": "B",
+        "mp": "D",
+        "crit": "S",
+        "dodge": "A"
+      }
+    },
+    "angel": {
+      "id": "angel",
+      "name": "天使",
+      "icon": "👼",
+      "hp": 100,
+      "atk": 18,
+      "def": 6,
+      "mp": 90,
+      "maxMp": 90,
+      "crit": 12,
+      "dodge": 8,
+      "hdodge": 10,
+      "activeSlots": 3,
+      "accSlots": 1,
+      "desc": "地下5階クリアで突然降臨。スキル連鎖の奇跡を持つ",
+      "unlockCond": "achievement",
+      "lvGrowth": {
+        "hp": "B",
+        "atk": "C",
+        "def": "A",
+        "mp": "A",
+        "crit": "B",
+        "dodge": "S"
+      }
+    },
+    "ninja": {
+      "id": "ninja",
+      "name": "忍者",
+      "icon": "🥷",
+      "hp": 75,
+      "atk": 18,
+      "def": 2,
+      "mp": 65,
+      "maxMp": 65,
+      "crit": 20,
+      "dodge": 25,
+      "hdodge": 35,
+      "activeSlots": 3,
+      "accSlots": 1,
+      "desc": "二刀流の暗殺者。通常攻撃2回・高回避",
+      "unlockCond": "achievement",
+      "lvGrowth": {
+        "hp": "D",
+        "atk": "A",
+        "def": "D",
+        "mp": "C",
+        "crit": "A",
+        "dodge": "S"
+      }
+    }
   },
   "weapons": {
-    "sword":    {"id":"sword",    "name":"錆びた剣",  "icon":"🗡️","atk":5,  "mp":0, "crit":0,"desc":"古びた剣。基本の一撃","anim":"slash","unlockCost":0},
-    "axe":      {"id":"axe",      "name":"呪われた斧","icon":"🪓", "atk":10, "mp":0, "crit":0,"desc":"重い一撃。クリット時+15","anim":"smash","special":"critBonus15","unlockCost":12},
-    "staff":    {"id":"staff",    "name":"骨の杖",    "icon":"🦴", "atk":8,  "mp":20,"crit":0,"desc":"魔力を宿した杖。MP+20","anim":"strike","unlockCost":10},
-    "dagger":   {"id":"dagger",   "name":"影の短剣",  "icon":"🔪", "atk":7,  "mp":0, "crit":0,"desc":"連撃しやすい。盗賊向き","anim":"pierce","unlockCost":8},
-    "mageblade":{"id":"mageblade","name":"魔剣",       "icon":"⚡", "atk":14, "mp":10,"crit":0,"desc":"魔力を帯びた剣。強力","anim":"slash","unlockCost":25,"lvReq":5},
-    "holyspear":{"id":"holyspear","name":"聖槍",       "icon":"✨", "atk":12, "mp":0, "crit":5,"desc":"光を宿す槍。会心+5%","anim":"pierce","unlockCost":30,"lvReq":15},
-    "katana":   {"id":"katana",   "name":"日本刀",    "icon":"⚔️", "atk":30, "mp":0, "crit":5,"desc":"魂を吸う伝説の刀。侍装備時に反撃確率2倍","anim":"slash","special":"samuraiDoubleCounter","unlockCost":3000,"lvReq":100,"unlockCond":"achievement"},
-    "dumbbell": {"id":"dumbbell", "name":"鉄アレイ",  "icon":"🏋️", "atk":0,  "mp":0, "crit":0,"desc":"装備者の攻撃力を1/3にする代わりに戦闘後の取得EXPが1.2倍","anim":"smash","special":"dumbbellEffect","unlockCost":0,"unlockCond":"achievement"},
-    "companion":{"id":"companion","name":"相棒",       "icon":"🗡️", "atk":300,"mp":0, "crit":10,"desc":"トラベラー専用。スキル使用時20%の確率で消費MP半分","anim":"slash","unlockCost":50000,"unlockCond":"achievement"}
+    "sword": {
+      "id": "sword",
+      "name": "錆びた剣",
+      "icon": "🗡️",
+      "atk": 5,
+      "mp": 0,
+      "crit": 0,
+      "desc": "古びた剣。基本の一撃",
+      "anim": "slash",
+      "unlockCost": 0
+    },
+    "axe": {
+      "id": "axe",
+      "name": "呪われた斧",
+      "icon": "🪓",
+      "atk": 10,
+      "mp": 0,
+      "crit": 0,
+      "desc": "重い一撃。クリット時+15",
+      "anim": "smash",
+      "special": "critBonus15",
+      "unlockCost": 12
+    },
+    "staff": {
+      "id": "staff",
+      "name": "骨の杖",
+      "icon": "🦴",
+      "atk": 8,
+      "mp": 20,
+      "crit": 0,
+      "desc": "魔力を宿した杖。MP+20",
+      "anim": "strike",
+      "unlockCost": 10
+    },
+    "dagger": {
+      "id": "dagger",
+      "name": "影の短剣",
+      "icon": "🔪",
+      "atk": 7,
+      "mp": 0,
+      "crit": 0,
+      "desc": "連撃しやすい。盗賊向き",
+      "anim": "pierce",
+      "unlockCost": 8
+    },
+    "mageblade": {
+      "id": "mageblade",
+      "name": "魔剣",
+      "icon": "⚡",
+      "atk": 14,
+      "mp": 10,
+      "crit": 0,
+      "desc": "魔力を帯びた剣。強力",
+      "anim": "slash",
+      "unlockCost": 25,
+      "lvReq": 5
+    },
+    "holyspear": {
+      "id": "holyspear",
+      "name": "聖槍",
+      "icon": "✨",
+      "atk": 12,
+      "mp": 0,
+      "crit": 5,
+      "desc": "光を宿す槍。会心+5%",
+      "anim": "pierce",
+      "unlockCost": 30,
+      "lvReq": 15
+    },
+    "katana": {
+      "id": "katana",
+      "name": "日本刀",
+      "icon": "⚔️",
+      "atk": 30,
+      "mp": 0,
+      "crit": 5,
+      "desc": "魂を吸う伝説の刀。侍装備時に反撃確率2倍",
+      "anim": "slash",
+      "special": "samuraiDoubleCounter",
+      "unlockCost": 3000,
+      "lvReq": 100,
+      "unlockCond": "achievement"
+    },
+    "dumbbell": {
+      "id": "dumbbell",
+      "name": "鉄アレイ",
+      "icon": "🏋️",
+      "atk": 0,
+      "mp": 0,
+      "crit": 0,
+      "desc": "装備者の攻撃力を1/3にする代わりに戦闘後の取得EXPが1.2倍",
+      "anim": "smash",
+      "special": "dumbbellEffect",
+      "unlockCost": 0,
+      "unlockCond": "achievement"
+    },
+    "companion": {
+      "id": "companion",
+      "name": "相棒",
+      "icon": "🗡️",
+      "atk": 300,
+      "mp": 0,
+      "crit": 10,
+      "desc": "トラベラー専用。スキル使用時20%の確率で消費MP半分",
+      "anim": "slash",
+      "unlockCost": 50000,
+      "unlockCond": "achievement"
+    }
   },
   "armors": {
-    "leather":   {"id":"leather",   "name":"粗末な革鎧",   "icon":"🥋","def":3, "hp":0, "mp":0, "desc":"最低限の防護","unlockCost":0},
-    "chainmail": {"id":"chainmail", "name":"腐食した鎖帷子","icon":"⛓️","def":7, "hp":10,"mp":0, "desc":"まだ使える防具","unlockCost":10},
-    "robe":      {"id":"robe",      "name":"呪術師の外套", "icon":"🧥","def":2, "hp":5, "mp":20,"desc":"魔防が高い。MP+20","unlockCost":8},
-    "shadow":    {"id":"shadow",    "name":"影織りの外套", "icon":"🌑","def":4, "hp":8, "mp":0, "desc":"回避しやすい。盗賊向き","unlockCost":12},
-    "cursedmail":{"id":"cursedmail","name":"呪術鎧",       "icon":"🛡","def":10,"hp":15,"mp":0, "desc":"重厚な呪術の鎧。高防御","unlockCost":25,"lvReq":5},
-    "bonemantle":{"id":"bonemantle","name":"骸骨外套",     "icon":"💀","def":3, "hp":8, "mp":30,"desc":"骸骨の外套。MP+30","unlockCost":30,"lvReq":15}
+    "leather": {
+      "id": "leather",
+      "name": "粗末な革鎧",
+      "icon": "🥋",
+      "def": 3,
+      "hp": 0,
+      "mp": 0,
+      "desc": "最低限の防護",
+      "unlockCost": 0
+    },
+    "chainmail": {
+      "id": "chainmail",
+      "name": "腐食した鎖帷子",
+      "icon": "⛓️",
+      "def": 7,
+      "hp": 10,
+      "mp": 0,
+      "desc": "まだ使える防具",
+      "unlockCost": 10
+    },
+    "robe": {
+      "id": "robe",
+      "name": "呪術師の外套",
+      "icon": "🧥",
+      "def": 2,
+      "hp": 5,
+      "mp": 20,
+      "desc": "魔防が高い。MP+20",
+      "unlockCost": 8
+    },
+    "shadow": {
+      "id": "shadow",
+      "name": "影織りの外套",
+      "icon": "🌑",
+      "def": 4,
+      "hp": 8,
+      "mp": 0,
+      "desc": "回避しやすい。盗賊向き",
+      "unlockCost": 12
+    },
+    "cursedmail": {
+      "id": "cursedmail",
+      "name": "呪術鎧",
+      "icon": "🛡",
+      "def": 10,
+      "hp": 15,
+      "mp": 0,
+      "desc": "重厚な呪術の鎧。高防御",
+      "unlockCost": 25,
+      "lvReq": 5
+    },
+    "bonemantle": {
+      "id": "bonemantle",
+      "name": "骸骨外套",
+      "icon": "💀",
+      "def": 3,
+      "hp": 8,
+      "mp": 30,
+      "desc": "骸骨の外套。MP+30",
+      "unlockCost": 30,
+      "lvReq": 15
+    }
   },
   "accessories": {
-    "amulet_mp":       {"id":"amulet_mp",       "name":"魔力の首飾り","icon":"📿","desc":"戦闘開始時MP+20","kind":"onBattleStart","effect":{"mp":20},"unlockCost":0},
-    "ring_double":     {"id":"ring_double",     "name":"連撃の指輪",  "icon":"💍","desc":"10%の確率で通常攻撃を2回実行","kind":"onHit","effect":{"doubleHit":0.1},"unlockCost":0},
-    "charm_souls":     {"id":"charm_souls",     "name":"魂喰いの護符","icon":"🪶","desc":"敵撃破時5%の確率で魂+5追加","kind":"onKill","effect":{"bonusSouls":5,"chance":0.05},"unlockCost":0},
-    "hayabusa_feather":{"id":"hayabusa_feather","name":"はやぶさの羽","icon":"🪶","desc":"行動時5%の確率でその行動を2回繰り返す。スキルのMPは1回分","kind":"onAction","effect":{"doubleAction":0.05},"unlockCost":150,"unlockCond":"achievement"},
-    "earring_mp":      {"id":"earring_mp",      "name":"イヤリング",  "icon":"💠","desc":"スキル使用時の消費MPを−20%","kind":"skillCost","effect":{"mpDiscount":0.20},"unlockCost":5000},
-    "headband_atk":    {"id":"headband_atk",    "name":"鉢巻",        "icon":"🎽","desc":"攻撃力1.2倍","kind":"statMult","effect":{"atkMult":1.2},"unlockCost":30000},
-    "barrier_def":     {"id":"barrier_def",     "name":"バリア",      "icon":"🔵","desc":"防御力1.2倍","kind":"statMult","effect":{"defMult":1.2},"unlockCost":30000},
-    "cat_whisker":     {"id":"cat_whisker",     "name":"猫のヒゲ",    "icon":"🐱","desc":"HP1.2倍","kind":"statMult","effect":{"hpMult":1.2},"unlockCost":30000},
-    "ssd_mp":          {"id":"ssd_mp",          "name":"SSD",         "icon":"💾","desc":"MP1.2倍","kind":"statMult","effect":{"mpMult":1.2},"unlockCost":30000},
-    "ribbon_souls":    {"id":"ribbon_souls",    "name":"リボン",      "icon":"🎀","desc":"戦闘で得られる魂+10%","kind":"soulsMult","effect":{"soulsMult":0.10},"unlockCost":100000}
+    "amulet_mp": {
+      "id": "amulet_mp",
+      "name": "魔力の首飾り",
+      "icon": "📿",
+      "desc": "戦闘開始時MP+20",
+      "kind": "onBattleStart",
+      "effect": {
+        "mp": 20
+      },
+      "unlockCost": 0
+    },
+    "ring_double": {
+      "id": "ring_double",
+      "name": "連撃の指輪",
+      "icon": "💍",
+      "desc": "10%の確率で通常攻撃を2回実行",
+      "kind": "onHit",
+      "effect": {
+        "doubleHit": 0.1
+      },
+      "unlockCost": 0
+    },
+    "charm_souls": {
+      "id": "charm_souls",
+      "name": "魂喰いの護符",
+      "icon": "🪶",
+      "desc": "敵撃破時5%の確率で魂+5追加",
+      "kind": "onKill",
+      "effect": {
+        "bonusSouls": 5,
+        "chance": 0.05
+      },
+      "unlockCost": 0
+    },
+    "hayabusa_feather": {
+      "id": "hayabusa_feather",
+      "name": "はやぶさの羽",
+      "icon": "🪶",
+      "desc": "行動時5%の確率でその行動を2回繰り返す。スキルのMPは1回分",
+      "kind": "onAction",
+      "effect": {
+        "doubleAction": 0.05
+      },
+      "unlockCost": 150,
+      "unlockCond": "achievement"
+    },
+    "earring_mp": {
+      "id": "earring_mp",
+      "name": "イヤリング",
+      "icon": "💠",
+      "desc": "スキル使用時の消費MPを−20%",
+      "kind": "skillCost",
+      "effect": {
+        "mpDiscount": 0.2
+      },
+      "unlockCost": 5000
+    },
+    "headband_atk": {
+      "id": "headband_atk",
+      "name": "鉢巻",
+      "icon": "🎽",
+      "desc": "攻撃力1.2倍",
+      "kind": "statMult",
+      "effect": {
+        "atkMult": 1.2
+      },
+      "unlockCost": 30000
+    },
+    "barrier_def": {
+      "id": "barrier_def",
+      "name": "バリア",
+      "icon": "🔵",
+      "desc": "防御力1.2倍",
+      "kind": "statMult",
+      "effect": {
+        "defMult": 1.2
+      },
+      "unlockCost": 30000
+    },
+    "cat_whisker": {
+      "id": "cat_whisker",
+      "name": "猫のヒゲ",
+      "icon": "🐱",
+      "desc": "HP1.2倍",
+      "kind": "statMult",
+      "effect": {
+        "hpMult": 1.2
+      },
+      "unlockCost": 30000
+    },
+    "ssd_mp": {
+      "id": "ssd_mp",
+      "name": "SSD",
+      "icon": "💾",
+      "desc": "MP1.2倍",
+      "kind": "statMult",
+      "effect": {
+        "mpMult": 1.2
+      },
+      "unlockCost": 30000
+    },
+    "ribbon_souls": {
+      "id": "ribbon_souls",
+      "name": "リボン",
+      "icon": "🎀",
+      "desc": "戦闘で得られる魂+10%",
+      "kind": "soulsMult",
+      "effect": {
+        "soulsMult": 0.1
+      },
+      "unlockCost": 100000
+    }
   },
   "activeSkills": {
-    "slash":      {"id":"slash",      "name":"断罪の一刀","icon":"⚔", "mpCost":20, "desc":"攻撃×2.5の斬撃ダメージ"},
-    "arcane":     {"id":"arcane",     "name":"魔弾乱射",  "icon":"✦", "mpCost":30, "desc":"3連続魔法ダメージ（防御無視）"},
-    "lifedrain":  {"id":"lifedrain",  "name":"生命吸収",  "icon":"🩸","mpCost":25, "desc":"ダメージ＆同量HP吸収"},
-    "blaze":      {"id":"blaze",      "name":"地獄炎",    "icon":"🔥","mpCost":35, "desc":"攻撃×4の爆発ダメージ","unlockCost":18},
-    "shadowstep": {"id":"shadowstep", "name":"影踏み",    "icon":"◆", "mpCost":20, "desc":"次の敵攻撃を回避＋反撃×2","unlockCost":18},
-    "rallycry":   {"id":"rallycry",   "name":"鬨の声",    "icon":"⚡", "mpCost":15, "desc":"3ターン攻撃+50%バフ","unlockCost":20},
-    "soulburst":  {"id":"soulburst",  "name":"魂の爆発",  "icon":"💜","mpCost":45, "desc":"最大HPの30%を消費して攻撃×6","lvReq":15,"unlockCost":35},
-    "timestop":   {"id":"timestop",   "name":"時間停止",  "icon":"⏳","mpCost":50, "desc":"敵の次の攻撃を2回無効化","lvReq":30,"unlockCost":40},
-    "divinewrath":{"id":"divinewrath","name":"天罰",       "icon":"⚡", "mpCost":100,"desc":"防御無視で攻撃×5の光ダメージ","lvReq":60,"unlockCost":55},
-    "apocalypse": {"id":"apocalypse", "name":"終焉",       "icon":"🌑","mpCost":0,  "desc":"最大MPの半分を消費して敵残HP30%分ダメージ","lvReq":100,"unlockCost":80}
+    "slash": {
+      "id": "slash",
+      "name": "断罪の一刀",
+      "icon": "⚔",
+      "mpCost": 20,
+      "desc": "攻撃×2.5の斬撃ダメージ",
+      "cooldown": 5
+    },
+    "arcane": {
+      "id": "arcane",
+      "name": "魔弾乱射",
+      "icon": "✦",
+      "mpCost": 30,
+      "desc": "3連続魔法ダメージ（防御無視）",
+      "cooldown": 5
+    },
+    "lifedrain": {
+      "id": "lifedrain",
+      "name": "生命吸収",
+      "icon": "🩸",
+      "mpCost": 25,
+      "desc": "ダメージ＆同量HP吸収",
+      "cooldown": 5
+    },
+    "blaze": {
+      "id": "blaze",
+      "name": "地獄炎",
+      "icon": "🔥",
+      "mpCost": 35,
+      "desc": "攻撃×4の爆発ダメージ",
+      "unlockCost": 18,
+      "cooldown": 5
+    },
+    "shadowstep": {
+      "id": "shadowstep",
+      "name": "影踏み",
+      "icon": "◆",
+      "mpCost": 20,
+      "desc": "次の敵攻撃を回避＋反撃×2",
+      "unlockCost": 18,
+      "cooldown": 5
+    },
+    "rallycry": {
+      "id": "rallycry",
+      "name": "鬨の声",
+      "icon": "⚡",
+      "mpCost": 15,
+      "desc": "3ターン攻撃+50%バフ",
+      "unlockCost": 20,
+      "cooldown": 5
+    },
+    "soulburst": {
+      "id": "soulburst",
+      "name": "魂の爆発",
+      "icon": "💜",
+      "mpCost": 45,
+      "desc": "最大HPの30%を消費して攻撃×6",
+      "lvReq": 15,
+      "unlockCost": 35,
+      "cooldown": 5
+    },
+    "timestop": {
+      "id": "timestop",
+      "name": "時間停止",
+      "icon": "⏳",
+      "mpCost": 50,
+      "desc": "敵の次の攻撃を2回無効化",
+      "lvReq": 30,
+      "unlockCost": 40,
+      "cooldown": 5
+    },
+    "divinewrath": {
+      "id": "divinewrath",
+      "name": "天罰",
+      "icon": "⚡",
+      "mpCost": 100,
+      "desc": "防御無視で攻撃×5の光ダメージ",
+      "lvReq": 60,
+      "unlockCost": 55,
+      "cooldown": 5
+    },
+    "apocalypse": {
+      "id": "apocalypse",
+      "name": "終焉",
+      "icon": "🌑",
+      "mpCost": 0,
+      "desc": "最大MPの半分を消費して敵残HP30%分ダメージ",
+      "lvReq": 100,
+      "unlockCost": 80,
+      "cooldown": 5
+    }
   },
   "passiveSkills": {
-    "ironwall":     {"id":"ironwall",     "name":"鉄壁",    "icon":"🛡","desc":"被ダメージ-10%"},
-    "vampiric":     {"id":"vampiric",     "name":"吸血",    "icon":"🩸","desc":"与ダメの3%をHP吸収"},
-    "mprecover":    {"id":"mprecover",    "name":"魔力回路","icon":"⚡","desc":"毎ターンMP+5多く回復"},
-    "critup":       {"id":"critup",       "name":"急所穿ち","icon":"🎯","desc":"クリティカル率+20%","unlockCost":15},
-    "rage":         {"id":"rage",         "name":"血の怒り","icon":"💢","desc":"HP50%以下で攻撃+30%","unlockCost":15},
-    "souleat":      {"id":"souleat",      "name":"魂喰い",  "icon":"👁","desc":"敵撃破時HP+10","unlockCost":20},
-    "cursedmark":   {"id":"cursedmark",   "name":"呪いの刻印","icon":"🩸","desc":"毎ターン敵に最大HPの2%の呪いダメージ","lvReq":30,"unlockCost":30},
-    "godspeed":     {"id":"godspeed",     "name":"神速",    "icon":"💨","desc":"完全回避率+10%・半回避率+15%","lvReq":30,"unlockCost":30},
-    "undying":      {"id":"undying",      "name":"不死身",  "icon":"💀","desc":"HP0になった時1度だけHP1で踏みとどまる","lvReq":60,"unlockCost":50},
-    "demonblessing":{"id":"demonblessing","name":"魔神の加護","icon":"🌑","desc":"全ダメージ+20%・全被ダメ-15%","lvReq":100,"unlockCost":80}
+    "ironwall": {
+      "id": "ironwall",
+      "name": "鉄壁",
+      "icon": "🛡",
+      "desc": "被ダメージ-10%"
+    },
+    "vampiric": {
+      "id": "vampiric",
+      "name": "吸血",
+      "icon": "🩸",
+      "desc": "与ダメの3%をHP吸収"
+    },
+    "mprecover": {
+      "id": "mprecover",
+      "name": "魔力回路",
+      "icon": "⚡",
+      "desc": "毎ターンMP+5多く回復"
+    },
+    "critup": {
+      "id": "critup",
+      "name": "急所穿ち",
+      "icon": "🎯",
+      "desc": "クリティカル率+20%",
+      "unlockCost": 15
+    },
+    "rage": {
+      "id": "rage",
+      "name": "血の怒り",
+      "icon": "💢",
+      "desc": "HP50%以下で攻撃+30%",
+      "unlockCost": 15
+    },
+    "souleat": {
+      "id": "souleat",
+      "name": "魂喰い",
+      "icon": "👁",
+      "desc": "敵撃破時HP+10",
+      "unlockCost": 20
+    },
+    "cursedmark": {
+      "id": "cursedmark",
+      "name": "呪いの刻印",
+      "icon": "🩸",
+      "desc": "毎ターン敵に最大HPの2%の呪いダメージ",
+      "lvReq": 30,
+      "unlockCost": 30
+    },
+    "godspeed": {
+      "id": "godspeed",
+      "name": "神速",
+      "icon": "💨",
+      "desc": "完全回避率+10%・半回避率+15%",
+      "lvReq": 30,
+      "unlockCost": 30
+    },
+    "undying": {
+      "id": "undying",
+      "name": "不死身",
+      "icon": "💀",
+      "desc": "HP0になった時1度だけHP1で踏みとどまる",
+      "lvReq": 60,
+      "unlockCost": 50
+    },
+    "demonblessing": {
+      "id": "demonblessing",
+      "name": "魔神の加護",
+      "icon": "🌑",
+      "desc": "全ダメージ+20%・全被ダメ-15%",
+      "lvReq": 100,
+      "unlockCost": 80
+    }
   },
   "uniqueSkills": {
-    "warrior_berserk":   {"id":"warrior_berserk",   "charId":"warrior",     "name":"血戦の心得",   "icon":"💢","initial":true, "desc":"HP30%以下で攻撃+50%・被ダメ-20%"},
-    "warrior_fortress":  {"id":"warrior_fortress",  "charId":"warrior",     "name":"難攻不落",     "icon":"🛡","initial":false,"desc":"防御力をATKの20%分上乗せ"},
-    "warrior_counter":   {"id":"warrior_counter",   "charId":"warrior",     "name":"鉄の反撃",     "icon":"⚔","initial":false,"desc":"被ダメ後の次の攻撃+30%"},
-    "mage_overload":     {"id":"mage_overload",     "charId":"mage",        "name":"魔力過負荷",   "icon":"✦","initial":true, "desc":"戦闘終了後10%で最大MP+30%上昇（階層中）"},
-    "mage_insight":      {"id":"mage_insight",      "charId":"mage",        "name":"洞察の眼",     "icon":"👁","initial":false,"desc":"会心発生時に追加でMP+15回復"},
-    "mage_chain":        {"id":"mage_chain",        "charId":"mage",        "name":"連鎖魔法",     "icon":"🔥","initial":false,"desc":"スキル発動後、次のスキルコスト-10MP"},
-    "rogue_jackpot":     {"id":"rogue_jackpot",     "charId":"rogue",       "name":"僥倖",         "icon":"💰","initial":true, "desc":"戦闘勝利後10%の確率で獲得魂が3倍"},
-    "rogue_phantom":     {"id":"rogue_phantom",     "charId":"rogue",       "name":"幻影",         "icon":"💨","initial":false,"desc":"戦闘開始時2ターン完全回避状態"},
-    "rogue_shadowblade": {"id":"rogue_shadowblade", "charId":"rogue",       "name":"影刃",         "icon":"◆","initial":false,"desc":"回避成功時に次の攻撃が会心確定"},
-    "paladin_aura":      {"id":"paladin_aura",      "charId":"paladin",     "name":"聖なる加護",   "icon":"✨","initial":true, "desc":"毎ターンHP+3自然回復"},
-    "paladin_judgement": {"id":"paladin_judgement", "charId":"paladin",     "name":"神罰",         "icon":"⚡","initial":false,"desc":"DEFが高いほどATKにボーナス（DEF×0.5）"},
-    "paladin_shield":    {"id":"paladin_shield",    "charId":"paladin",     "name":"聖盾の意志",   "icon":"🛡","initial":false,"desc":"HP50%以下で被ダメ-25%"},
-    "necro_soulharvest": {"id":"necro_soulharvest", "charId":"necromancer", "name":"魂の収穫",     "icon":"💀","initial":true, "desc":"敵撃破時MP+10追加回復"},
-    "necro_lich":        {"id":"necro_lich",        "charId":"necromancer", "name":"リッチの目覚め","icon":"👾","initial":false,"desc":"HP10%以下で全ステータス+40%（1回限り）"},
-    "necro_curse":       {"id":"necro_curse",       "charId":"necromancer", "name":"死の呪縛",     "icon":"🌑","initial":false,"desc":"戦闘開始時に敵にHP最大値の5%の呪い付与"},
-    "samurai_counter":   {"id":"samurai_counter",   "charId":"samurai",     "name":"反撃",         "icon":"⚔️","initial":true, "desc":"被弾時10%の確率で攻撃を無効化しATK×2のダメージを与える"},
-    "angel_miracle":     {"id":"angel_miracle",     "charId":"angel",       "name":"奇跡",         "icon":"✨","initial":true, "desc":"スキル発動時50%の確率でそのスキルを1回追加発動（MP消費1.5回分）"},
-    "traveler_journey":  {"id":"traveler_journey",  "charId":"traveler",    "name":"旅",           "icon":"🌍","initial":false,"desc":"アクティブ・パッシブスキルが各6枠に、装飾品8つ装備可能、アイコン変化","unlockCond":"宇宙クリア"},
-    "traveler_growth":   {"id":"traveler_growth",   "charId":"traveler",    "name":"成長",         "icon":"🌱","initial":true, "desc":"敵撃破時の取得魂とEXPが1.1倍になる"},
-    "ninja_dual":        {"id":"ninja_dual",        "charId":"ninja",       "name":"二刀流",        "icon":"🥷","initial":true, "desc":"通常攻撃が必ず2回（各75%威力）。それぞれ会心判定あり"},
-    "ninja_deathblow":   {"id":"ninja_deathblow",   "charId":"ninja",       "name":"必殺",          "icon":"💀","initial":false,"desc":"会心ダメージ時1%で敵を即死（ボス無効）"}
+    "warrior_berserk": {
+      "id": "warrior_berserk",
+      "charId": "warrior",
+      "name": "血戦の心得",
+      "icon": "💢",
+      "initial": true,
+      "desc": "HP30%以下で攻撃+50%・被ダメ-20%"
+    },
+    "warrior_fortress": {
+      "id": "warrior_fortress",
+      "charId": "warrior",
+      "name": "難攻不落",
+      "icon": "🛡",
+      "initial": false,
+      "desc": "防御力をATKの20%分上乗せ"
+    },
+    "warrior_counter": {
+      "id": "warrior_counter",
+      "charId": "warrior",
+      "name": "鉄の反撃",
+      "icon": "⚔",
+      "initial": false,
+      "desc": "被ダメ後の次の攻撃+30%"
+    },
+    "mage_overload": {
+      "id": "mage_overload",
+      "charId": "mage",
+      "name": "魔力過負荷",
+      "icon": "✦",
+      "initial": true,
+      "desc": "戦闘終了後10%で最大MP+30%上昇（階層中）"
+    },
+    "mage_insight": {
+      "id": "mage_insight",
+      "charId": "mage",
+      "name": "洞察の眼",
+      "icon": "👁",
+      "initial": false,
+      "desc": "会心発生時に追加でMP+15回復"
+    },
+    "mage_chain": {
+      "id": "mage_chain",
+      "charId": "mage",
+      "name": "連鎖魔法",
+      "icon": "🔥",
+      "initial": false,
+      "desc": "スキル発動後、次のスキルコスト-10MP"
+    },
+    "rogue_jackpot": {
+      "id": "rogue_jackpot",
+      "charId": "rogue",
+      "name": "僥倖",
+      "icon": "💰",
+      "initial": true,
+      "desc": "戦闘勝利後10%の確率で獲得魂が3倍"
+    },
+    "rogue_phantom": {
+      "id": "rogue_phantom",
+      "charId": "rogue",
+      "name": "幻影",
+      "icon": "💨",
+      "initial": false,
+      "desc": "戦闘開始時2ターン完全回避状態"
+    },
+    "rogue_shadowblade": {
+      "id": "rogue_shadowblade",
+      "charId": "rogue",
+      "name": "影刃",
+      "icon": "◆",
+      "initial": false,
+      "desc": "回避成功時に次の攻撃が会心確定"
+    },
+    "paladin_aura": {
+      "id": "paladin_aura",
+      "charId": "paladin",
+      "name": "聖なる加護",
+      "icon": "✨",
+      "initial": true,
+      "desc": "毎ターンHP+3自然回復"
+    },
+    "paladin_judgement": {
+      "id": "paladin_judgement",
+      "charId": "paladin",
+      "name": "神罰",
+      "icon": "⚡",
+      "initial": false,
+      "desc": "DEFが高いほどATKにボーナス（DEF×0.5）"
+    },
+    "paladin_shield": {
+      "id": "paladin_shield",
+      "charId": "paladin",
+      "name": "聖盾の意志",
+      "icon": "🛡",
+      "initial": false,
+      "desc": "HP50%以下で被ダメ-25%"
+    },
+    "necro_soulharvest": {
+      "id": "necro_soulharvest",
+      "charId": "necromancer",
+      "name": "魂の収穫",
+      "icon": "💀",
+      "initial": true,
+      "desc": "敵撃破時MP+10追加回復"
+    },
+    "necro_lich": {
+      "id": "necro_lich",
+      "charId": "necromancer",
+      "name": "リッチの目覚め",
+      "icon": "👾",
+      "initial": false,
+      "desc": "HP10%以下で全ステータス+40%（1回限り）"
+    },
+    "necro_curse": {
+      "id": "necro_curse",
+      "charId": "necromancer",
+      "name": "死の呪縛",
+      "icon": "🌑",
+      "initial": false,
+      "desc": "戦闘開始時に敵にHP最大値の5%の呪い付与"
+    },
+    "samurai_counter": {
+      "id": "samurai_counter",
+      "charId": "samurai",
+      "name": "反撃",
+      "icon": "⚔️",
+      "initial": true,
+      "desc": "被弾時10%の確率で攻撃を無効化しATK×2のダメージを与える"
+    },
+    "angel_miracle": {
+      "id": "angel_miracle",
+      "charId": "angel",
+      "name": "奇跡",
+      "icon": "✨",
+      "initial": true,
+      "desc": "スキル発動時50%の確率でそのスキルを1回追加発動（MP消費1.5回分）"
+    },
+    "traveler_journey": {
+      "id": "traveler_journey",
+      "charId": "traveler",
+      "name": "旅",
+      "icon": "🌍",
+      "initial": false,
+      "desc": "アクティブ・パッシブスキルが各6枠に、装飾品8つ装備可能、アイコン変化",
+      "unlockCond": "宇宙クリア"
+    },
+    "traveler_growth": {
+      "id": "traveler_growth",
+      "charId": "traveler",
+      "name": "成長",
+      "icon": "🌱",
+      "initial": true,
+      "desc": "敵撃破時の取得魂とEXPが1.1倍になる"
+    },
+    "ninja_dual": {
+      "id": "ninja_dual",
+      "charId": "ninja",
+      "name": "二刀流",
+      "icon": "🥷",
+      "initial": true,
+      "desc": "通常攻撃が必ず2回（各75%威力）。それぞれ会心判定あり"
+    },
+    "ninja_deathblow": {
+      "id": "ninja_deathblow",
+      "charId": "ninja",
+      "name": "必殺",
+      "icon": "💀",
+      "initial": false,
+      "desc": "会心ダメージ時1%で敵を即死（ボス無効）"
+    }
   },
   "floors": [
-    {"id":1,"name":"地下1階","sub":"奈落の入口","icon":"🪨","color":"#888780","soulsMult":1.0,"expMult":1.0,
-      "enemies":[
-        {"id":"f1_shika",  "name":"腐乱した屍",  "icon":"💀","hp":40, "atk":8, "def":1,"crit":5,"dodge":0,"souls":2, "exp":3,  "kind":"normal"},
-        {"id":"f1_kage",   "name":"影の番人",    "icon":"👁","hp":55, "atk":12,"def":2,"crit":5,"dodge":0,"souls":3, "exp":4,  "kind":"normal"},
-        {"id":"f1_hone",   "name":"骨の騎士",    "icon":"⚰","hp":70, "atk":14,"def":5,"crit":5,"dodge":0,"souls":4, "exp":5,  "kind":"normal"},
-        {"id":"f1_ookami", "name":"呪われた狼",  "icon":"🐺","hp":45, "atk":16,"def":1,"crit":5,"dodge":0,"souls":3, "exp":4,  "kind":"normal"},
-        {"id":"f1_ishi",   "name":"石の守護者",  "icon":"🗿","hp":90, "atk":10,"def":8,"crit":5,"dodge":0,"souls":5, "exp":6,  "kind":"normal"},
-        {"id":"f1_tamashii","name":"魂の亡者",   "icon":"👻","hp":60, "atk":18,"def":3,"crit":5,"dodge":0,"souls":5, "exp":6,  "kind":"normal"}
+    {
+      "id": 1,
+      "name": "地下1階",
+      "sub": "奈落の入口",
+      "icon": "🪨",
+      "color": "#888780",
+      "soulsMult": 1.0,
+      "expMult": 1.0,
+      "enemies": [
+        {
+          "id": "f1_shika",
+          "name": "腐乱した屍",
+          "icon": "💀",
+          "hp": 40,
+          "atk": 8,
+          "def": 1,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 2,
+          "exp": 3,
+          "kind": "normal"
+        },
+        {
+          "id": "f1_kage",
+          "name": "影の番人",
+          "icon": "👁",
+          "hp": 55,
+          "atk": 12,
+          "def": 2,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 3,
+          "exp": 4,
+          "kind": "normal"
+        },
+        {
+          "id": "f1_hone",
+          "name": "骨の騎士",
+          "icon": "⚰",
+          "hp": 70,
+          "atk": 14,
+          "def": 5,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 4,
+          "exp": 5,
+          "kind": "normal"
+        },
+        {
+          "id": "f1_ookami",
+          "name": "呪われた狼",
+          "icon": "🐺",
+          "hp": 45,
+          "atk": 16,
+          "def": 1,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 3,
+          "exp": 4,
+          "kind": "normal"
+        },
+        {
+          "id": "f1_ishi",
+          "name": "石の守護者",
+          "icon": "🗿",
+          "hp": 90,
+          "atk": 10,
+          "def": 8,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 5,
+          "exp": 6,
+          "kind": "normal"
+        },
+        {
+          "id": "f1_tamashii",
+          "name": "魂の亡者",
+          "icon": "👻",
+          "hp": 60,
+          "atk": 18,
+          "def": 3,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 5,
+          "exp": 6,
+          "kind": "normal"
+        }
       ],
-      "bosses":[
-        {"id":"f1b_ban",   "name":"奈落の番人",  "icon":"👁","hp":450,"atk":24,"def":10,"crit":8,"dodge":5,"souls":15,"exp":20, "kind":"boss",
-          "specials":[{"type":"mpDrain","chance":0.10,"label":"MP吸い","desc":"MPを-10奪う"},{"type":"fullGuard","chance":0.15,"label":"完全防御","turns":3,"desc":"3ターン完全防御の構えをとる"}]},
-        {"id":"f1b_hasha", "name":"深淵の覇者",  "icon":"🦂","hp":660,"atk":34,"def":14,"crit":10,"dodge":8,"souls":25,"exp":35, "kind":"boss"}
+      "bosses": [
+        {
+          "id": "f1b_ban",
+          "name": "奈落の番人",
+          "icon": "👁",
+          "hp": 450,
+          "atk": 24,
+          "def": 10,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 15,
+          "exp": 20,
+          "kind": "boss",
+          "specials": [
+            {
+              "type": "mpDrain",
+              "chance": 0.1,
+              "label": "MP吸い",
+              "desc": "MPを-10奪う"
+            },
+            {
+              "type": "fullGuard",
+              "chance": 0.15,
+              "label": "完全防御",
+              "turns": 3,
+              "desc": "3ターン完全防御の構えをとる"
+            }
+          ]
+        },
+        {
+          "id": "f1b_hasha",
+          "name": "深淵の覇者",
+          "icon": "🦂",
+          "hp": 660,
+          "atk": 34,
+          "def": 14,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 25,
+          "exp": 35,
+          "kind": "boss"
+        }
       ]
     },
-    {"id":2,"name":"地下2階","sub":"腐食の回廊","icon":"🌿","color":"#4ade80","soulsMult":1.8,"expMult":2.0,
-      "enemies":[
-        {"id":"f2_gian",   "name":"苔むした巨人","icon":"🧌","hp":110,"atk":20,"def":6, "crit":5,"dodge":0,"souls":5, "exp":8,  "kind":"normal"},
-        {"id":"f2_hebi",   "name":"毒蛇の使者",  "icon":"🐍","hp":80, "atk":26,"def":2, "crit":5,"dodge":0,"souls":4, "exp":7,  "kind":"normal"},
-        {"id":"f2_ban",    "name":"腐食の番兵",  "icon":"🫙","hp":130,"atk":18,"def":10,"crit":5,"dodge":0,"souls":6, "exp":9,  "kind":"normal"},
-        {"id":"f2_spore",  "name":"胞子の怪物",  "icon":"🍄","hp":95, "atk":22,"def":4, "crit":5,"dodge":0,"souls":5, "exp":8,  "kind":"normal"},
-        {"id":"f2_tsuta",  "name":"蔦の精霊",    "icon":"🌿","hp":75, "atk":30,"def":3, "crit":5,"dodge":0,"souls":5, "exp":9,  "kind":"normal"},
-        {"id":"f2_guard",  "name":"腐敗の守護者","icon":"🦠","hp":145,"atk":16,"def":12,"crit":5,"dodge":0,"souls":7, "exp":10, "kind":"normal"}
+    {
+      "id": 2,
+      "name": "地下2階",
+      "sub": "腐食の回廊",
+      "icon": "🌿",
+      "color": "#4ade80",
+      "soulsMult": 1.8,
+      "expMult": 2.0,
+      "enemies": [
+        {
+          "id": "f2_gian",
+          "name": "苔むした巨人",
+          "icon": "🧌",
+          "hp": 110,
+          "atk": 20,
+          "def": 6,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 5,
+          "exp": 8,
+          "kind": "normal"
+        },
+        {
+          "id": "f2_hebi",
+          "name": "毒蛇の使者",
+          "icon": "🐍",
+          "hp": 80,
+          "atk": 26,
+          "def": 2,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 4,
+          "exp": 7,
+          "kind": "normal"
+        },
+        {
+          "id": "f2_ban",
+          "name": "腐食の番兵",
+          "icon": "🫙",
+          "hp": 130,
+          "atk": 18,
+          "def": 10,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 6,
+          "exp": 9,
+          "kind": "normal"
+        },
+        {
+          "id": "f2_spore",
+          "name": "胞子の怪物",
+          "icon": "🍄",
+          "hp": 95,
+          "atk": 22,
+          "def": 4,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 5,
+          "exp": 8,
+          "kind": "normal"
+        },
+        {
+          "id": "f2_tsuta",
+          "name": "蔦の精霊",
+          "icon": "🌿",
+          "hp": 75,
+          "atk": 30,
+          "def": 3,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 5,
+          "exp": 9,
+          "kind": "normal"
+        },
+        {
+          "id": "f2_guard",
+          "name": "腐敗の守護者",
+          "icon": "🦠",
+          "hp": 145,
+          "atk": 16,
+          "def": 12,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 7,
+          "exp": 10,
+          "kind": "normal"
+        }
       ],
-      "bosses":[
-        {"id":"f2b_ou",    "name":"腐食の王",    "icon":"🧌","hp":950,"atk":50,"def":22,"crit":8,"dodge":5,"souls":30,"exp":50, "kind":"boss"},
-        {"id":"f2b_queen", "name":"毒牙の女王",  "icon":"🐍","hp":800,"atk":65,"def":16,"crit":8,"dodge":5,"souls":35,"exp":60, "kind":"boss"}
+      "bosses": [
+        {
+          "id": "f2b_ou",
+          "name": "腐食の王",
+          "icon": "🧌",
+          "hp": 950,
+          "atk": 50,
+          "def": 22,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 30,
+          "exp": 50,
+          "kind": "boss"
+        },
+        {
+          "id": "f2b_queen",
+          "name": "毒牙の女王",
+          "icon": "🐍",
+          "hp": 800,
+          "atk": 65,
+          "def": 16,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 35,
+          "exp": 60,
+          "kind": "boss"
+        }
       ]
     },
-    {"id":3,"name":"地下3階","sub":"灼熱の熔岩窟","icon":"🔥","color":"#f97316","soulsMult":3.0,"expMult":3.5,
-      "enemies":[
-        {"id":"f3_yougan", "name":"溶岩の番兵",  "icon":"🌋","hp":200,"atk":42,"def":14,"crit":5,"dodge":0,"souls":9, "exp":14, "kind":"normal"},
-        {"id":"f3_akuma",  "name":"炎の悪魔",    "icon":"😈","hp":165,"atk":55,"def":8, "crit":8,"dodge":5,"souls":10,"exp":15, "kind":"normal"},
-        {"id":"f3_gaikotsu","name":"灼熱の骸骨", "icon":"🦴","hp":150,"atk":50,"def":6, "crit":5,"dodge":0,"souls":8, "exp":13, "kind":"normal"},
-        {"id":"f3_golem",  "name":"マグマゴーレム","icon":"🪨","hp":260,"atk":36,"def":20,"crit":5,"dodge":0,"souls":11,"exp":16, "kind":"normal"},
-        {"id":"f3_kaen",   "name":"火炎の精霊",  "icon":"🔥","hp":180,"atk":48,"def":10,"crit":8,"dodge":5,"souls":10,"exp":14, "kind":"normal"},
-        {"id":"f3_jusha",  "name":"炎王の従者",  "icon":"👑","hp":220,"atk":45,"def":16,"crit":5,"dodge":0,"souls":12,"exp":17, "kind":"normal"}
+    {
+      "id": 3,
+      "name": "地下3階",
+      "sub": "灼熱の熔岩窟",
+      "icon": "🔥",
+      "color": "#f97316",
+      "soulsMult": 3.0,
+      "expMult": 3.5,
+      "enemies": [
+        {
+          "id": "f3_yougan",
+          "name": "溶岩の番兵",
+          "icon": "🌋",
+          "hp": 200,
+          "atk": 42,
+          "def": 14,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 9,
+          "exp": 14,
+          "kind": "normal"
+        },
+        {
+          "id": "f3_akuma",
+          "name": "炎の悪魔",
+          "icon": "😈",
+          "hp": 165,
+          "atk": 55,
+          "def": 8,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 10,
+          "exp": 15,
+          "kind": "normal"
+        },
+        {
+          "id": "f3_gaikotsu",
+          "name": "灼熱の骸骨",
+          "icon": "🦴",
+          "hp": 150,
+          "atk": 50,
+          "def": 6,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 8,
+          "exp": 13,
+          "kind": "normal"
+        },
+        {
+          "id": "f3_golem",
+          "name": "マグマゴーレム",
+          "icon": "🪨",
+          "hp": 260,
+          "atk": 36,
+          "def": 20,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 11,
+          "exp": 16,
+          "kind": "normal"
+        },
+        {
+          "id": "f3_kaen",
+          "name": "火炎の精霊",
+          "icon": "🔥",
+          "hp": 180,
+          "atk": 48,
+          "def": 10,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 10,
+          "exp": 14,
+          "kind": "normal"
+        },
+        {
+          "id": "f3_jusha",
+          "name": "炎王の従者",
+          "icon": "👑",
+          "hp": 220,
+          "atk": 45,
+          "def": 16,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 12,
+          "exp": 17,
+          "kind": "normal"
+        }
       ],
-      "bosses":[
-        {"id":"f3b_hao",   "name":"炎獄の覇王",  "icon":"😈","hp":2000,"atk":100,"def":45,"crit":10,"dodge":5,"souls":60, "exp":100,"kind":"boss"},
-        {"id":"f3b_ryu",   "name":"溶岩竜",      "icon":"🐉","hp":2400,"atk":90, "def":55,"crit":8, "dodge":8,"souls":70, "exp":120,"kind":"boss"}
+      "bosses": [
+        {
+          "id": "f3b_hao",
+          "name": "炎獄の覇王",
+          "icon": "😈",
+          "hp": 2000,
+          "atk": 100,
+          "def": 45,
+          "crit": 10,
+          "dodge": 5,
+          "souls": 60,
+          "exp": 100,
+          "kind": "boss"
+        },
+        {
+          "id": "f3b_ryu",
+          "name": "溶岩竜",
+          "icon": "🐉",
+          "hp": 2400,
+          "atk": 90,
+          "def": 55,
+          "crit": 8,
+          "dodge": 8,
+          "souls": 70,
+          "exp": 120,
+          "kind": "boss"
+        }
       ]
     },
-    {"id":4,"name":"地下4階","sub":"虚無の深淵","icon":"🌑","color":"#8b5cf6","soulsMult":3.5,"expMult":4.0,
-      "enemies":[
-        {"id":"f4_mouryou","name":"虚無の亡霊",  "icon":"👾","hp":380,"atk":90, "def":25,"crit":10,"dodge":8,"souls":15,"exp":22, "kind":"normal"},
-        {"id":"f4_hunter", "name":"深淵の狩人",  "icon":"🦇","hp":320,"atk":110,"def":15,"crit":10,"dodge":8,"souls":16,"exp":24, "kind":"normal"},
-        {"id":"f4_knight", "name":"奈落の騎士",  "icon":"⚔", "hp":450,"atk":85, "def":35,"crit":8, "dodge":5,"souls":18,"exp":26, "kind":"normal"},
-        {"id":"f4_soul",   "name":"魂の収奪者",  "icon":"💜","hp":340,"atk":105,"def":20,"crit":10,"dodge":8,"souls":17,"exp":25, "kind":"normal"},
-        {"id":"f4_kyoku",  "name":"虚空の番人",  "icon":"🌑","hp":500,"atk":80, "def":40,"crit":5, "dodge":5,"souls":20,"exp":28, "kind":"normal"},
-        {"id":"f4_witch",  "name":"深淵の魔女",  "icon":"🧙","hp":300,"atk":120,"def":12,"crit":12,"dodge":8,"souls":18,"exp":27, "kind":"normal"}
+    {
+      "id": 4,
+      "name": "地下4階",
+      "sub": "虚無の深淵",
+      "icon": "🌑",
+      "color": "#8b5cf6",
+      "soulsMult": 3.5,
+      "expMult": 4.0,
+      "enemies": [
+        {
+          "id": "f4_mouryou",
+          "name": "虚無の亡霊",
+          "icon": "👾",
+          "hp": 380,
+          "atk": 90,
+          "def": 25,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 15,
+          "exp": 22,
+          "kind": "normal"
+        },
+        {
+          "id": "f4_hunter",
+          "name": "深淵の狩人",
+          "icon": "🦇",
+          "hp": 320,
+          "atk": 110,
+          "def": 15,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 16,
+          "exp": 24,
+          "kind": "normal"
+        },
+        {
+          "id": "f4_knight",
+          "name": "奈落の騎士",
+          "icon": "⚔",
+          "hp": 450,
+          "atk": 85,
+          "def": 35,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 18,
+          "exp": 26,
+          "kind": "normal"
+        },
+        {
+          "id": "f4_soul",
+          "name": "魂の収奪者",
+          "icon": "💜",
+          "hp": 340,
+          "atk": 105,
+          "def": 20,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 17,
+          "exp": 25,
+          "kind": "normal"
+        },
+        {
+          "id": "f4_kyoku",
+          "name": "虚空の番人",
+          "icon": "🌑",
+          "hp": 500,
+          "atk": 80,
+          "def": 40,
+          "crit": 5,
+          "dodge": 5,
+          "souls": 20,
+          "exp": 28,
+          "kind": "normal"
+        },
+        {
+          "id": "f4_witch",
+          "name": "深淵の魔女",
+          "icon": "🧙",
+          "hp": 300,
+          "atk": 120,
+          "def": 12,
+          "crit": 12,
+          "dodge": 8,
+          "souls": 18,
+          "exp": 27,
+          "kind": "normal"
+        }
       ],
-      "bosses":[
-        {"id":"f4b_shihai","name":"虚無の支配者","icon":"👾","hp":4500, "atk":190,"def":80, "crit":10,"dodge":8,"souls":120,"exp":200,"kind":"boss"},
-        {"id":"f4b_shin",  "name":"深淵神",      "icon":"🌑","hp":5500, "atk":175,"def":100,"crit":10,"dodge":8,"souls":150,"exp":250,"kind":"boss"}
+      "bosses": [
+        {
+          "id": "f4b_shihai",
+          "name": "虚無の支配者",
+          "icon": "👾",
+          "hp": 4500,
+          "atk": 190,
+          "def": 80,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 120,
+          "exp": 200,
+          "kind": "boss"
+        },
+        {
+          "id": "f4b_shin",
+          "name": "深淵神",
+          "icon": "🌑",
+          "hp": 5500,
+          "atk": 175,
+          "def": 100,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 150,
+          "exp": 250,
+          "kind": "boss"
+        }
       ]
     },
-    {"id":5,"name":"地下5階","sub":"終焉の間","icon":"💀","color":"#ef4444","soulsMult":4.0,"expMult":4.5,
-      "enemies":[
-        {"id":"f5_shisha", "name":"終焉の使者",  "icon":"☠️","hp":700, "atk":200,"def":55,"crit":10,"dodge":8,"souls":28,"exp":40, "kind":"normal"},
-        {"id":"f5_keshin", "name":"滅びの化身",  "icon":"💀","hp":800, "atk":185,"def":65,"crit":8, "dodge":5,"souls":30,"exp":44, "kind":"normal"},
-        {"id":"f5_knight", "name":"黙示録の騎士","icon":"🗡️","hp":900, "atk":175,"def":75,"crit":8, "dodge":5,"souls":32,"exp":46, "kind":"normal"},
-        {"id":"f5_kanshin","name":"混沌の神官",  "icon":"🌀","hp":650, "atk":220,"def":45,"crit":10,"dodge":8,"souls":30,"exp":42, "kind":"normal"},
-        {"id":"f5_ban",    "name":"終末の番兵",  "icon":"⛧", "hp":1000,"atk":165,"def":85,"crit":5, "dodge":5,"souls":35,"exp":50, "kind":"normal"},
-        {"id":"f5_megami", "name":"奈落の女神",  "icon":"👸","hp":750, "atk":210,"def":60,"crit":10,"dodge":8,"souls":33,"exp":48, "kind":"normal"}
+    {
+      "id": 5,
+      "name": "地下5階",
+      "sub": "終焉の間",
+      "icon": "💀",
+      "color": "#ef4444",
+      "soulsMult": 4.0,
+      "expMult": 4.5,
+      "enemies": [
+        {
+          "id": "f5_shisha",
+          "name": "終焉の使者",
+          "icon": "☠️",
+          "hp": 700,
+          "atk": 200,
+          "def": 55,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 28,
+          "exp": 40,
+          "kind": "normal"
+        },
+        {
+          "id": "f5_keshin",
+          "name": "滅びの化身",
+          "icon": "💀",
+          "hp": 800,
+          "atk": 185,
+          "def": 65,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 30,
+          "exp": 44,
+          "kind": "normal"
+        },
+        {
+          "id": "f5_knight",
+          "name": "黙示録の騎士",
+          "icon": "🗡️",
+          "hp": 900,
+          "atk": 175,
+          "def": 75,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 32,
+          "exp": 46,
+          "kind": "normal"
+        },
+        {
+          "id": "f5_kanshin",
+          "name": "混沌の神官",
+          "icon": "🌀",
+          "hp": 650,
+          "atk": 220,
+          "def": 45,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 30,
+          "exp": 42,
+          "kind": "normal"
+        },
+        {
+          "id": "f5_ban",
+          "name": "終末の番兵",
+          "icon": "⛧",
+          "hp": 1000,
+          "atk": 165,
+          "def": 85,
+          "crit": 5,
+          "dodge": 5,
+          "souls": 35,
+          "exp": 50,
+          "kind": "normal"
+        },
+        {
+          "id": "f5_megami",
+          "name": "奈落の女神",
+          "icon": "👸",
+          "hp": 750,
+          "atk": 210,
+          "def": 60,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 33,
+          "exp": 48,
+          "kind": "normal"
+        }
       ],
-      "bosses":[
-        {"id":"f5b_god",   "name":"終焉の神",    "icon":"☠️","hp":9000, "atk":380,"def":180,"crit":12,"dodge":8,"souls":300,"exp":500,"kind":"boss"},
-        {"id":"f5b_souzou","name":"奈落の創造主","icon":"🌀","hp":12000,"atk":350,"def":220,"crit":10,"dodge":8,"souls":400,"exp":700,"kind":"boss"}
+      "bosses": [
+        {
+          "id": "f5b_god",
+          "name": "終焉の神",
+          "icon": "☠️",
+          "hp": 9000,
+          "atk": 380,
+          "def": 180,
+          "crit": 12,
+          "dodge": 8,
+          "souls": 300,
+          "exp": 500,
+          "kind": "boss"
+        },
+        {
+          "id": "f5b_souzou",
+          "name": "奈落の創造主",
+          "icon": "🌀",
+          "hp": 12000,
+          "atk": 350,
+          "def": 220,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 400,
+          "exp": 700,
+          "kind": "boss"
+        }
       ]
     },
-    {"id":6,"name":"地上","sub":"光の平原","icon":"🌅","color":"#facc15","soulsMult":4.5,"expMult":5.0,"areaMode":true,"unlockReq":{"angelAllFloors":true},
-      "enemies":[
-        {"id":"f6_hikari", "name":"光の番人",    "icon":"🌟","hp":1800,"atk":280,"def":90, "crit":8,"dodge":5,"souls":50,"exp":70, "kind":"normal"},
-        {"id":"f6_seiki",  "name":"聖なる騎士",  "icon":"⚡","hp":2200,"atk":260,"def":110,"crit":8,"dodge":5,"souls":55,"exp":75, "kind":"normal"},
-        {"id":"f6_inori",  "name":"祈りの精霊",  "icon":"🕊️","hp":1600,"atk":300,"def":80, "crit":8,"dodge":8,"souls":48,"exp":68, "kind":"normal"},
-        {"id":"f6_souki",  "name":"天空の衛士",  "icon":"☁️","hp":2400,"atk":245,"def":120,"crit":5,"dodge":5,"souls":58,"exp":78, "kind":"normal"},
-        {"id":"f6_senshi", "name":"光翼の戦士",  "icon":"🦅","hp":2000,"atk":270,"def":100,"crit":8,"dodge":8,"souls":52,"exp":72, "kind":"normal"},
-        {"id":"f6_seiki2", "name":"聖域の守護者","icon":"🏛️","hp":2600,"atk":240,"def":130,"crit":5,"dodge":5,"souls":60,"exp":80, "kind":"normal"}
+    {
+      "id": 6,
+      "name": "地上",
+      "sub": "光の平原",
+      "icon": "🌅",
+      "color": "#facc15",
+      "soulsMult": 4.5,
+      "expMult": 5.0,
+      "areaMode": true,
+      "unlockReq": {
+        "angelAllFloors": true
+      },
+      "enemies": [
+        {
+          "id": "f6_hikari",
+          "name": "光の番人",
+          "icon": "🌟",
+          "hp": 1800,
+          "atk": 280,
+          "def": 90,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 50,
+          "exp": 70,
+          "kind": "normal"
+        },
+        {
+          "id": "f6_seiki",
+          "name": "聖なる騎士",
+          "icon": "⚡",
+          "hp": 2200,
+          "atk": 260,
+          "def": 110,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 55,
+          "exp": 75,
+          "kind": "normal"
+        },
+        {
+          "id": "f6_inori",
+          "name": "祈りの精霊",
+          "icon": "🕊️",
+          "hp": 1600,
+          "atk": 300,
+          "def": 80,
+          "crit": 8,
+          "dodge": 8,
+          "souls": 48,
+          "exp": 68,
+          "kind": "normal"
+        },
+        {
+          "id": "f6_souki",
+          "name": "天空の衛士",
+          "icon": "☁️",
+          "hp": 2400,
+          "atk": 245,
+          "def": 120,
+          "crit": 5,
+          "dodge": 5,
+          "souls": 58,
+          "exp": 78,
+          "kind": "normal"
+        },
+        {
+          "id": "f6_senshi",
+          "name": "光翼の戦士",
+          "icon": "🦅",
+          "hp": 2000,
+          "atk": 270,
+          "def": 100,
+          "crit": 8,
+          "dodge": 8,
+          "souls": 52,
+          "exp": 72,
+          "kind": "normal"
+        },
+        {
+          "id": "f6_seiki2",
+          "name": "聖域の守護者",
+          "icon": "🏛️",
+          "hp": 2600,
+          "atk": 240,
+          "def": 130,
+          "crit": 5,
+          "dodge": 5,
+          "souls": 60,
+          "exp": 80,
+          "kind": "normal"
+        }
       ],
-      "bosses":[
-        {"id":"f6b_ou",    "name":"光の王",      "icon":"👑","hp":35000, "atk":600,"def":280,"crit":10,"dodge":8,"souls":800, "exp":1200,"kind":"boss"},
-        {"id":"f6b_tenshi","name":"天使長",       "icon":"😇","hp":45000, "atk":560,"def":320,"crit":10,"dodge":8,"souls":1000,"exp":1500,"kind":"boss"}
+      "bosses": [
+        {
+          "id": "f6b_ou",
+          "name": "光の王",
+          "icon": "👑",
+          "hp": 35000,
+          "atk": 600,
+          "def": 280,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 800,
+          "exp": 1200,
+          "kind": "boss"
+        },
+        {
+          "id": "f6b_tenshi",
+          "name": "天使長",
+          "icon": "😇",
+          "hp": 45000,
+          "atk": 560,
+          "def": 320,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 1000,
+          "exp": 1500,
+          "kind": "boss"
+        }
       ]
     },
-    {"id":7,"name":"空中都市","sub":"雲上の楽園","icon":"🌆","color":"#38bdf8","soulsMult":5.0,"expMult":5.5,"areaMode":true,"unlockReq":{"clearedFloor":6},
-      "enemies":[
-        {"id":"f7_kumo",   "name":"雲の守人",    "icon":"⛅","hp":5000,"atk":500,"def":160,"crit":8,"dodge":5,"souls":90,"exp":130,"kind":"normal"},
-        {"id":"f7_kaze",   "name":"風の精霊王",  "icon":"🌬️","hp":4500,"atk":550,"def":140,"crit":8,"dodge":8,"souls":85,"exp":125,"kind":"normal"},
-        {"id":"f7_raichou","name":"雷鳥",        "icon":"⚡","hp":4800,"atk":520,"def":150,"crit":8,"dodge":5,"souls":88,"exp":128,"kind":"normal"},
-        {"id":"f7_knight", "name":"空中騎士",    "icon":"🪁","hp":5200,"atk":490,"def":170,"crit":5,"dodge":5,"souls":92,"exp":132,"kind":"normal"},
-        {"id":"f7_golem",  "name":"浮遊ゴーレム","icon":"🪨","hp":6000,"atk":460,"def":200,"crit":5,"dodge":0,"souls":98,"exp":140,"kind":"normal"},
-        {"id":"f7_rakuen", "name":"楽園の番人",  "icon":"🌈","hp":5500,"atk":480,"def":180,"crit":8,"dodge":5,"souls":95,"exp":136,"kind":"normal"}
+    {
+      "id": 7,
+      "name": "空中都市",
+      "sub": "雲上の楽園",
+      "icon": "🌆",
+      "color": "#38bdf8",
+      "soulsMult": 5.0,
+      "expMult": 5.5,
+      "areaMode": true,
+      "unlockReq": {
+        "clearedFloor": 6
+      },
+      "enemies": [
+        {
+          "id": "f7_kumo",
+          "name": "雲の守人",
+          "icon": "⛅",
+          "hp": 5000,
+          "atk": 500,
+          "def": 160,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 90,
+          "exp": 130,
+          "kind": "normal"
+        },
+        {
+          "id": "f7_kaze",
+          "name": "風の精霊王",
+          "icon": "🌬️",
+          "hp": 4500,
+          "atk": 550,
+          "def": 140,
+          "crit": 8,
+          "dodge": 8,
+          "souls": 85,
+          "exp": 125,
+          "kind": "normal"
+        },
+        {
+          "id": "f7_raichou",
+          "name": "雷鳥",
+          "icon": "⚡",
+          "hp": 4800,
+          "atk": 520,
+          "def": 150,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 88,
+          "exp": 128,
+          "kind": "normal"
+        },
+        {
+          "id": "f7_knight",
+          "name": "空中騎士",
+          "icon": "🪁",
+          "hp": 5200,
+          "atk": 490,
+          "def": 170,
+          "crit": 5,
+          "dodge": 5,
+          "souls": 92,
+          "exp": 132,
+          "kind": "normal"
+        },
+        {
+          "id": "f7_golem",
+          "name": "浮遊ゴーレム",
+          "icon": "🪨",
+          "hp": 6000,
+          "atk": 460,
+          "def": 200,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 98,
+          "exp": 140,
+          "kind": "normal"
+        },
+        {
+          "id": "f7_rakuen",
+          "name": "楽園の番人",
+          "icon": "🌈",
+          "hp": 5500,
+          "atk": 480,
+          "def": 180,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 95,
+          "exp": 136,
+          "kind": "normal"
+        }
       ],
-      "bosses":[
-        {"id":"f7b_kou",   "name":"天空皇",      "icon":"🌤️","hp":90000, "atk":1000,"def":500,"crit":10,"dodge":8,"souls":2000,"exp":3000,"kind":"boss"},
-        {"id":"f7b_roc",   "name":"神鳥ロック",  "icon":"🦅","hp":110000,"atk":950, "def":550,"crit":10,"dodge":10,"souls":2500,"exp":3500,"kind":"boss"}
+      "bosses": [
+        {
+          "id": "f7b_kou",
+          "name": "天空皇",
+          "icon": "🌤️",
+          "hp": 90000,
+          "atk": 1000,
+          "def": 500,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 2000,
+          "exp": 3000,
+          "kind": "boss"
+        },
+        {
+          "id": "f7b_roc",
+          "name": "神鳥ロック",
+          "icon": "🦅",
+          "hp": 110000,
+          "atk": 950,
+          "def": 550,
+          "crit": 10,
+          "dodge": 10,
+          "souls": 2500,
+          "exp": 3500,
+          "kind": "boss"
+        }
       ]
     },
-    {"id":8,"name":"宇宙","sub":"星々の果て","icon":"🌌","color":"#a78bfa","soulsMult":5.5,"expMult":6.0,"areaMode":true,"unlockReq":{"clearedFloor":7},
-      "enemies":[
-        {"id":"f8_bourei", "name":"星の亡霊",    "icon":"💫","hp":15000,"atk":1200,"def":350,"crit":8, "dodge":5,"souls":180,"exp":260,"kind":"normal"},
-        {"id":"f8_ginga",  "name":"銀河の番人",  "icon":"🌠","hp":18000,"atk":1100,"def":400,"crit":8, "dodge":5,"souls":195,"exp":280,"kind":"normal"},
-        {"id":"f8_busshitu","name":"暗黒物質",   "icon":"🕳️","hp":20000,"atk":1000,"def":450,"crit":5, "dodge":0,"souls":210,"exp":300,"kind":"normal"},
-        {"id":"f8_choushin","name":"超新星の化身","icon":"💥","hp":16000,"atk":1300,"def":320,"crit":10,"dodge":8,"souls":188,"exp":270,"kind":"normal"},
-        {"id":"f8_shihai", "name":"宇宙の支配者","icon":"👾","hp":22000,"atk":950, "def":480,"crit":8, "dodge":5,"souls":220,"exp":315,"kind":"normal"},
-        {"id":"f8_jikuu",  "name":"時空の歪み",  "icon":"🌀","hp":17000,"atk":1150,"def":380,"crit":8, "dodge":8,"souls":200,"exp":288,"kind":"normal"}
+    {
+      "id": 8,
+      "name": "宇宙",
+      "sub": "星々の果て",
+      "icon": "🌌",
+      "color": "#a78bfa",
+      "soulsMult": 5.5,
+      "expMult": 6.0,
+      "areaMode": true,
+      "unlockReq": {
+        "clearedFloor": 7
+      },
+      "enemies": [
+        {
+          "id": "f8_bourei",
+          "name": "星の亡霊",
+          "icon": "💫",
+          "hp": 15000,
+          "atk": 1200,
+          "def": 350,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 180,
+          "exp": 260,
+          "kind": "normal"
+        },
+        {
+          "id": "f8_ginga",
+          "name": "銀河の番人",
+          "icon": "🌠",
+          "hp": 18000,
+          "atk": 1100,
+          "def": 400,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 195,
+          "exp": 280,
+          "kind": "normal"
+        },
+        {
+          "id": "f8_busshitu",
+          "name": "暗黒物質",
+          "icon": "🕳️",
+          "hp": 20000,
+          "atk": 1000,
+          "def": 450,
+          "crit": 5,
+          "dodge": 0,
+          "souls": 210,
+          "exp": 300,
+          "kind": "normal"
+        },
+        {
+          "id": "f8_choushin",
+          "name": "超新星の化身",
+          "icon": "💥",
+          "hp": 16000,
+          "atk": 1300,
+          "def": 320,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 188,
+          "exp": 270,
+          "kind": "normal"
+        },
+        {
+          "id": "f8_shihai",
+          "name": "宇宙の支配者",
+          "icon": "👾",
+          "hp": 22000,
+          "atk": 950,
+          "def": 480,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 220,
+          "exp": 315,
+          "kind": "normal"
+        },
+        {
+          "id": "f8_jikuu",
+          "name": "時空の歪み",
+          "icon": "🌀",
+          "hp": 17000,
+          "atk": 1150,
+          "def": 380,
+          "crit": 8,
+          "dodge": 8,
+          "souls": 200,
+          "exp": 288,
+          "kind": "normal"
+        }
       ],
-      "bosses":[
-        {"id":"f8b_shin",  "name":"宇宙神",       "icon":"🌌","hp":250000,"atk":2500,"def":1000,"crit":10,"dodge":8,"souls":6000,"exp":9000,"kind":"boss"},
-        {"id":"f8b_bigbang","name":"ビッグバンの化身","icon":"💥","hp":350000,"atk":2200,"def":1200,"crit":10,"dodge":8,"souls":8000,"exp":12000,"kind":"boss"}
+      "bosses": [
+        {
+          "id": "f8b_shin",
+          "name": "宇宙神",
+          "icon": "🌌",
+          "hp": 250000,
+          "atk": 2500,
+          "def": 1000,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 6000,
+          "exp": 9000,
+          "kind": "boss"
+        },
+        {
+          "id": "f8b_bigbang",
+          "name": "ビッグバンの化身",
+          "icon": "💥",
+          "hp": 350000,
+          "atk": 2200,
+          "def": 1200,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 8000,
+          "exp": 12000,
+          "kind": "boss"
+        }
       ]
     },
-    {"id":9,"name":"地獄","sub":"最終審判の地","icon":"🔥","color":"#ef4444","soulsMult":6.0,"expMult":7.0,"areaMode":true,"unlockReq":{"clearedFloor":8},
-      "enemies":[
-        {"id":"f9_shisha", "name":"地獄の使者",  "icon":"😈","hp":60000,"atk":3500,"def":1500,"crit":10,"dodge":8,"souls":400,"exp":600,"kind":"normal"},
-        {"id":"f9_akuma",  "name":"業火の悪魔",  "icon":"🔥","hp":70000,"atk":3200,"def":1600,"crit":10,"dodge":8,"souls":420,"exp":630,"kind":"normal"},
-        {"id":"f9_inugami","name":"地獄の番犬",  "icon":"🐕","hp":55000,"atk":3800,"def":1400,"crit":10,"dodge":10,"souls":390,"exp":585,"kind":"normal"},
-        {"id":"f9_tamashii","name":"魂食らい",   "icon":"💀","hp":75000,"atk":3000,"def":1800,"crit":8, "dodge":5,"souls":440,"exp":660,"kind":"normal"},
-        {"id":"f9_konton", "name":"混沌の神",    "icon":"🌑","hp":80000,"atk":2800,"def":2000,"crit":8, "dodge":5,"souls":460,"exp":690,"kind":"normal"},
-        {"id":"f9_tenshi", "name":"終末の天使",  "icon":"⚰️","hp":65000,"atk":3400,"def":1700,"crit":10,"dodge":8,"souls":430,"exp":645,"kind":"normal"}
+    {
+      "id": 9,
+      "name": "地獄",
+      "sub": "最終審判の地",
+      "icon": "🔥",
+      "color": "#ef4444",
+      "soulsMult": 6.0,
+      "expMult": 7.0,
+      "areaMode": true,
+      "unlockReq": {
+        "clearedFloor": 8
+      },
+      "enemies": [
+        {
+          "id": "f9_shisha",
+          "name": "地獄の使者",
+          "icon": "😈",
+          "hp": 60000,
+          "atk": 3500,
+          "def": 1500,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 400,
+          "exp": 600,
+          "kind": "normal"
+        },
+        {
+          "id": "f9_akuma",
+          "name": "業火の悪魔",
+          "icon": "🔥",
+          "hp": 70000,
+          "atk": 3200,
+          "def": 1600,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 420,
+          "exp": 630,
+          "kind": "normal"
+        },
+        {
+          "id": "f9_inugami",
+          "name": "地獄の番犬",
+          "icon": "🐕",
+          "hp": 55000,
+          "atk": 3800,
+          "def": 1400,
+          "crit": 10,
+          "dodge": 10,
+          "souls": 390,
+          "exp": 585,
+          "kind": "normal"
+        },
+        {
+          "id": "f9_tamashii",
+          "name": "魂食らい",
+          "icon": "💀",
+          "hp": 75000,
+          "atk": 3000,
+          "def": 1800,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 440,
+          "exp": 660,
+          "kind": "normal"
+        },
+        {
+          "id": "f9_konton",
+          "name": "混沌の神",
+          "icon": "🌑",
+          "hp": 80000,
+          "atk": 2800,
+          "def": 2000,
+          "crit": 8,
+          "dodge": 5,
+          "souls": 460,
+          "exp": 690,
+          "kind": "normal"
+        },
+        {
+          "id": "f9_tenshi",
+          "name": "終末の天使",
+          "icon": "⚰️",
+          "hp": 65000,
+          "atk": 3400,
+          "def": 1700,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 430,
+          "exp": 645,
+          "kind": "normal"
+        }
       ],
-      "bosses":[
-        {"id":"f9b_maou",  "name":"魔王",        "icon":"👿","hp":800000, "atk":8000,"def":3500,"crit":12,"dodge":8,"souls":20000,"exp":30000,"kind":"boss"},
-        {"id":"f9b_souzou","name":"地獄の創造主","icon":"🌑","hp":1200000,"atk":7000,"def":4500,"crit":10,"dodge":8,"souls":30000,"exp":50000,"kind":"boss"}
+      "bosses": [
+        {
+          "id": "f9b_maou",
+          "name": "魔王",
+          "icon": "👿",
+          "hp": 800000,
+          "atk": 8000,
+          "def": 3500,
+          "crit": 12,
+          "dodge": 8,
+          "souls": 20000,
+          "exp": 30000,
+          "kind": "boss"
+        },
+        {
+          "id": "f9b_souzou",
+          "name": "地獄の創造主",
+          "icon": "🌑",
+          "hp": 1200000,
+          "atk": 7000,
+          "def": 4500,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 30000,
+          "exp": 50000,
+          "kind": "boss"
+        }
       ]
     }
   ],
   "systemUnlocks": [
-    {"id":"clairvoyance",    "name":"千里眼",     "icon":"🔮","cost":500, "lvReq":20,"desc":"ダンジョン探索時、各部屋の内容がアイコンで事前に表示される","achReq":null},
-    {"id":"passive_slot_up", "name":"魔法の覚醒", "icon":"🛡","cost":300, "lvReq":0, "desc":"パッシブスキルの装備枠が1増加する（最大3枠）","achReq":"ach_floor2_clear"},
-    {"id":"active_slot_up",  "name":"刃の冴え",   "icon":"⚡","cost":400, "lvReq":0, "desc":"アクティブスキルの装備枠が全キャラ+1増加する","achReq":"ach_floor4_clear"},
-    {"id":"passive_slot_up2","name":"深淵の覚醒", "icon":"🛡","cost":500, "lvReq":0, "desc":"パッシブスキルの装備枠がさらに1増加する（最大4枠）","achReq":"ach_floor3_passive"},
-    {"id":"active_slot_up2", "name":"終焉の刃",   "icon":"⚡","cost":600, "lvReq":0, "desc":"アクティブスキルの装備枠が全キャラさらに+1増加する","achReq":"ach_floor5_active"},
-    {"id":"acc_slot_up",     "name":"宝物の縁",   "icon":"💍","cost":400, "lvReq":0, "desc":"装飾品の装備枠が1増加する","achReq":"ach_floor3_acc"},
-    {"id":"acc_slot_up2",    "name":"秘宝の覚醒", "icon":"💎","cost":500, "lvReq":0, "desc":"装飾品の装備枠がさらに1増加する","achReq":"ach_floor5_acc"}
+    {
+      "id": "clairvoyance",
+      "name": "千里眼",
+      "icon": "🔮",
+      "cost": 500,
+      "lvReq": 20,
+      "desc": "ダンジョン探索時、各部屋の内容がアイコンで事前に表示される",
+      "achReq": null
+    },
+    {
+      "id": "passive_slot_up",
+      "name": "魔法の覚醒",
+      "icon": "🛡",
+      "cost": 300,
+      "lvReq": 0,
+      "desc": "パッシブスキルの装備枠が1増加する（最大3枠）",
+      "achReq": "ach_floor2_clear"
+    },
+    {
+      "id": "active_slot_up",
+      "name": "刃の冴え",
+      "icon": "⚡",
+      "cost": 400,
+      "lvReq": 0,
+      "desc": "アクティブスキルの装備枠が全キャラ+1増加する",
+      "achReq": "ach_floor4_clear"
+    },
+    {
+      "id": "passive_slot_up2",
+      "name": "深淵の覚醒",
+      "icon": "🛡",
+      "cost": 500,
+      "lvReq": 0,
+      "desc": "パッシブスキルの装備枠がさらに1増加する（最大4枠）",
+      "achReq": "ach_floor3_passive"
+    },
+    {
+      "id": "active_slot_up2",
+      "name": "終焉の刃",
+      "icon": "⚡",
+      "cost": 600,
+      "lvReq": 0,
+      "desc": "アクティブスキルの装備枠が全キャラさらに+1増加する",
+      "achReq": "ach_floor5_active"
+    },
+    {
+      "id": "acc_slot_up",
+      "name": "宝物の縁",
+      "icon": "💍",
+      "cost": 400,
+      "lvReq": 0,
+      "desc": "装飾品の装備枠が1増加する",
+      "achReq": "ach_floor3_acc"
+    },
+    {
+      "id": "acc_slot_up2",
+      "name": "秘宝の覚醒",
+      "icon": "💎",
+      "cost": 500,
+      "lvReq": 0,
+      "desc": "装飾品の装備枠がさらに1増加する",
+      "achReq": "ach_floor5_acc"
+    }
   ],
   "unlockGroups": {
     "char": [
-      {"id":"warrior",     "label":"戦士",     "cost":10,    "sub":"高HPと防御力・アクティブ2枠"},
-      {"id":"mage",        "label":"魔術師",   "cost":15,    "sub":"高火力・高MP・アクティブ3枠"},
-      {"id":"rogue",       "label":"盗賊",     "cost":20,    "sub":"会心・回避最高・アクティブ3枠"},
-      {"id":"paladin",     "label":"聖騎士",   "cost":30,    "sub":"超高耐久・装飾品2枠",          "lvReq":5},
-      {"id":"necromancer", "label":"死霊術師", "cost":40,    "sub":"最高MP・高火力スペシャリスト",  "lvReq":15},
-      {"id":"samurai",     "label":"侍",       "cost":1000,  "sub":"反撃の達人・被弾時反撃",        "achReq":"ach_samurai_unlock","lvReq":25},
-      {"id":"ninja",       "label":"忍者",     "cost":50000, "sub":"二刀流で2連撃・高回避",          "achReq":"ach_ninja_unlock"}
+      {
+        "id": "warrior",
+        "label": "戦士",
+        "cost": 10,
+        "sub": "高HPと防御力・アクティブ2枠"
+      },
+      {
+        "id": "mage",
+        "label": "魔術師",
+        "cost": 15,
+        "sub": "高火力・高MP・アクティブ3枠"
+      },
+      {
+        "id": "rogue",
+        "label": "盗賊",
+        "cost": 20,
+        "sub": "会心・回避最高・アクティブ3枠"
+      },
+      {
+        "id": "paladin",
+        "label": "聖騎士",
+        "cost": 30,
+        "sub": "超高耐久・装飾品2枠",
+        "lvReq": 5
+      },
+      {
+        "id": "necromancer",
+        "label": "死霊術師",
+        "cost": 40,
+        "sub": "最高MP・高火力スペシャリスト",
+        "lvReq": 15
+      },
+      {
+        "id": "samurai",
+        "label": "侍",
+        "cost": 1000,
+        "sub": "反撃の達人・被弾時反撃",
+        "achReq": "ach_samurai_unlock",
+        "lvReq": 25
+      },
+      {
+        "id": "ninja",
+        "label": "忍者",
+        "cost": 50000,
+        "sub": "二刀流で2連撃・高回避",
+        "achReq": "ach_ninja_unlock"
+      }
     ],
     "equip": [
-      {"id":"axe",       "label":"呪われた斧",    "cost":12,    "sub":"攻撃+10"},
-      {"id":"staff",     "label":"骨の杖",        "cost":10,    "sub":"攻撃+8 MP+20"},
-      {"id":"dagger",    "label":"影の短剣",      "cost":8,     "sub":"攻撃+7"},
-      {"id":"chainmail", "label":"腐食した鎖帷子","cost":10,    "sub":"防御+7 HP+10"},
-      {"id":"robe",      "label":"呪術師の外套",  "cost":8,     "sub":"防御+2 HP+5 MP+20"},
-      {"id":"shadow",    "label":"影織りの外套",  "cost":12,    "sub":"防御+4 HP+8"},
-      {"id":"mageblade", "label":"魔剣",           "cost":25,    "sub":"攻撃+14 MP+10",               "lvReq":5},
-      {"id":"holyspear", "label":"聖槍",           "cost":30,    "sub":"攻撃+12 会心+5%",             "lvReq":15},
-      {"id":"cursedmail","label":"呪術鎧",         "cost":25,    "sub":"防御+10 HP+15",               "lvReq":5},
-      {"id":"bonemantle","label":"骸骨外套",       "cost":30,    "sub":"防御+3 HP+8 MP+30",           "lvReq":15},
-      {"id":"katana",    "label":"日本刀",          "cost":3000,  "sub":"攻撃+30 会心+5% 侍専用特殊効果","achReq":"ach_katana_unlock","lvReq":100},
-      {"id":"dumbbell",  "label":"鉄アレイ",        "cost":0,     "sub":"ATK×1/3 戦闘後EXP×1.2",      "achReq":"ach_kill100"},
-      {"id":"companion", "label":"相棒",             "cost":50000, "sub":"ATK+300 会心+10% スキルMP20%で半分","achReq":"ach_traveler_3clear"}
+      {
+        "id": "axe",
+        "label": "呪われた斧",
+        "cost": 12,
+        "sub": "攻撃+10"
+      },
+      {
+        "id": "staff",
+        "label": "骨の杖",
+        "cost": 10,
+        "sub": "攻撃+8 MP+20"
+      },
+      {
+        "id": "dagger",
+        "label": "影の短剣",
+        "cost": 8,
+        "sub": "攻撃+7"
+      },
+      {
+        "id": "chainmail",
+        "label": "腐食した鎖帷子",
+        "cost": 10,
+        "sub": "防御+7 HP+10"
+      },
+      {
+        "id": "robe",
+        "label": "呪術師の外套",
+        "cost": 8,
+        "sub": "防御+2 HP+5 MP+20"
+      },
+      {
+        "id": "shadow",
+        "label": "影織りの外套",
+        "cost": 12,
+        "sub": "防御+4 HP+8"
+      },
+      {
+        "id": "mageblade",
+        "label": "魔剣",
+        "cost": 25,
+        "sub": "攻撃+14 MP+10",
+        "lvReq": 5
+      },
+      {
+        "id": "holyspear",
+        "label": "聖槍",
+        "cost": 30,
+        "sub": "攻撃+12 会心+5%",
+        "lvReq": 15
+      },
+      {
+        "id": "cursedmail",
+        "label": "呪術鎧",
+        "cost": 25,
+        "sub": "防御+10 HP+15",
+        "lvReq": 5
+      },
+      {
+        "id": "bonemantle",
+        "label": "骸骨外套",
+        "cost": 30,
+        "sub": "防御+3 HP+8 MP+30",
+        "lvReq": 15
+      },
+      {
+        "id": "katana",
+        "label": "日本刀",
+        "cost": 3000,
+        "sub": "攻撃+30 会心+5% 侍専用特殊効果",
+        "achReq": "ach_katana_unlock",
+        "lvReq": 100
+      },
+      {
+        "id": "dumbbell",
+        "label": "鉄アレイ",
+        "cost": 0,
+        "sub": "ATK×1/3 戦闘後EXP×1.2",
+        "achReq": "ach_kill100"
+      },
+      {
+        "id": "companion",
+        "label": "相棒",
+        "cost": 50000,
+        "sub": "ATK+300 会心+10% スキルMP20%で半分",
+        "achReq": "ach_traveler_3clear"
+      }
     ],
     "accessory": [
-      {"id":"amulet_mp",        "label":"魔力の首飾り", "cost":0,     "sub":"戦闘開始時MP+20 — デフォルト解放"},
-      {"id":"ring_double",      "label":"連撃の指輪",   "cost":0,     "sub":"10%で2連撃 — デフォルト解放"},
-      {"id":"charm_souls",      "label":"魂喰いの護符", "cost":0,     "sub":"撃破時5%で魂+5 — デフォルト解放"},
-      {"id":"hayabusa_feather", "label":"はやぶさの羽", "cost":150,   "sub":"行動時5%で行動2回繰り返し",   "achReq":"ach_hayabusa_unlock"},
-      {"id":"earring_mp",       "label":"イヤリング",   "cost":5000,  "sub":"スキル消費MP -20%"},
-      {"id":"headband_atk",     "label":"鉢巻",         "cost":30000, "sub":"攻撃力1.2倍"},
-      {"id":"barrier_def",      "label":"バリア",       "cost":30000, "sub":"防御力1.2倍"},
-      {"id":"cat_whisker",      "label":"猫のヒゲ",     "cost":30000, "sub":"HP1.2倍"},
-      {"id":"ssd_mp",           "label":"SSD",          "cost":30000, "sub":"MP1.2倍"},
-      {"id":"ribbon_souls",     "label":"リボン",       "cost":100000,"sub":"戦闘獲得魂+10%"}
+      {
+        "id": "amulet_mp",
+        "label": "魔力の首飾り",
+        "cost": 0,
+        "sub": "戦闘開始時MP+20 — デフォルト解放"
+      },
+      {
+        "id": "ring_double",
+        "label": "連撃の指輪",
+        "cost": 0,
+        "sub": "10%で2連撃 — デフォルト解放"
+      },
+      {
+        "id": "charm_souls",
+        "label": "魂喰いの護符",
+        "cost": 0,
+        "sub": "撃破時5%で魂+5 — デフォルト解放"
+      },
+      {
+        "id": "hayabusa_feather",
+        "label": "はやぶさの羽",
+        "cost": 150,
+        "sub": "行動時5%で行動2回繰り返し",
+        "achReq": "ach_hayabusa_unlock"
+      },
+      {
+        "id": "earring_mp",
+        "label": "イヤリング",
+        "cost": 5000,
+        "sub": "スキル消費MP -20%"
+      },
+      {
+        "id": "headband_atk",
+        "label": "鉢巻",
+        "cost": 30000,
+        "sub": "攻撃力1.2倍"
+      },
+      {
+        "id": "barrier_def",
+        "label": "バリア",
+        "cost": 30000,
+        "sub": "防御力1.2倍"
+      },
+      {
+        "id": "cat_whisker",
+        "label": "猫のヒゲ",
+        "cost": 30000,
+        "sub": "HP1.2倍"
+      },
+      {
+        "id": "ssd_mp",
+        "label": "SSD",
+        "cost": 30000,
+        "sub": "MP1.2倍"
+      },
+      {
+        "id": "ribbon_souls",
+        "label": "リボン",
+        "cost": 100000,
+        "sub": "戦闘獲得魂+10%"
+      }
     ],
     "skill": [
-      {"id":"blaze",         "label":"地獄炎",     "cost":18, "sub":"攻撃×4の爆発",            "kind":"active"},
-      {"id":"shadowstep",    "label":"影踏み",     "cost":18, "sub":"回避＋反撃×2",            "kind":"active"},
-      {"id":"rallycry",      "label":"鬨の声",     "cost":20, "sub":"3ターン攻撃+50%",         "kind":"active"},
-      {"id":"soulburst",     "label":"魂の爆発",   "cost":35, "sub":"HP消費で攻撃×6",          "kind":"active","lvReq":15},
-      {"id":"timestop",      "label":"時間停止",   "cost":40, "sub":"敵攻撃2回無効化",          "kind":"active","lvReq":30},
-      {"id":"divinewrath",   "label":"天罰",       "cost":55, "sub":"防御無視・攻撃×5・MP100", "kind":"active","lvReq":60},
-      {"id":"apocalypse",    "label":"終焉",       "cost":80, "sub":"最大MPの半分消費で残HP30%ダメージ","kind":"active","lvReq":100},
-      {"id":"critup",        "label":"急所穿ち",   "cost":15, "sub":"クリティカル率+20%",      "kind":"passive"},
-      {"id":"rage",          "label":"血の怒り",   "cost":15, "sub":"HP50%以下で攻撃+30%",    "kind":"passive"},
-      {"id":"souleat",       "label":"魂喰い",     "cost":20, "sub":"敵撃破時HP+10",           "kind":"passive"},
-      {"id":"cursedmark",    "label":"呪いの刻印", "cost":30, "sub":"毎ターン敵に最大HP2%ダメ","kind":"passive","lvReq":30},
-      {"id":"godspeed",      "label":"神速",       "cost":30, "sub":"完全回避+10% 半回避+15%","kind":"passive","lvReq":30},
-      {"id":"undying",       "label":"不死身",     "cost":50, "sub":"HP0時1度だけ踏みとどまる","kind":"passive","lvReq":60},
-      {"id":"demonblessing", "label":"魔神の加護", "cost":80, "sub":"与ダメ+20% 被ダメ-15%",  "kind":"passive","lvReq":100}
+      {
+        "id": "blaze",
+        "label": "地獄炎",
+        "cost": 18,
+        "sub": "攻撃×4の爆発",
+        "kind": "active"
+      },
+      {
+        "id": "shadowstep",
+        "label": "影踏み",
+        "cost": 18,
+        "sub": "回避＋反撃×2",
+        "kind": "active"
+      },
+      {
+        "id": "rallycry",
+        "label": "鬨の声",
+        "cost": 20,
+        "sub": "3ターン攻撃+50%",
+        "kind": "active"
+      },
+      {
+        "id": "soulburst",
+        "label": "魂の爆発",
+        "cost": 35,
+        "sub": "HP消費で攻撃×6",
+        "kind": "active",
+        "lvReq": 15
+      },
+      {
+        "id": "timestop",
+        "label": "時間停止",
+        "cost": 40,
+        "sub": "敵攻撃2回無効化",
+        "kind": "active",
+        "lvReq": 30
+      },
+      {
+        "id": "divinewrath",
+        "label": "天罰",
+        "cost": 55,
+        "sub": "防御無視・攻撃×5・MP100",
+        "kind": "active",
+        "lvReq": 60
+      },
+      {
+        "id": "apocalypse",
+        "label": "終焉",
+        "cost": 80,
+        "sub": "最大MPの半分消費で残HP30%ダメージ",
+        "kind": "active",
+        "lvReq": 100
+      },
+      {
+        "id": "critup",
+        "label": "急所穿ち",
+        "cost": 15,
+        "sub": "クリティカル率+20%",
+        "kind": "passive"
+      },
+      {
+        "id": "rage",
+        "label": "血の怒り",
+        "cost": 15,
+        "sub": "HP50%以下で攻撃+30%",
+        "kind": "passive"
+      },
+      {
+        "id": "souleat",
+        "label": "魂喰い",
+        "cost": 20,
+        "sub": "敵撃破時HP+10",
+        "kind": "passive"
+      },
+      {
+        "id": "cursedmark",
+        "label": "呪いの刻印",
+        "cost": 30,
+        "sub": "毎ターン敵に最大HP2%ダメ",
+        "kind": "passive",
+        "lvReq": 30
+      },
+      {
+        "id": "godspeed",
+        "label": "神速",
+        "cost": 30,
+        "sub": "完全回避+10% 半回避+15%",
+        "kind": "passive",
+        "lvReq": 30
+      },
+      {
+        "id": "undying",
+        "label": "不死身",
+        "cost": 50,
+        "sub": "HP0時1度だけ踏みとどまる",
+        "kind": "passive",
+        "lvReq": 60
+      },
+      {
+        "id": "demonblessing",
+        "label": "魔神の加護",
+        "cost": 80,
+        "sub": "与ダメ+20% 被ダメ-15%",
+        "kind": "passive",
+        "lvReq": 100
+      }
     ]
   },
   "achievements": [
-    {"id":"ach_w_floor3",      "title":"戦士の試練",    "cond":{"kind":"floorClear",         "val":3,   "charId":"warrior"},     "reward":{"type":"uniqueSkill",   "id":"warrior_fortress"},  "icon":"⚔",  "desc":"戦士で地下3階「灼熱の熔岩窟」をクリア"},
-    {"id":"ach_w_boss5",       "title":"戦士の覚醒",    "cond":{"kind":"bossKill",           "val":5,   "charId":"warrior"},     "reward":{"type":"uniqueSkill",   "id":"warrior_counter"},   "icon":"⚔",  "desc":"戦士でボスを5回撃破"},
-    {"id":"ach_w_boss10",      "title":"戦士の極意",    "cond":{"kind":"bossKill",           "val":10,  "charId":"warrior"},     "reward":{"type":"unlockItem",    "id":"未定"},              "icon":"⚔",  "desc":"戦士でボスを10回撃破"},
-    {"id":"ach_m_floor3",      "title":"魔術師の試練",  "cond":{"kind":"floorClear",         "val":3,   "charId":"mage"},        "reward":{"type":"uniqueSkill",   "id":"mage_insight"},      "icon":"✦",  "desc":"魔術師で地下3階「灼熱の熔岩窟」をクリア"},
-    {"id":"ach_m_skill100",    "title":"魔術師の道",    "cond":{"kind":"skillUse",           "val":100, "charId":"mage"},        "reward":{"type":"uniqueSkill",   "id":"mage_chain"},        "icon":"✦",  "desc":"魔術師でスキルを100回使用"},
-    {"id":"ach_r_floor3",      "title":"盗賊の試練",    "cond":{"kind":"floorClear",         "val":3,   "charId":"rogue"},       "reward":{"type":"uniqueSkill",   "id":"rogue_phantom"},     "icon":"◆",  "desc":"盗賊で地下3階「灼熱の熔岩窟」をクリア"},
-    {"id":"ach_r_dodge10",     "title":"影の達人",      "cond":{"kind":"dodgeCount",         "val":10,  "charId":"rogue"},       "reward":{"type":"uniqueSkill",   "id":"rogue_shadowblade"}, "icon":"◆",  "desc":"盗賊で10回完全回避（盗賊プレイ中のみカウント）"},
-    {"id":"ach_p_floor3",      "title":"聖騎士の試練",  "cond":{"kind":"floorClear",         "val":3,   "charId":"paladin"},     "reward":{"type":"uniqueSkill",   "id":"paladin_judgement"}, "icon":"🛡", "desc":"聖騎士で地下3階「灼熱の熔岩窟」をクリア"},
-    {"id":"ach_p_boss5",       "title":"聖騎士の誓い",  "cond":{"kind":"bossKill",           "val":5,   "charId":"paladin"},     "reward":{"type":"uniqueSkill",   "id":"paladin_shield"},    "icon":"🛡", "desc":"聖騎士でボスを5回撃破"},
-    {"id":"ach_n_floor3",      "title":"死霊術師の試練","cond":{"kind":"floorClear",         "val":3,   "charId":"necromancer"}, "reward":{"type":"uniqueSkill",   "id":"necro_lich"},        "icon":"💀", "desc":"死霊術師で地下3階「灼熱の熔岩窟」をクリア"},
-    {"id":"ach_total10",       "title":"奈落の探索者",  "cond":{"kind":"totalRun",           "val":10},                           "reward":{"type":"unlockAccessory","id":"hayabusa_feather"}, "icon":"🌑", "desc":"合計10回ランを完了"},
-    {"id":"ach_total50",       "title":"奈落の住人",    "cond":{"kind":"totalRun",           "val":50},                           "reward":{"type":"unlockItem",    "id":"未定"},              "icon":"🌑", "desc":"合計50回ランを完了"},
-    {"id":"ach_kill100",       "title":"殲滅者",         "cond":{"kind":"killCount",          "val":100},                          "reward":{"type":"unlockWeapon",  "id":"dumbbell"},          "icon":"💀", "desc":"累計100体撃破"},
-    {"id":"ach_samurai_unlock","title":"武士道の自覚",  "cond":{"kind":"floorClearId",       "val":2},                            "reward":{"type":"unlockChar",    "id":"samurai"},           "icon":"⚔️", "desc":"地下2階「腐食の回廊」クリア＋総Lv25でアンロックショップに侍が登場"},
-    {"id":"ach_katana_unlock", "title":"刀匠の統べ",    "cond":{"kind":"floorClear",         "val":4,   "charId":"samurai"},     "reward":{"type":"unlockWeapon",  "id":"katana"},            "icon":"⚔️", "desc":"侍で地下4階「虚無の深淵」クリア＋総Lv100でアンロックショップに日本刀が登場"},
-    {"id":"ach_floor2_clear",  "title":"腐食の征服",    "cond":{"kind":"floorClearId",       "val":2},                            "reward":{"type":"unlockSystem",  "id":"passive_slot_up"},   "icon":"🌿", "desc":"地下2階「腐食の回廊」クリア"},
-    {"id":"ach_floor4_clear",  "title":"虚無の克服",    "cond":{"kind":"floorClearId",       "val":4},                            "reward":{"type":"unlockSystem",  "id":"active_slot_up"},    "icon":"🌑", "desc":"地下4階「虚無の深淵」クリア"},
-    {"id":"ach_floor3_passive","title":"灼熱の突破",    "cond":{"kind":"floorClearId",       "val":3},                            "reward":{"type":"unlockSystem",  "id":"passive_slot_up2"},  "icon":"🔥", "desc":"地下3階「灼熱の熔岩窟」クリアでパッシブ枠+1"},
-    {"id":"ach_floor5_active", "title":"終焉の踏破",    "cond":{"kind":"floorClearId",       "val":5},                            "reward":{"type":"unlockSystem",  "id":"active_slot_up2"},   "icon":"💀", "desc":"地下5階「終焉の間」クリアでアクティブ枠+1"},
-    {"id":"ach_floor3_acc",    "title":"溶岩の収穫者",  "cond":{"kind":"floorClearId",       "val":3},                            "reward":{"type":"unlockSystem",  "id":"acc_slot_up"},       "icon":"💍", "desc":"地下3階「灼熱の熔岩窟」クリアで装飾品枠+1"},
-    {"id":"ach_floor5_acc",    "title":"終焉の装飾者",  "cond":{"kind":"floorClearId",       "val":5},                            "reward":{"type":"unlockSystem",  "id":"acc_slot_up2"},      "icon":"💎", "desc":"地下5階「終焉の間」クリアで装飾品枠+1"},
-    {"id":"ach_traveler_3clear","title":"旅の証",        "cond":{"kind":"travelerJourneyClear","val":3},                           "reward":{"type":"unlockWeapon",  "id":"companion"},         "icon":"🧭", "desc":"「旅」スキル習得後にトラベラーで任意のステージを3回クリア — アンロックショップに「相棒」が登場"},
-    {"id":"ach_ninja_unlock",  "title":"忍者の覚醒",    "cond":{"kind":"angelAllFloors"},                                          "reward":{"type":"unlockChar",    "id":"ninja"},             "icon":"🥷", "desc":"天使で地下1〜5階をすべてクリアするとアンロックショップに忍者が登場"},
-    {"id":"ach_ninja_5clear",  "title":"忍の道",         "cond":{"kind":"floorClear",         "val":5,   "charId":"ninja"},       "reward":{"type":"uniqueSkill",   "id":"ninja_deathblow"},   "icon":"🥷", "desc":"忍者で任意のステージを5回クリア"}
+    {
+      "id": "ach_w_floor3",
+      "title": "戦士の試練",
+      "cond": {
+        "kind": "floorClear",
+        "val": 3,
+        "charId": "warrior"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "warrior_fortress"
+      },
+      "icon": "⚔",
+      "desc": "戦士で地下3階「灼熱の熔岩窟」をクリア"
+    },
+    {
+      "id": "ach_w_boss5",
+      "title": "戦士の覚醒",
+      "cond": {
+        "kind": "bossKill",
+        "val": 5,
+        "charId": "warrior"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "warrior_counter"
+      },
+      "icon": "⚔",
+      "desc": "戦士でボスを5回撃破"
+    },
+    {
+      "id": "ach_w_boss10",
+      "title": "戦士の極意",
+      "cond": {
+        "kind": "bossKill",
+        "val": 10,
+        "charId": "warrior"
+      },
+      "reward": {
+        "type": "unlockItem",
+        "id": "未定"
+      },
+      "icon": "⚔",
+      "desc": "戦士でボスを10回撃破"
+    },
+    {
+      "id": "ach_m_floor3",
+      "title": "魔術師の試練",
+      "cond": {
+        "kind": "floorClear",
+        "val": 3,
+        "charId": "mage"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "mage_insight"
+      },
+      "icon": "✦",
+      "desc": "魔術師で地下3階「灼熱の熔岩窟」をクリア"
+    },
+    {
+      "id": "ach_m_skill100",
+      "title": "魔術師の道",
+      "cond": {
+        "kind": "skillUse",
+        "val": 100,
+        "charId": "mage"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "mage_chain"
+      },
+      "icon": "✦",
+      "desc": "魔術師でスキルを100回使用"
+    },
+    {
+      "id": "ach_r_floor3",
+      "title": "盗賊の試練",
+      "cond": {
+        "kind": "floorClear",
+        "val": 3,
+        "charId": "rogue"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "rogue_phantom"
+      },
+      "icon": "◆",
+      "desc": "盗賊で地下3階「灼熱の熔岩窟」をクリア"
+    },
+    {
+      "id": "ach_r_dodge10",
+      "title": "影の達人",
+      "cond": {
+        "kind": "dodgeCount",
+        "val": 10,
+        "charId": "rogue"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "rogue_shadowblade"
+      },
+      "icon": "◆",
+      "desc": "盗賊で10回完全回避（盗賊プレイ中のみカウント）"
+    },
+    {
+      "id": "ach_p_floor3",
+      "title": "聖騎士の試練",
+      "cond": {
+        "kind": "floorClear",
+        "val": 3,
+        "charId": "paladin"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "paladin_judgement"
+      },
+      "icon": "🛡",
+      "desc": "聖騎士で地下3階「灼熱の熔岩窟」をクリア"
+    },
+    {
+      "id": "ach_p_boss5",
+      "title": "聖騎士の誓い",
+      "cond": {
+        "kind": "bossKill",
+        "val": 5,
+        "charId": "paladin"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "paladin_shield"
+      },
+      "icon": "🛡",
+      "desc": "聖騎士でボスを5回撃破"
+    },
+    {
+      "id": "ach_n_floor3",
+      "title": "死霊術師の試練",
+      "cond": {
+        "kind": "floorClear",
+        "val": 3,
+        "charId": "necromancer"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "necro_lich"
+      },
+      "icon": "💀",
+      "desc": "死霊術師で地下3階「灼熱の熔岩窟」をクリア"
+    },
+    {
+      "id": "ach_total10",
+      "title": "奈落の探索者",
+      "cond": {
+        "kind": "totalRun",
+        "val": 10
+      },
+      "reward": {
+        "type": "unlockAccessory",
+        "id": "hayabusa_feather"
+      },
+      "icon": "🌑",
+      "desc": "合計10回ランを完了"
+    },
+    {
+      "id": "ach_total50",
+      "title": "奈落の住人",
+      "cond": {
+        "kind": "totalRun",
+        "val": 50
+      },
+      "reward": {
+        "type": "unlockItem",
+        "id": "未定"
+      },
+      "icon": "🌑",
+      "desc": "合計50回ランを完了"
+    },
+    {
+      "id": "ach_kill100",
+      "title": "殲滅者",
+      "cond": {
+        "kind": "killCount",
+        "val": 100
+      },
+      "reward": {
+        "type": "unlockWeapon",
+        "id": "dumbbell"
+      },
+      "icon": "💀",
+      "desc": "累計100体撃破"
+    },
+    {
+      "id": "ach_samurai_unlock",
+      "title": "武士道の自覚",
+      "cond": {
+        "kind": "floorClearId",
+        "val": 2
+      },
+      "reward": {
+        "type": "unlockChar",
+        "id": "samurai"
+      },
+      "icon": "⚔️",
+      "desc": "地下2階「腐食の回廊」クリア＋総Lv25でアンロックショップに侍が登場"
+    },
+    {
+      "id": "ach_katana_unlock",
+      "title": "刀匠の統べ",
+      "cond": {
+        "kind": "floorClear",
+        "val": 4,
+        "charId": "samurai"
+      },
+      "reward": {
+        "type": "unlockWeapon",
+        "id": "katana"
+      },
+      "icon": "⚔️",
+      "desc": "侍で地下4階「虚無の深淵」クリア＋総Lv100でアンロックショップに日本刀が登場"
+    },
+    {
+      "id": "ach_floor2_clear",
+      "title": "腐食の征服",
+      "cond": {
+        "kind": "floorClearId",
+        "val": 2
+      },
+      "reward": {
+        "type": "unlockSystem",
+        "id": "passive_slot_up"
+      },
+      "icon": "🌿",
+      "desc": "地下2階「腐食の回廊」クリア"
+    },
+    {
+      "id": "ach_floor4_clear",
+      "title": "虚無の克服",
+      "cond": {
+        "kind": "floorClearId",
+        "val": 4
+      },
+      "reward": {
+        "type": "unlockSystem",
+        "id": "active_slot_up"
+      },
+      "icon": "🌑",
+      "desc": "地下4階「虚無の深淵」クリア"
+    },
+    {
+      "id": "ach_floor3_passive",
+      "title": "灼熱の突破",
+      "cond": {
+        "kind": "floorClearId",
+        "val": 3
+      },
+      "reward": {
+        "type": "unlockSystem",
+        "id": "passive_slot_up2"
+      },
+      "icon": "🔥",
+      "desc": "地下3階「灼熱の熔岩窟」クリアでパッシブ枠+1"
+    },
+    {
+      "id": "ach_floor5_active",
+      "title": "終焉の踏破",
+      "cond": {
+        "kind": "floorClearId",
+        "val": 5
+      },
+      "reward": {
+        "type": "unlockSystem",
+        "id": "active_slot_up2"
+      },
+      "icon": "💀",
+      "desc": "地下5階「終焉の間」クリアでアクティブ枠+1"
+    },
+    {
+      "id": "ach_floor3_acc",
+      "title": "溶岩の収穫者",
+      "cond": {
+        "kind": "floorClearId",
+        "val": 3
+      },
+      "reward": {
+        "type": "unlockSystem",
+        "id": "acc_slot_up"
+      },
+      "icon": "💍",
+      "desc": "地下3階「灼熱の熔岩窟」クリアで装飾品枠+1"
+    },
+    {
+      "id": "ach_floor5_acc",
+      "title": "終焉の装飾者",
+      "cond": {
+        "kind": "floorClearId",
+        "val": 5
+      },
+      "reward": {
+        "type": "unlockSystem",
+        "id": "acc_slot_up2"
+      },
+      "icon": "💎",
+      "desc": "地下5階「終焉の間」クリアで装飾品枠+1"
+    },
+    {
+      "id": "ach_traveler_3clear",
+      "title": "旅の証",
+      "cond": {
+        "kind": "travelerJourneyClear",
+        "val": 3
+      },
+      "reward": {
+        "type": "unlockWeapon",
+        "id": "companion"
+      },
+      "icon": "🧭",
+      "desc": "「旅」スキル習得後にトラベラーで任意のステージを3回クリア — アンロックショップに「相棒」が登場"
+    },
+    {
+      "id": "ach_ninja_unlock",
+      "title": "奈落の天使",
+      "cond": {
+        "kind": "angelAllFloors",
+        "charId": "angel",
+        "val": 1
+      },
+      "reward": {
+        "type": "unlockChar",
+        "id": "ninja"
+      },
+      "icon": "👼",
+      "desc": "天使が地下を巡ると、何かが起こる… 天使で地下1〜5階をすべて制覇せよ"
+    },
+    {
+      "id": "ach_ninja_5clear",
+      "title": "忍の道",
+      "cond": {
+        "kind": "floorClear",
+        "val": 5,
+        "charId": "ninja"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "ninja_deathblow"
+      },
+      "icon": "🥷",
+      "desc": "忍者で任意のステージを5回クリア"
+    }
   ]
 }

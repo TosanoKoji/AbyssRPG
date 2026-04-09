@@ -72,6 +72,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .dmg-pop.crit-dmg{font-size:26px;color:#FCD34D;text-shadow:0 0 10px #F59E0B,0 2px 6px rgba(0,0,0,.5)}
 .dmg-pop.heal{font-size:20px;color:#1D9E75;text-shadow:0 0 8px #10b981}
 .dmg-pop.dodge-txt{color:#60A5FA;font-size:16px;font-weight:600}
+.dmg-pop.graze-txt{color:#60A5FA;font-size:13px;font-weight:600}
+.dmg-pop.graze-dmg{color:#94a3b8;font-size:14px;font-weight:500}
 .dmg-pop.enemy-dmg{color:#F09595}
 @keyframes pop{0%{opacity:1;transform:translateY(0) scale(1)}20%{transform:translateY(-8px) scale(1.1)}100%{opacity:0;transform:translateY(-50px) scale(.8)}}
 .skill-flash{position:absolute;inset:0;background:rgba(168,85,247,.18);border-radius:12px;animation:flash .4s forwards;pointer-events:none}
@@ -128,11 +130,19 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .tab.active{background:#2c2c2a;color:#e0ddd8}
 
 /* アクティブスキルボタン */
-.active-btn{background:#26215C;border:0.5px solid #534AB7;border-radius:8px;padding:7px 12px;font-size:12px;color:#AFA9EC;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:76px}
+.active-btn{background:#26215C;border:0.5px solid #534AB7;border-radius:8px;padding:7px 12px;font-size:12px;color:#AFA9EC;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s,opacity .15s;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:76px;position:relative;overflow:hidden}
 .active-btn:hover:not(:disabled){background:#2d2865;border-color:#7c6fe0}
-.active-btn:disabled{opacity:.4;cursor:not-allowed}
+.active-btn:disabled{cursor:not-allowed}
+.active-btn.cd-active{background:#18161a;border-color:#3a3840;color:#4a4860;opacity:0.7}
+.active-btn.cd-ready{background:#2d2865;border:1.5px solid #a78bfa;box-shadow:0 0 8px rgba(167,139,250,0.25)}
+.active-btn.cd-no-mp{opacity:0.5}
 .active-btn .sk-name{font-size:12px;font-weight:500}
 .active-btn .sk-cost{font-size:10px;color:#8b7cf8}
+.cd-bar{width:100%;height:3px;background:#2a2a2e;border-radius:2px;margin-top:3px;overflow:hidden}
+.cd-fill{height:100%;background:linear-gradient(90deg,#534AB7,#a78bfa);border-radius:2px}
+.cd-secs{font-size:10px;color:#8b7cf8;margin-top:1px}
+.cd-status{font-size:10px;color:#a78bfa;font-weight:bold;margin-top:1px}
+.gr-S{color:#facc15;font-weight:bold}.gr-A{color:#fb923c;font-weight:bold}.gr-B{color:#60a5fa}.gr-C{color:#888780}.gr-D{color:#524f56}
 
 /* 部屋グリッド */
 .room-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
@@ -263,7 +273,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title-hero">
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604091728</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604092139</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -656,13 +666,19 @@ function executeHardReset(){
 // ─── レベル計算 ───────────────────────────────────────────
 const LV_STATS=[
   {key:'hp',  label:'最大HP',  costPer:20,  valPer:10, unit:'HP',  cap:null},
-  {key:'atk', label:'攻撃力',  costPer:30,  valPer:2,  unit:'ATK', cap:null},
+  {key:'atk', label:'攻撃力',  costPer:30,  valPer:1,  unit:'ATK', cap:null},
   {key:'def', label:'防御力',  costPer:30,  valPer:1,  unit:'DEF', cap:null},
   {key:'mp',  label:'最大MP',  costPer:50,  valPer:5,  unit:'MP',  cap:null},
   {key:'crit',label:'会心率',  costPer:500, valPer:1,  unit:'%',   cap:20},
   {key:'dodge',label:'回避率', costPer:500, valPer:1,  unit:'%',   cap:20},
 ];
 const MAX_LV=9999;
+// 成長倍率テーブル: S=2.0, A=1.5, B=1.0(基準), C=0.75, D=0.45
+const GROWTH_RATES={S:2.0,A:1.5,B:1.0,C:0.75,D:0.45};
+function charGm(charId,stat){
+  const g=(CHARS?.[charId]?.lvGrowth||{})[stat]||'B';
+  return GROWTH_RATES[g]||1.0;
+}
 function calcLevel(){
   const total=Object.values(GS.lvBonus).reduce((a,b)=>a+b,0);
   return Math.min(MAX_LV, Math.floor(total/3)+1);
@@ -686,6 +702,18 @@ const SKILL_FNS={
 
 
 let bState={};
+let _cdTimer=null;
+function startCdTimer(){
+  if(_cdTimer)return;
+  _cdTimer=setInterval(()=>{
+    if(!bState||bState.over){stopCdTimer();return;}
+    const now=Date.now();
+    const anyActive=Object.values(bState.skillCooldownEnd||{}).some(t=>now<t);
+    if(anyActive)renderActiveBtns();
+    else stopCdTimer();
+  },100);
+}
+function stopCdTimer(){if(_cdTimer){clearInterval(_cdTimer);_cdTimer=null;}}
 let skillTab='active';
 let unlockTab='char';
 let paused=false;
@@ -836,9 +864,9 @@ function renderAchievements(){
   sorted.forEach(a=>{
     const done=GS.achDone.includes(a.id);
     // 未解放キャラ関連の達成はネタバレ防止のため非表示（達成済みは除く）
+    // cond.charIdがあれば、そのキャラが解放済みの場合のみ表示（例: 天使解放後に忍者ヒントを表示）
     if(!done){
       if(a.cond.charId&&!GS.unlocked.includes(a.cond.charId)) return;
-      if(a.reward.type==='unlockChar'&&!GS.unlocked.includes(a.reward.id)) return;
     }
     // 宇宙クリア前はトラベラーの「旅」スキル解放情報も非表示
     if(!done&&a.reward.type==='uniqueSkill'&&a.reward.id==='traveler_journey'&&!GS.unlockedUniqueSkills.includes('traveler_journey')) return;
@@ -1008,6 +1036,24 @@ function renderLevel(){
       row.querySelector('.lv-stat-btn').addEventListener('click',()=>lvUp(s.key,s.costPer));
     }
     list.appendChild(row);
+
+    // 各キャラ成長率の内訳を表示
+    const growthRow=document.createElement('div');
+    growthRow.style.cssText='display:flex;flex-wrap:wrap;gap:4px;padding:2px 0 8px 0;border-bottom:0.5px solid #3a3a38;margin-bottom:0';
+    const valPerActual = s.key==='mp' ? 8 : s.valPer; // mpは実際の計算値が8
+    Object.values(CHARS).forEach(c=>{
+      if(!isUnlocked(c.id)) return;
+      const g=(c.lvGrowth||{})[s.key]||'B';
+      const rate=GROWTH_RATES[g]||1.0;
+      const perLv=(valPerActual*rate);
+      const dispVal=Number.isInteger(perLv)?perLv:perLv.toFixed(2).replace(/\.?0+$/,'');
+      const span=document.createElement('span');
+      span.style.cssText='font-size:10px;padding:1px 5px;border-radius:4px;background:#1f1f24;border:0.5px solid #3a3a38;white-space:nowrap';
+      span.innerHTML=`${c.icon}<span class="gr-${g}">${g}</span> +${dispVal}`;
+      span.title=`${c.name}: 1レベルにつき+${dispVal}${s.unit}`;
+      growthRow.appendChild(span);
+    });
+    list.appendChild(growthRow);
   });
 }
 let lvMult=1; // 強化倍率（×1/×10/×100）
@@ -1139,12 +1185,12 @@ function unlockFree(id){
   GS.unlocked.push(id);save();renderUnlock();
 }
 function unlockItem(id,cost){
-  if(GS.souls<cost){alert('魂の欠片が足りない');return;}
+  if(GS.souls<cost){showInlineAlert('魂の欠片が足りない');return;}
   GS.souls-=cost;GS.unlocked.push(id);save();renderUnlock();
   document.getElementById('unlock-souls-disp').textContent=GS.souls;
 }
 function unlockSystem(id,cost){
-  if(GS.souls<cost){alert('魂の欠片が足りない');return;}
+  if(GS.souls<cost){showInlineAlert('魂の欠片が足りない');return;}
   GS.souls-=cost;
   GS.systemUnlocked=GS.systemUnlocked||[];
   GS.systemUnlocked.push(id);
@@ -1201,12 +1247,12 @@ function renderLibrary(){
         <div class="lib-card-title">${c.icon} ${c.name}</div>
         <div class="lib-card-desc">${c.desc}</div>
         <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
-          <span class="badge badge-red">HP ${c.hp+(lb.hp||0)*10}</span>
-          <span class="badge badge-amber">ATK ${c.atk+(lb.atk||0)*2}</span>
-          <span class="badge badge-blue">DEF ${c.def+(lb.def||0)}</span>
-          <span class="badge badge-purple">MP ${c.maxMp+(lb.mp||0)*8}</span>
-          <span class="badge badge-teal">会心 ${c.crit+(lb.crit||0)}%</span>
-          ${c.dodge>0?`<span class="badge badge-gray">回避 ${c.dodge+(lb.dodge||0)}%</span>`:''}
+          <span class="badge badge-red">HP ${c.hp+Math.round((lb.hp||0)*10*charGm(c.id,'hp'))}</span>
+          <span class="badge badge-amber">ATK ${c.atk+Math.round((lb.atk||0)*charGm(c.id,'atk'))}</span>
+          <span class="badge badge-blue">DEF ${c.def+Math.round((lb.def||0)*charGm(c.id,'def'))}</span>
+          <span class="badge badge-purple">MP ${c.maxMp+Math.round((lb.mp||0)*8*charGm(c.id,'mp'))}</span>
+          <span class="badge badge-teal">会心 ${c.crit+Math.round((lb.crit||0)*charGm(c.id,'crit'))}%</span>
+          ${c.dodge>0?`<span class="badge badge-gray">回避 ${c.dodge+Math.round((lb.dodge||0)*charGm(c.id,'dodge'))}%</span>`:''}
         </div>
         ${myUniques.length?`<div style="margin-top:6px">
           <div style="font-size:10px;color:#5f5e5a;margin-bottom:3px">ユニークスキル</div>
@@ -1370,12 +1416,13 @@ function renderChars(){
   Object.values(CHARS).forEach(c=>{
     const ok=isUnlocked(c.id);
     const lb=GS.lvBonus;
-    const effHp=c.hp+(lb.hp||0)*10;
-    const effAtk=c.atk+(lb.atk||0)*2;
-    const effDef=c.def+(lb.def||0)*1;
-    const effCrit=c.crit+(lb.crit||0);
-    const effDodge=c.dodge+(lb.dodge||0);
-    const effMp=c.maxMp+(lb.mp||0)*8;
+    const effHp=c.hp+Math.round((lb.hp||0)*10*charGm(c.id,'hp'));
+    const effAtk=c.atk+Math.round((lb.atk||0)*1*charGm(c.id,'atk'));
+    const effDef=c.def+Math.round((lb.def||0)*1*charGm(c.id,'def'));
+    const effCrit=c.crit+Math.round((lb.crit||0)*charGm(c.id,'crit'));
+    const effDodge=c.dodge+Math.round((lb.dodge||0)*charGm(c.id,'dodge'));
+    const effMp=c.maxMp+Math.round((lb.mp||0)*8*charGm(c.id,'mp'));
+    const g=c.lvGrowth||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
     // このキャラの所持ユニークスキル
     const myUniques=Object.values(UNIQUE_SKILLS).filter(u=>
       u.charId===c.id&&(u.initial||GS.unlockedUniqueSkills.includes(u.id))
@@ -1403,6 +1450,15 @@ function renderChars(){
             ${effDodge>0?`<span class="badge badge-gray">回避 ${effDodge}%</span>`:''}
             ${c.accSlots>1?`<span class="badge badge-orange">装飾品${c.accSlots}枠</span>`:''}
           </div>
+          <div style="margin-top:4px;font-size:10px;color:#5f5e5a;display:flex;gap:6px;flex-wrap:wrap">
+            <span>成長↑</span>
+            <span>HP:<span class="gr-${g.hp}">${g.hp}</span></span>
+            <span>ATK:<span class="gr-${g.atk}">${g.atk}</span></span>
+            <span>DEF:<span class="gr-${g.def}">${g.def}</span></span>
+            <span>MP:<span class="gr-${g.mp}">${g.mp}</span></span>
+            <span>会心:<span class="gr-${g.crit}">${g.crit}</span></span>
+            <span>回避:<span class="gr-${g.dodge}">${g.dodge}</span></span>
+          </div>
           ${uniqueHtml}
         </div>
         ${ok?'':'<span class="badge badge-red" style="font-weight:bold;">未解放</span>'}
@@ -1410,6 +1466,49 @@ function renderChars(){
     if(ok) _cd.addEventListener('click',()=>selectChar(c.id));
     el.appendChild(_cd);
   });
+
+  // ── 現在のパラメーター比較パネル（アンロック済みキャラのみ）──────
+  const unlockedChars=Object.values(CHARS).filter(c=>isUnlocked(c.id));
+  if(unlockedChars.length>0){
+    const lb=GS.lvBonus;
+    const panel=document.createElement('div');
+    panel.style.cssText='margin-top:14px;padding-top:10px;border-top:0.5px solid #3a3a38';
+    const panelTitle=document.createElement('div');
+    panelTitle.style.cssText='font-size:11px;color:#5f5e5a;margin-bottom:8px;letter-spacing:0.5px';
+    panelTitle.textContent='現在のパラメーター（強化込み）';
+    panel.appendChild(panelTitle);
+
+    const scroll=document.createElement('div');
+    scroll.style.cssText='display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch';
+    unlockedChars.forEach(c=>{
+      const effHp =c.hp +Math.round((lb.hp||0)*10*charGm(c.id,'hp'));
+      const effAtk=c.atk+Math.round((lb.atk||0)*charGm(c.id,'atk'));
+      const effDef=c.def+Math.round((lb.def||0)*charGm(c.id,'def'));
+      const effMp =c.maxMp+Math.round((lb.mp||0)*8*charGm(c.id,'mp'));
+      const effCrit=c.crit+Math.round((lb.crit||0)*charGm(c.id,'crit'));
+      const effDodge=c.dodge+Math.round((lb.dodge||0)*charGm(c.id,'dodge'));
+      const isSelected=GS.run.charId===c.id;
+      const card=document.createElement('div');
+      card.style.cssText=`min-width:90px;background:${isSelected?'#1f2922':'#1f1f24'};border:0.5px solid ${isSelected?'#4ade80':'#3a3a38'};border-radius:8px;padding:8px 8px 6px;flex-shrink:0;cursor:pointer;transition:border-color .15s`;
+      card.innerHTML=`
+        <div style="text-align:center;margin-bottom:4px">
+          <span style="font-size:20px">${c.icon}</span>
+          <div style="font-size:10px;color:#888780;margin-top:1px">${c.name}</div>
+        </div>
+        <div style="font-size:10px;line-height:1.9">
+          <div style="display:flex;justify-content:space-between;gap:4px"><span style="color:#5f5e5a">HP</span><span style="color:#F09595;font-weight:500">${effHp}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:4px"><span style="color:#5f5e5a">MP</span><span style="color:#AFA9EC;font-weight:500">${effMp}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:4px"><span style="color:#5f5e5a">ATK</span><span style="color:#EF9F27;font-weight:500">${effAtk}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:4px"><span style="color:#5f5e5a">DEF</span><span style="color:#85B7EB;font-weight:500">${effDef}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:4px"><span style="color:#5f5e5a">会心</span><span style="color:#6ee7b7;font-weight:500">${effCrit}%</span></div>
+          ${effDodge>0?`<div style="display:flex;justify-content:space-between;gap:4px"><span style="color:#5f5e5a">回避</span><span style="color:#b4b2a9;font-weight:500">${effDodge}%</span></div>`:''}
+        </div>`;
+      card.addEventListener('click',()=>selectChar(c.id));
+      scroll.appendChild(card);
+    });
+    panel.appendChild(scroll);
+    el.appendChild(panel);
+  }
 }
 
 function selectChar(id){
@@ -1614,15 +1713,16 @@ function startRun(){
   };
   save();
 
-  GS.run.maxHp  = c.hp + a.hp + (lb.hp||0)*10;
+  const cid=GS.run.charId;
+  GS.run.maxHp  = c.hp + a.hp + Math.round((lb.hp||0)*10*charGm(cid,'hp'));
   GS.run.hp     = GS.run.maxHp;
-  GS.run.atk    = c.atk + w.atk + (lb.atk||0)*2;
-  GS.run.def    = c.def + a.def + (lb.def||0)*1;
-  GS.run.maxMp  = c.maxMp + (w.mp||0) + (a.mp||0) + (lb.mp||0)*8;
+  GS.run.atk    = c.atk + w.atk + Math.round((lb.atk||0)*1*charGm(cid,'atk'));
+  GS.run.def    = c.def + a.def + Math.round((lb.def||0)*1*charGm(cid,'def'));
+  GS.run.maxMp  = c.maxMp + (w.mp||0) + (a.mp||0) + Math.round((lb.mp||0)*8*charGm(cid,'mp'));
   GS.run.mp     = GS.run.maxMp;
-  GS.run.crit   = c.crit + (lb.crit||0) + (w.crit||0);
-  GS.run.dodge  = c.dodge + (lb.dodge||0) + (passives.includes('godspeed')?10:0);
-  GS.run.hdodge = c.hdodge + Math.floor((lb.dodge||0)*1.5) + (passives.includes('godspeed')?15:0);
+  GS.run.crit   = c.crit + Math.round((lb.crit||0)*charGm(cid,'crit')) + (w.crit||0);
+  GS.run.dodge  = c.dodge + Math.round((lb.dodge||0)*charGm(cid,'dodge')) + (passives.includes('godspeed')?10:0);
+  GS.run.hdodge = c.hdodge + Math.round((lb.dodge||0)*1.5*charGm(cid,'dodge')) + (passives.includes('godspeed')?15:0);
   GS.run.dmgBonus  = passives.includes('demonblessing')?1.20:1.0;
   GS.run.defBonus  = passives.includes('demonblessing')?0.85:1.0;
   // statMult系アクセサリ: 鉢巻・バリア・猫のヒゲ・SSD
@@ -1878,8 +1978,10 @@ function startBattle(enemy,isBoss){
     rageStacks:0, dodgeNext:false, stunTurns:0,
     fullGuardTurns:0,
     phantomTurns: GS.run.phantomTurns||0,
-    curseTick: (GS.run.uniqueSkills||[]).includes('necro_curse') ? Math.floor(enemy.hp*0.05) : 0
+    curseTick: (GS.run.uniqueSkills||[]).includes('necro_curse') ? Math.floor(enemy.hp*0.05) : 0,
+    skillCooldownEnd: {}
   };
+  stopCdTimer();
   setTC('battle-title',isBoss?'⚠ ボス戦':'戦闘');
   // 階層名と部屋番号表示
   const _battleFloor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
@@ -1972,16 +2074,33 @@ function triggerPassiveBadge(id){
 function renderActiveBtns(){
   const el=document.getElementById('active-skill-btns');el.innerHTML='';
   const earringDisc=(GS.run.accessories||[]).some(a=>{const ac=ACCESSORIES[a];return ac&&ac.kind==='skillCost'&&ac.effect.mpDiscount;})?0.20:0;
+  const now=Date.now();
   (GS.run.activeSkills||[]).forEach(id=>{
     const s=ACTIVE_SKILLS[id];
-    // 終焉は最大MPの半分消費（表示用コスト）
     const baseCostDisp=Math.max(0,s.mpCost-(GS.run.nextSkillDiscount||0));
-    const displayCost = id==='apocalypse' ? Math.floor((bState.heroMaxMp||GS.run.maxMp)*0.5) : Math.max(0,Math.floor(baseCostDisp*(1-earringDisc)));
-    const cost=id==='apocalypse' ? displayCost : displayCost;
-    const canUse=!bState.over&&bState.heroMp>=cost;
+    const displayCost=id==='apocalypse'?Math.floor((bState.heroMaxMp||GS.run.maxMp)*0.5):Math.max(0,Math.floor(baseCostDisp*(1-earringDisc)));
+    const cost=displayCost;
+    const cdEnd=(bState.skillCooldownEnd||{})[id]||0;
+    const cdRemain=Math.max(0,cdEnd-now);
+    const cdTotal=(s.cooldown||0)*1000;
+    const cdPct=cdTotal>0?Math.min(100,((cdTotal-cdRemain)/cdTotal)*100):100;
+    const onCooldown=cdRemain>0;
+    const hasMp=!bState.over&&bState.heroMp>=cost;
+    const canUse=hasMp&&!onCooldown&&!bState.over;
     const btn=document.createElement('button');
-    btn.className='active-btn';btn.disabled=!canUse;
-    btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><span class="sk-cost">MP ${id==='apocalypse'?displayCost+'(半分)':cost}</span><span class="sk-desc">${s.desc}</span>`;
+    let cls='active-btn';
+    if(onCooldown) cls+=' cd-active';
+    else if(canUse) cls+=' cd-ready';
+    else cls+=' cd-no-mp';
+    btn.className=cls;
+    btn.disabled=!canUse;
+    if(onCooldown){
+      btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><div class="cd-bar"><div class="cd-fill" style="width:${cdPct.toFixed(1)}%"></div></div><span class="cd-secs">${(cdRemain/1000).toFixed(1)}s</span>`;
+    } else if(canUse){
+      btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><span class="sk-cost">MP ${id==='apocalypse'?displayCost+'(半分)':cost}</span><span class="cd-status">✓ 使用可能</span>`;
+    } else {
+      btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><span class="sk-cost">MP ${id==='apocalypse'?displayCost+'(半分)':cost}</span><span class="sk-desc">${s.desc}</span>`;
+    }
     btn.onclick=()=>useActiveSkill(id);
     el.appendChild(btn);
   });
@@ -1998,6 +2117,12 @@ function useActiveSkill(id){
   GS.run.nextSkillDiscount=0;
   if(bState.heroMp<cost){addLog('MPが足りない！','log-hero-dmg');return;}
   bState.heroMp-=cost;
+  // クールタイム設定
+  if(s.cooldown>0){
+    bState.skillCooldownEnd=bState.skillCooldownEnd||{};
+    bState.skillCooldownEnd[id]=Date.now()+(s.cooldown||0)*1000;
+    startCdTimer();
+  }
   addLog(`【${s.name}】発動！`,'log-skill');
   s.fn(bState);
   // 天使の奇跡: 50%の確率で1回追加発動（MP消費0.5回分追加=合計1.5回分）
@@ -2085,24 +2210,29 @@ function addLog(msg,cls=''){
 const _activeDmg={'enemy-sprite':0,'hero-sprite':0};
 function showDmg(targetId,val,isHeal,isSkill,isCrit){
   const area=document.getElementById('battle-area');
-  const el=document.createElement('div');
   const isEnemyTarget=targetId==='enemy-sprite';
-  el.className='dmg-pop'+(isCrit?' crit-dmg':isSkill?' skill-dmg':isHeal?' heal':isEnemyTarget?' enemy-dmg':'');
-  el.textContent=(isHeal?'+':'-')+val;
   const tgt=document.getElementById(targetId);
   const rect=tgt.getBoundingClientRect();
   const aRect=area.getBoundingClientRect();
-  // 連続攻撃時の重なり防止: カウントに応じてX/Yをずらす
+  // 連続攻撃時の重なり防止: カウントに応じてX/Y・タイミングをずらす
   const n=_activeDmg[targetId]||0;
   _activeDmg[targetId]=n+1;
-  setTimeout(()=>{_activeDmg[targetId]=Math.max(0,(_activeDmg[targetId]||1)-1);},950);
-  const xOff=(n%3-1)*26;      // -26 / 0 / +26 で横方向にずらす
-  const yOff=Math.floor(n/3)*(-22);  // 3つごとに上にずらす
-  const jitter=(Math.random()-0.5)*10;
-  el.style.left=(rect.left-aRect.left+rect.width/2-16+jitter+xOff)+'px';
-  el.style.top=(rect.top-aRect.top-10+yOff)+'px';
-  area.appendChild(el);
-  setTimeout(()=>el.remove(),900);
+  const delay=n>0?n*110:0; // 2発目以降は110msずつ遅らせて重なりを防ぐ
+  setTimeout(()=>{_activeDmg[targetId]=Math.max(0,(_activeDmg[targetId]||1)-1);},950+delay);
+  const xOff=(n%4-1.5)*36;         // -54 / -18 / +18 / +54 で横方向にずらす
+  const yOff=Math.floor(n/4)*(-28); // 4つごとに上にずらす
+  const jitter=(Math.random()-0.5)*14;
+  const leftPos=rect.left-aRect.left+rect.width/2-16+jitter+xOff;
+  const topPos =rect.top -aRect.top -10+yOff;
+  setTimeout(()=>{
+    const el=document.createElement('div');
+    el.className='dmg-pop'+(isCrit?' crit-dmg':isSkill?' skill-dmg':isHeal?' heal':isEnemyTarget?' enemy-dmg':'');
+    el.textContent=(isHeal?'+':'-')+val;
+    el.style.left=leftPos+'px';
+    el.style.top=topPos+'px';
+    area.appendChild(el);
+    setTimeout(()=>el.remove(),900);
+  },delay);
 }
 
 function animAttack(spriteId, animType, onHit){
@@ -2361,8 +2491,8 @@ function autoBattleTick(){
         } else if(dodgeResult==='half'){
           animShake('hero-sprite');showHeroFlash();
           bState.heroHp-=dmgToHero;
-          showTextPop('hero-sprite','直撃を避けた！','dodge-txt');
-          addLog(`直撃を避けた！ ${bState.enemy.name}からダメージを受けた`,'log-hero-dmg');
+          showGrazePop('hero-sprite',dmgToHero);
+          addLog(`かすった！ ${bState.enemy.name}から${dmgToHero}ダメージ（半減）`,'log-hero-dmg');
         } else {
           animShake('hero-sprite');showHeroFlash();
           bState.heroHp-=dmgToHero;
@@ -2399,11 +2529,37 @@ function showTextPop(targetId,text,cls){
   area.appendChild(el);
   setTimeout(()=>el.remove(),900);
 }
+// かすり当たり専用: 「かすった！」テキスト＋小さなダメージ数値を別々に表示
+function showGrazePop(targetId,dmgVal){
+  const area=document.getElementById('battle-area');
+  const tgt=document.getElementById(targetId);
+  const rect=tgt.getBoundingClientRect();
+  const aRect=area.getBoundingClientRect();
+  const cx=rect.left-aRect.left+rect.width/2;
+  const cy=rect.top-aRect.top;
+  // 「かすった！」テキスト（左上に表示）
+  const txt=document.createElement('div');
+  txt.className='dmg-pop graze-txt';
+  txt.textContent='かすった！';
+  txt.style.left=(cx-28)+'px';
+  txt.style.top=(cy-28)+'px';
+  area.appendChild(txt);
+  setTimeout(()=>txt.remove(),900);
+  // ダメージ数値（右側に少しずらして表示）
+  const num=document.createElement('div');
+  num.className='dmg-pop graze-dmg';
+  num.textContent='-'+dmgVal;
+  num.style.left=(cx+8)+'px';
+  num.style.top=(cy-10)+'px';
+  area.appendChild(num);
+  setTimeout(()=>num.remove(),900);
+}
 
 // ─── 戦闘終了 ─────────────────────────────────────────────
 function endBattle(won){
   if(bState.over)return;
   bState.over=true;
+  stopCdTimer();
   const passives=GS.run.passiveSkills||[];
   const resEl=document.getElementById('battle-result');
   resEl.style.display='block';
