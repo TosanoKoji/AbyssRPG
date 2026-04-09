@@ -263,7 +263,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title-hero">
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604091700</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604091728</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2776,9 +2776,7 @@ function showInlineAlert(msg){
 }
 
 // 初期化
-// マイグレーション: travelerは初期キャラなので常に解放済み扱い
-if(!GS.unlocked.includes('traveler')){GS.unlocked.push('traveler');save();}
-checkAchievements();
+// マイグレーション・初期化はloadAndInit()内で実行（データロード後）
 
 // ─── ボタンイベント一括登録 ───────────────────────────────
 function initButtons(){
@@ -2890,6 +2888,9 @@ async function loadAndInit(){
     ACHIEVEMENTS=d.achievements; FLOORS=d.floors; UNLOCK_GROUPS=d.unlockGroups; SYSTEM_UNLOCKS=d.systemUnlocks;
     // アクティブスキルに実行関数を付与
     Object.keys(SKILL_FNS).forEach(id=>{if(ACTIVE_SKILLS[id])ACTIVE_SKILLS[id].fn=SKILL_FNS[id];});
+    // マイグレーション: travelerは初期キャラなので常に解放済み扱い
+    if(!GS.unlocked.includes('traveler')){GS.unlocked.push('traveler');save();}
+    checkAchievements();
   }catch(e){
     document.body.innerHTML='<div style="color:#ef4444;padding:40px;font-family:monospace;background:#1a1a18;min-height:100vh">⚠ データ読み込みエラー<br><br>'+e.message+'<br><br><small>ローカルサーバー経由でアクセスしてください<br>例: python3 -m http.server 8000</small></div>';
     return;
