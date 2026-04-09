@@ -220,5 +220,94 @@
         {"id":"f9b_souzou","name":"地獄の創造主","icon":"🌑","hp":1200000,"atk":7000,"def":4500,"crit":10,"dodge":8,"souls":30000,"exp":50000,"kind":"boss"}
       ]
     }
+  ],
+  "systemUnlocks": [
+    {"id":"clairvoyance",    "name":"千里眼",     "icon":"🔮","cost":500, "lvReq":20,"desc":"ダンジョン探索時、各部屋の内容がアイコンで事前に表示される","achReq":null},
+    {"id":"passive_slot_up", "name":"魔法の覚醒", "icon":"🛡","cost":300, "lvReq":0, "desc":"パッシブスキルの装備枠が1増加する（最大3枠）","achReq":"ach_floor2_clear"},
+    {"id":"active_slot_up",  "name":"刃の冴え",   "icon":"⚡","cost":400, "lvReq":0, "desc":"アクティブスキルの装備枠が全キャラ+1増加する","achReq":"ach_floor4_clear"},
+    {"id":"passive_slot_up2","name":"深淵の覚醒", "icon":"🛡","cost":500, "lvReq":0, "desc":"パッシブスキルの装備枠がさらに1増加する（最大4枠）","achReq":"ach_floor3_passive"},
+    {"id":"active_slot_up2", "name":"終焉の刃",   "icon":"⚡","cost":600, "lvReq":0, "desc":"アクティブスキルの装備枠が全キャラさらに+1増加する","achReq":"ach_floor5_active"},
+    {"id":"acc_slot_up",     "name":"宝物の縁",   "icon":"💍","cost":400, "lvReq":0, "desc":"装飾品の装備枠が1増加する","achReq":"ach_floor3_acc"},
+    {"id":"acc_slot_up2",    "name":"秘宝の覚醒", "icon":"💎","cost":500, "lvReq":0, "desc":"装飾品の装備枠がさらに1増加する","achReq":"ach_floor5_acc"}
+  ],
+  "unlockGroups": {
+    "char": [
+      {"id":"warrior",     "label":"戦士",     "cost":10,    "sub":"高HPと防御力・アクティブ2枠"},
+      {"id":"mage",        "label":"魔術師",   "cost":15,    "sub":"高火力・高MP・アクティブ3枠"},
+      {"id":"rogue",       "label":"盗賊",     "cost":20,    "sub":"会心・回避最高・アクティブ3枠"},
+      {"id":"paladin",     "label":"聖騎士",   "cost":30,    "sub":"超高耐久・装飾品2枠",          "lvReq":5},
+      {"id":"necromancer", "label":"死霊術師", "cost":40,    "sub":"最高MP・高火力スペシャリスト",  "lvReq":15},
+      {"id":"samurai",     "label":"侍",       "cost":1000,  "sub":"反撃の達人・被弾時反撃",        "achReq":"ach_samurai_unlock","lvReq":25},
+      {"id":"ninja",       "label":"忍者",     "cost":50000, "sub":"二刀流で2連撃・高回避",          "achReq":"ach_ninja_unlock"}
+    ],
+    "equip": [
+      {"id":"axe",       "label":"呪われた斧",    "cost":12,    "sub":"攻撃+10"},
+      {"id":"staff",     "label":"骨の杖",        "cost":10,    "sub":"攻撃+8 MP+20"},
+      {"id":"dagger",    "label":"影の短剣",      "cost":8,     "sub":"攻撃+7"},
+      {"id":"chainmail", "label":"腐食した鎖帷子","cost":10,    "sub":"防御+7 HP+10"},
+      {"id":"robe",      "label":"呪術師の外套",  "cost":8,     "sub":"防御+2 HP+5 MP+20"},
+      {"id":"shadow",    "label":"影織りの外套",  "cost":12,    "sub":"防御+4 HP+8"},
+      {"id":"mageblade", "label":"魔剣",           "cost":25,    "sub":"攻撃+14 MP+10",               "lvReq":5},
+      {"id":"holyspear", "label":"聖槍",           "cost":30,    "sub":"攻撃+12 会心+5%",             "lvReq":15},
+      {"id":"cursedmail","label":"呪術鎧",         "cost":25,    "sub":"防御+10 HP+15",               "lvReq":5},
+      {"id":"bonemantle","label":"骸骨外套",       "cost":30,    "sub":"防御+3 HP+8 MP+30",           "lvReq":15},
+      {"id":"katana",    "label":"日本刀",          "cost":3000,  "sub":"攻撃+30 会心+5% 侍専用特殊効果","achReq":"ach_katana_unlock","lvReq":100},
+      {"id":"dumbbell",  "label":"鉄アレイ",        "cost":0,     "sub":"ATK×1/3 戦闘後EXP×1.2",      "achReq":"ach_kill100"},
+      {"id":"companion", "label":"相棒",             "cost":50000, "sub":"ATK+300 会心+10% スキルMP20%で半分","achReq":"ach_traveler_3clear"}
+    ],
+    "accessory": [
+      {"id":"amulet_mp",        "label":"魔力の首飾り", "cost":0,     "sub":"戦闘開始時MP+20 — デフォルト解放"},
+      {"id":"ring_double",      "label":"連撃の指輪",   "cost":0,     "sub":"10%で2連撃 — デフォルト解放"},
+      {"id":"charm_souls",      "label":"魂喰いの護符", "cost":0,     "sub":"撃破時5%で魂+5 — デフォルト解放"},
+      {"id":"hayabusa_feather", "label":"はやぶさの羽", "cost":150,   "sub":"行動時5%で行動2回繰り返し",   "achReq":"ach_hayabusa_unlock"},
+      {"id":"earring_mp",       "label":"イヤリング",   "cost":5000,  "sub":"スキル消費MP -20%"},
+      {"id":"headband_atk",     "label":"鉢巻",         "cost":30000, "sub":"攻撃力1.2倍"},
+      {"id":"barrier_def",      "label":"バリア",       "cost":30000, "sub":"防御力1.2倍"},
+      {"id":"cat_whisker",      "label":"猫のヒゲ",     "cost":30000, "sub":"HP1.2倍"},
+      {"id":"ssd_mp",           "label":"SSD",          "cost":30000, "sub":"MP1.2倍"},
+      {"id":"ribbon_souls",     "label":"リボン",       "cost":100000,"sub":"戦闘獲得魂+10%"}
+    ],
+    "skill": [
+      {"id":"blaze",         "label":"地獄炎",     "cost":18, "sub":"攻撃×4の爆発",            "kind":"active"},
+      {"id":"shadowstep",    "label":"影踏み",     "cost":18, "sub":"回避＋反撃×2",            "kind":"active"},
+      {"id":"rallycry",      "label":"鬨の声",     "cost":20, "sub":"3ターン攻撃+50%",         "kind":"active"},
+      {"id":"soulburst",     "label":"魂の爆発",   "cost":35, "sub":"HP消費で攻撃×6",          "kind":"active","lvReq":15},
+      {"id":"timestop",      "label":"時間停止",   "cost":40, "sub":"敵攻撃2回無効化",          "kind":"active","lvReq":30},
+      {"id":"divinewrath",   "label":"天罰",       "cost":55, "sub":"防御無視・攻撃×5・MP100", "kind":"active","lvReq":60},
+      {"id":"apocalypse",    "label":"終焉",       "cost":80, "sub":"最大MPの半分消費で残HP30%ダメージ","kind":"active","lvReq":100},
+      {"id":"critup",        "label":"急所穿ち",   "cost":15, "sub":"クリティカル率+20%",      "kind":"passive"},
+      {"id":"rage",          "label":"血の怒り",   "cost":15, "sub":"HP50%以下で攻撃+30%",    "kind":"passive"},
+      {"id":"souleat",       "label":"魂喰い",     "cost":20, "sub":"敵撃破時HP+10",           "kind":"passive"},
+      {"id":"cursedmark",    "label":"呪いの刻印", "cost":30, "sub":"毎ターン敵に最大HP2%ダメ","kind":"passive","lvReq":30},
+      {"id":"godspeed",      "label":"神速",       "cost":30, "sub":"完全回避+10% 半回避+15%","kind":"passive","lvReq":30},
+      {"id":"undying",       "label":"不死身",     "cost":50, "sub":"HP0時1度だけ踏みとどまる","kind":"passive","lvReq":60},
+      {"id":"demonblessing", "label":"魔神の加護", "cost":80, "sub":"与ダメ+20% 被ダメ-15%",  "kind":"passive","lvReq":100}
+    ]
+  },
+  "achievements": [
+    {"id":"ach_w_floor3",      "title":"戦士の試練",    "cond":{"kind":"floorClear",         "val":3,   "charId":"warrior"},     "reward":{"type":"uniqueSkill",   "id":"warrior_fortress"},  "icon":"⚔",  "desc":"戦士で地下3階「灼熱の熔岩窟」をクリア"},
+    {"id":"ach_w_boss5",       "title":"戦士の覚醒",    "cond":{"kind":"bossKill",           "val":5,   "charId":"warrior"},     "reward":{"type":"uniqueSkill",   "id":"warrior_counter"},   "icon":"⚔",  "desc":"戦士でボスを5回撃破"},
+    {"id":"ach_w_boss10",      "title":"戦士の極意",    "cond":{"kind":"bossKill",           "val":10,  "charId":"warrior"},     "reward":{"type":"unlockItem",    "id":"未定"},              "icon":"⚔",  "desc":"戦士でボスを10回撃破"},
+    {"id":"ach_m_floor3",      "title":"魔術師の試練",  "cond":{"kind":"floorClear",         "val":3,   "charId":"mage"},        "reward":{"type":"uniqueSkill",   "id":"mage_insight"},      "icon":"✦",  "desc":"魔術師で地下3階「灼熱の熔岩窟」をクリア"},
+    {"id":"ach_m_skill100",    "title":"魔術師の道",    "cond":{"kind":"skillUse",           "val":100, "charId":"mage"},        "reward":{"type":"uniqueSkill",   "id":"mage_chain"},        "icon":"✦",  "desc":"魔術師でスキルを100回使用"},
+    {"id":"ach_r_floor3",      "title":"盗賊の試練",    "cond":{"kind":"floorClear",         "val":3,   "charId":"rogue"},       "reward":{"type":"uniqueSkill",   "id":"rogue_phantom"},     "icon":"◆",  "desc":"盗賊で地下3階「灼熱の熔岩窟」をクリア"},
+    {"id":"ach_r_dodge10",     "title":"影の達人",      "cond":{"kind":"dodgeCount",         "val":10,  "charId":"rogue"},       "reward":{"type":"uniqueSkill",   "id":"rogue_shadowblade"}, "icon":"◆",  "desc":"盗賊で10回完全回避（盗賊プレイ中のみカウント）"},
+    {"id":"ach_p_floor3",      "title":"聖騎士の試練",  "cond":{"kind":"floorClear",         "val":3,   "charId":"paladin"},     "reward":{"type":"uniqueSkill",   "id":"paladin_judgement"}, "icon":"🛡", "desc":"聖騎士で地下3階「灼熱の熔岩窟」をクリア"},
+    {"id":"ach_p_boss5",       "title":"聖騎士の誓い",  "cond":{"kind":"bossKill",           "val":5,   "charId":"paladin"},     "reward":{"type":"uniqueSkill",   "id":"paladin_shield"},    "icon":"🛡", "desc":"聖騎士でボスを5回撃破"},
+    {"id":"ach_n_floor3",      "title":"死霊術師の試練","cond":{"kind":"floorClear",         "val":3,   "charId":"necromancer"}, "reward":{"type":"uniqueSkill",   "id":"necro_lich"},        "icon":"💀", "desc":"死霊術師で地下3階「灼熱の熔岩窟」をクリア"},
+    {"id":"ach_total10",       "title":"奈落の探索者",  "cond":{"kind":"totalRun",           "val":10},                           "reward":{"type":"unlockAccessory","id":"hayabusa_feather"}, "icon":"🌑", "desc":"合計10回ランを完了"},
+    {"id":"ach_total50",       "title":"奈落の住人",    "cond":{"kind":"totalRun",           "val":50},                           "reward":{"type":"unlockItem",    "id":"未定"},              "icon":"🌑", "desc":"合計50回ランを完了"},
+    {"id":"ach_kill100",       "title":"殲滅者",         "cond":{"kind":"killCount",          "val":100},                          "reward":{"type":"unlockWeapon",  "id":"dumbbell"},          "icon":"💀", "desc":"累計100体撃破"},
+    {"id":"ach_samurai_unlock","title":"武士道の自覚",  "cond":{"kind":"floorClearId",       "val":2},                            "reward":{"type":"unlockChar",    "id":"samurai"},           "icon":"⚔️", "desc":"地下2階「腐食の回廊」クリア＋総Lv25でアンロックショップに侍が登場"},
+    {"id":"ach_katana_unlock", "title":"刀匠の統べ",    "cond":{"kind":"floorClear",         "val":4,   "charId":"samurai"},     "reward":{"type":"unlockWeapon",  "id":"katana"},            "icon":"⚔️", "desc":"侍で地下4階「虚無の深淵」クリア＋総Lv100でアンロックショップに日本刀が登場"},
+    {"id":"ach_floor2_clear",  "title":"腐食の征服",    "cond":{"kind":"floorClearId",       "val":2},                            "reward":{"type":"unlockSystem",  "id":"passive_slot_up"},   "icon":"🌿", "desc":"地下2階「腐食の回廊」クリア"},
+    {"id":"ach_floor4_clear",  "title":"虚無の克服",    "cond":{"kind":"floorClearId",       "val":4},                            "reward":{"type":"unlockSystem",  "id":"active_slot_up"},    "icon":"🌑", "desc":"地下4階「虚無の深淵」クリア"},
+    {"id":"ach_floor3_passive","title":"灼熱の突破",    "cond":{"kind":"floorClearId",       "val":3},                            "reward":{"type":"unlockSystem",  "id":"passive_slot_up2"},  "icon":"🔥", "desc":"地下3階「灼熱の熔岩窟」クリアでパッシブ枠+1"},
+    {"id":"ach_floor5_active", "title":"終焉の踏破",    "cond":{"kind":"floorClearId",       "val":5},                            "reward":{"type":"unlockSystem",  "id":"active_slot_up2"},   "icon":"💀", "desc":"地下5階「終焉の間」クリアでアクティブ枠+1"},
+    {"id":"ach_floor3_acc",    "title":"溶岩の収穫者",  "cond":{"kind":"floorClearId",       "val":3},                            "reward":{"type":"unlockSystem",  "id":"acc_slot_up"},       "icon":"💍", "desc":"地下3階「灼熱の熔岩窟」クリアで装飾品枠+1"},
+    {"id":"ach_floor5_acc",    "title":"終焉の装飾者",  "cond":{"kind":"floorClearId",       "val":5},                            "reward":{"type":"unlockSystem",  "id":"acc_slot_up2"},      "icon":"💎", "desc":"地下5階「終焉の間」クリアで装飾品枠+1"},
+    {"id":"ach_traveler_3clear","title":"旅の証",        "cond":{"kind":"travelerJourneyClear","val":3},                           "reward":{"type":"unlockWeapon",  "id":"companion"},         "icon":"🧭", "desc":"「旅」スキル習得後にトラベラーで任意のステージを3回クリア — アンロックショップに「相棒」が登場"},
+    {"id":"ach_ninja_unlock",  "title":"忍者の覚醒",    "cond":{"kind":"angelAllFloors"},                                          "reward":{"type":"unlockChar",    "id":"ninja"},             "icon":"🥷", "desc":"天使で地下1〜5階をすべてクリアするとアンロックショップに忍者が登場"},
+    {"id":"ach_ninja_5clear",  "title":"忍の道",         "cond":{"kind":"floorClear",         "val":5,   "charId":"ninja"},       "reward":{"type":"uniqueSkill",   "id":"ninja_deathblow"},   "icon":"🥷", "desc":"忍者で任意のステージを5回クリア"}
   ]
 }
