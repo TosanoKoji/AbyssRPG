@@ -275,7 +275,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title-hero">
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604101022</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604101026</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1016,8 +1016,11 @@ function renderLevel(){
   document.getElementById('lv-exp-disp').textContent=GS.exp;
   document.getElementById('totallv-level').textContent=GS.totalLv;
 
-  // ── キャラパネル（アイコン＋才能＋現在パラメータ）──
+  // スクロール位置を保存
   const charPanel=document.getElementById('level-char-panel');
+  const prevScroll=charPanel.querySelector('div')?charPanel.querySelector('div').scrollLeft:0;
+
+  // ── キャラパネル（アイコン＋才能＋現在パラメータ）──
   charPanel.innerHTML='';
   const unlockedChars=Object.values(CHARS).filter(c=>isUnlocked(c.id));
   if(unlockedChars.length>0){
@@ -1058,6 +1061,8 @@ function renderLevel(){
       scroll.appendChild(card);
     });
     charPanel.appendChild(scroll);
+    // スクロール位置を復元（requestAnimationFrame でDOM反映後に実行）
+    requestAnimationFrame(()=>{ scroll.scrollLeft=prevScroll; });
   }
 
   const list=document.getElementById('lv-stat-list');list.innerHTML='';
