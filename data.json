@@ -1681,8 +1681,8 @@
           "def": 500,
           "crit": 10,
           "dodge": 8,
-          "souls": 2000,
-          "exp": 3000,
+          "souls": 1000,
+          "exp": 2000,
           "kind": "boss"
         },
         {
@@ -1936,8 +1936,8 @@
           "def": 4500,
           "crit": 10,
           "dodge": 8,
-          "souls": 30000,
-          "exp": 50000,
+          "souls": 3000,
+          "exp": 5000,
           "kind": "boss"
         }
       ]
