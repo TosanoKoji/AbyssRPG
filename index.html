@@ -275,7 +275,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title-hero">
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604101010</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604101019</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -983,10 +983,10 @@ function resetRunState(){
 
 function proceedToChar(){
   GS.run.floorId = currentFloorId;
-  // キャラ・武器・防具が全て設定済みなら装備選択をスキップしてダンジョンへ直接
-  if(GS.run.charId && GS.run.weaponId && GS.run.armorId){
-    goTo('s-dungeon');
-    renderDungeon();
+  // quickStartRun 経由（装備引き継ぎ）: startRun() でダンジョン初期化
+  if(GS.run._quickStart && GS.run.charId && GS.run.weaponId && GS.run.armorId){
+    GS.run._quickStart = false;
+    startRun();
     return;
   }
   resetRunState();
@@ -1456,7 +1456,7 @@ function renderChars(){
       const accDetails=accs.map(id=>{const acc=ACCESSORIES[id];return acc?`${acc.icon} ${acc.name}`:'';}).filter(Boolean);
 
       const subLabel=document.createElement('div');
-      subLabel.className='sub';subLabel.textContent='同じキャラ・装備でダンジョンを選ぶ';
+      subLabel.className='sub';subLabel.textContent='前回の構成を引き継いでダンジョンを選ぶ';
       lastContainer.appendChild(subLabel);
 
       const card=document.createElement('div');
@@ -1609,13 +1609,16 @@ function quickStartRun() {
   if(!lr.charId||!lr.weaponId||!lr.armorId){showInlineAlert('前回の装備データが不完全です');return;}
   if(!isUnlocked(lr.charId)||!isUnlocked(lr.weaponId)||!isUnlocked(lr.armorId)){showInlineAlert('前回の装備がアンロックされていません');return;}
   // キャラ・装備・スキル状態を復元（フロアは引き継がない）
-  GS.run.charId = lr.charId;
-  GS.run.weaponId = lr.weaponId;
-  GS.run.armorId = lr.armorId;
-  GS.run.accessories = Array.isArray(lr.accessories) ? [...lr.accessories] : [];
-  GS.run.activeSkills = Array.isArray(lr.activeSkills) ? [...lr.activeSkills] : [];
-  GS.run.passiveSkills = Array.isArray(lr.passiveSkills) ? [...lr.passiveSkills] : [];
-  // フロア選択画面へ（GS.runは保持したまま）
+  GS.run = {
+    charId: lr.charId,
+    weaponId: lr.weaponId,
+    armorId: lr.armorId,
+    accessories: Array.isArray(lr.accessories) ? [...lr.accessories] : [],
+    activeSkills: Array.isArray(lr.activeSkills) ? [...lr.activeSkills] : [],
+    passiveSkills: Array.isArray(lr.passiveSkills) ? [...lr.passiveSkills] : [],
+    _quickStart: true   // フラグ: proceedToChar で startRun() を呼ぶ
+  };
+  currentFloorId = lr.floorId || currentFloorId || 1;
   goTo('s-floor');
   renderFloors();
 }
