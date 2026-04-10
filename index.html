@@ -7,7 +7,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0ddd8;min-height:100vh}
-#game{max-width:520px;margin:0 auto;padding:16px}
+#game{max-width:520px;margin:0 auto;padding:16px;padding-bottom:max(100px,calc(env(safe-area-inset-bottom,0px) + 80px))}
 .screen{display:none}.screen.active{display:block}
 .title{font-size:22px;font-weight:500;margin-bottom:4px}
 .sub{font-size:13px;color:#888780;margin-bottom:20px}
@@ -246,6 +246,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 
 /* キャラ強化のLv表示行を非表示 */
 #lv-next-exp{display:none}
+/* exp-bar非表示 */
+.exp-bar-wrap{display:none}
 
 /* pause-btn「次の部屋へ」グロー */
 @keyframes pauseGlow{0%,100%{box-shadow:0 0 6px rgba(74,222,128,.3)}50%{box-shadow:0 0 14px rgba(74,222,128,.7)}}
@@ -273,7 +275,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title-hero">
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604092139</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604101010</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -345,14 +347,17 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 <!-- キャラ強化（レベル） -->
 <div id="s-level" class="screen">
   <div class="title">キャラクター強化</div>
-  <div style="margin-bottom:12px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-      <span style="font-size:13px;color:#888780">経験値: <strong id="lv-exp-disp" style="color:#AFA9EC">0</strong></span>
-      <span style="font-size:13px;color:#888780">総レベル: <strong id="totallv-level" style="color:#e0ddd8">0</strong></span>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
+    <div>
+      <div style="font-size:11px;color:#5f5e5a;margin-bottom:2px">保有EXP</div>
+      <div style="font-size:24px;font-weight:600;color:#AFA9EC;line-height:1" id="lv-exp-disp">0</div>
     </div>
-    <div class="exp-bar-wrap"><div class="exp-bar" id="lv-exp-bar" style="width:0%"></div></div>
-    <div style="font-size:11px;color:#5f5e5a" id="lv-next-exp"></div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:#5f5e5a;margin-bottom:2px">総レベル</div>
+      <div style="font-size:42px;font-weight:700;color:#e0ddd8;line-height:1" id="totallv-level">0</div>
+    </div>
   </div>
+  <div id="level-char-panel" style="margin-bottom:10px"></div>
   <div id="lv-stat-list"></div>
   <hr class="divider">
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -909,6 +914,8 @@ function angelAllFloorsCleared(){
   return ac.includes(1)&&ac.includes(2)&&ac.includes(3)&&ac.includes(4)&&ac.includes(5);
 }
 function isFloorVisible(f){
+  // 地下2〜5階は前の階をクリアしないと表示しない（順番攻略）
+  if(f.id>=2&&f.id<=5&&!GS.clearedFloors.includes(f.id-1)) return false;
   if(!f.unlockReq) return true;
   if(f.unlockReq.angelAllFloors) return angelAllFloorsCleared();
   if(f.unlockReq.clearedFloor) return GS.clearedFloors.includes(f.unlockReq.clearedFloor);
@@ -976,6 +983,12 @@ function resetRunState(){
 
 function proceedToChar(){
   GS.run.floorId = currentFloorId;
+  // キャラ・武器・防具が全て設定済みなら装備選択をスキップしてダンジョンへ直接
+  if(GS.run.charId && GS.run.weaponId && GS.run.armorId){
+    goTo('s-dungeon');
+    renderDungeon();
+    return;
+  }
   resetRunState();
   goTo('s-char');
 }
@@ -1006,16 +1019,53 @@ function confirmResetBonus(){
 
 // ─── レベル強化画面 ───────────────────────────────────────
 function renderLevel(){
-  const lv=calcLevel();
-  const totalSpent=LV_STATS.reduce((sum,s)=>sum+(GS.lvBonus[s.key]||0)*s.costPer,0);
-  const nextLvExp = lv * 3; // 1レベルあたり3ポイント消費
-  const remainingExp = nextLvExp - totalSpent;
-
   document.getElementById('lv-exp-disp').textContent=GS.exp;
   document.getElementById('totallv-level').textContent=GS.totalLv;
-  document.getElementById('lv-next-exp').textContent= lv >= MAX_LV ? '最大レベルに到達しています' : `Lv${lv+1}まであと ${remainingExp} EXP必要`;
-  document.getElementById('lv-exp-bar').style.width=Math.min(100,((totalSpent % 3) / 3)*100)+'%';
-  
+
+  // ── キャラパネル（アイコン＋才能＋現在パラメータ）──
+  const charPanel=document.getElementById('level-char-panel');
+  charPanel.innerHTML='';
+  const unlockedChars=Object.values(CHARS).filter(c=>isUnlocked(c.id));
+  if(unlockedChars.length>0){
+    const scroll=document.createElement('div');
+    scroll.style.cssText='display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch';
+    unlockedChars.forEach(c=>{
+      const lb=GS.lvBonus;
+      const effHp =c.hp +Math.round((lb.hp||0)*10*charGm(c.id,'hp'));
+      const effAtk=c.atk+Math.round((lb.atk||0)*charGm(c.id,'atk'));
+      const effDef=c.def+Math.round((lb.def||0)*charGm(c.id,'def'));
+      const effMp =c.maxMp+Math.round((lb.mp||0)*8*charGm(c.id,'mp'));
+      const effCrit=c.crit+Math.round((lb.crit||0)*charGm(c.id,'crit'));
+      const effDodge=c.dodge+Math.round((lb.dodge||0)*charGm(c.id,'dodge'));
+      const g=c.lvGrowth||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
+      const card=document.createElement('div');
+      card.style.cssText='min-width:82px;background:#1f1f24;border:0.5px solid #3a3a38;border-radius:8px;padding:7px 7px 6px;flex-shrink:0';
+      card.innerHTML=`
+        <div style="text-align:center;margin-bottom:4px">
+          <span style="font-size:22px">${c.icon}</span>
+          <div style="font-size:9px;color:#888780;margin-top:1px">${c.name}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:5px;font-size:10px">
+          <div style="color:#5f5e5a">HP <span class="gr-${g.hp}">${g.hp}</span></div>
+          <div style="color:#5f5e5a">ATK <span class="gr-${g.atk}">${g.atk}</span></div>
+          <div style="color:#5f5e5a">DEF <span class="gr-${g.def}">${g.def}</span></div>
+          <div style="color:#5f5e5a">MP <span class="gr-${g.mp}">${g.mp}</span></div>
+          <div style="color:#5f5e5a">会心 <span class="gr-${g.crit}">${g.crit}</span></div>
+          <div style="color:#5f5e5a">回避 <span class="gr-${g.dodge}">${g.dodge}</span></div>
+        </div>
+        <div style="border-top:0.5px solid #3a3a38;padding-top:4px;font-size:10px;line-height:1.8">
+          <div style="display:flex;justify-content:space-between"><span style="color:#5f5e5a">HP</span><span style="color:#F09595;font-weight:500">${effHp}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#5f5e5a">ATK</span><span style="color:#EF9F27;font-weight:500">${effAtk}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#5f5e5a">DEF</span><span style="color:#85B7EB;font-weight:500">${effDef}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#5f5e5a">MP</span><span style="color:#AFA9EC;font-weight:500">${effMp}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#5f5e5a">会心</span><span style="color:#6ee7b7;font-weight:500">${effCrit}%</span></div>
+          ${effDodge>0?`<div style="display:flex;justify-content:space-between"><span style="color:#5f5e5a">回避</span><span style="color:#b4b2a9;font-weight:500">${effDodge}%</span></div>`:''}
+        </div>`;
+      scroll.appendChild(card);
+    });
+    charPanel.appendChild(scroll);
+  }
+
   const list=document.getElementById('lv-stat-list');list.innerHTML='';
   LV_STATS.forEach(s=>{
     const cur=GS.lvBonus[s.key]||0;
@@ -1028,29 +1078,24 @@ function renderLevel(){
     row.className='lv-stat-row';
     row.innerHTML=`
       <div class="lv-stat-name">${s.label}${capNote}</div>
-      <div class="lv-stat-cur">${atCap?`<span style="color:#F09595">+${bonus}${s.unit} MAX</span>`:`+${bonus}${s.unit}`}</div>
       <button class="lv-stat-btn" ${canUp?'':'disabled'}>${'強化'}${multLabel}</button>
       <span class="lv-stat-cost">${s.costPer*lvMult} EXP</span>
-      <span style="font-size:11px;color:#5f5e5a;margin-left:auto">${cur}回</span>`;
+      <span style="font-size:11px;color:#5f5e5a;margin-left:auto">${atCap?'<span style="color:#F09595">MAX</span>':cur+'回'}</span>`;
     if(canUp){
       row.querySelector('.lv-stat-btn').addEventListener('click',()=>lvUp(s.key,s.costPer));
     }
     list.appendChild(row);
 
-    // 各キャラ成長率の内訳を表示
+    // 各キャラ成長グレードのみ表示（数値は非表示）
     const growthRow=document.createElement('div');
-    growthRow.style.cssText='display:flex;flex-wrap:wrap;gap:4px;padding:2px 0 8px 0;border-bottom:0.5px solid #3a3a38;margin-bottom:0';
-    const valPerActual = s.key==='mp' ? 8 : s.valPer; // mpは実際の計算値が8
+    growthRow.style.cssText='display:flex;flex-wrap:wrap;gap:4px;padding:2px 0 8px 0;border-bottom:0.5px solid #3a3a38';
     Object.values(CHARS).forEach(c=>{
       if(!isUnlocked(c.id)) return;
       const g=(c.lvGrowth||{})[s.key]||'B';
-      const rate=GROWTH_RATES[g]||1.0;
-      const perLv=(valPerActual*rate);
-      const dispVal=Number.isInteger(perLv)?perLv:perLv.toFixed(2).replace(/\.?0+$/,'');
       const span=document.createElement('span');
-      span.style.cssText='font-size:10px;padding:1px 5px;border-radius:4px;background:#1f1f24;border:0.5px solid #3a3a38;white-space:nowrap';
-      span.innerHTML=`${c.icon}<span class="gr-${g}">${g}</span> +${dispVal}`;
-      span.title=`${c.name}: 1レベルにつき+${dispVal}${s.unit}`;
+      span.style.cssText='font-size:10px;padding:1px 6px;border-radius:4px;background:#1f1f24;border:0.5px solid #3a3a38;white-space:nowrap';
+      span.innerHTML=`${c.icon} <span class="gr-${g}">${g}</span>`;
+      span.title=`${c.name}: ${g}ランク成長`;
       growthRow.appendChild(span);
     });
     list.appendChild(growthRow);
@@ -1186,16 +1231,40 @@ function unlockFree(id){
 }
 function unlockItem(id,cost){
   if(GS.souls<cost){showInlineAlert('魂の欠片が足りない');return;}
-  GS.souls-=cost;GS.unlocked.push(id);save();renderUnlock();
-  document.getElementById('unlock-souls-disp').textContent=GS.souls;
+  const u=Object.values(UNLOCK_GROUPS).flat().find(x=>x.id===id);
+  const label=u?u.label:id;
+  _showBuyConfirm(label,cost,()=>{
+    if(GS.souls<cost){showInlineAlert('魂の欠片が足りない');return;}
+    GS.souls-=cost;GS.unlocked.push(id);save();renderUnlock();
+    document.getElementById('unlock-souls-disp').textContent=GS.souls;
+  });
 }
 function unlockSystem(id,cost){
   if(GS.souls<cost){showInlineAlert('魂の欠片が足りない');return;}
-  GS.souls-=cost;
-  GS.systemUnlocked=GS.systemUnlocked||[];
-  GS.systemUnlocked.push(id);
-  save();renderUnlock();
-  document.getElementById('unlock-souls-disp').textContent=GS.souls;
+  const u=(SYSTEM_UNLOCKS||[]).find(x=>x.id===id);
+  const label=u?u.name:id;
+  _showBuyConfirm(label,cost,()=>{
+    if(GS.souls<cost){showInlineAlert('魂の欠片が足りない');return;}
+    GS.souls-=cost;
+    GS.systemUnlocked=GS.systemUnlocked||[];
+    GS.systemUnlocked.push(id);
+    save();renderUnlock();
+    document.getElementById('unlock-souls-disp').textContent=GS.souls;
+  });
+}
+function _showBuyConfirm(label,cost,onOk){
+  const list=document.getElementById('cm-list');
+  while(list.firstChild)list.removeChild(list.firstChild);
+  document.getElementById('cm-title').textContent='購入確認';
+  document.getElementById('cm-sub').textContent=`「${label}」を ${cost} 魂の欠片で解放しますか？`;
+  const btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:8px;margin-top:8px';
+  const okBtn=document.createElement('button');okBtn.className='btn btn-primary';okBtn.textContent='解放する';
+  okBtn.addEventListener('click',()=>{document.getElementById('choice-modal').classList.remove('open');onOk();});
+  const cancelBtn=document.createElement('button');cancelBtn.className='btn';cancelBtn.textContent='キャンセル';
+  cancelBtn.addEventListener('click',()=>document.getElementById('choice-modal').classList.remove('open'));
+  btnRow.appendChild(okBtn);btnRow.appendChild(cancelBtn);
+  list.appendChild(btnRow);
+  document.getElementById('choice-modal').classList.add('open');
 }
 
 // ─── 装飾品ツールチップ ───────────────────────────────────
@@ -1243,6 +1312,7 @@ function renderLibrary(){
       const myUniques=Object.values(UNIQUE_SKILLS).filter(u=>
         u.charId===c.id&&(u.initial||GS.unlockedUniqueSkills.includes(u.id))
       );
+      const _lg=c.lvGrowth||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
       el.innerHTML+=`<div class="lib-card">
         <div class="lib-card-title">${c.icon} ${c.name}</div>
         <div class="lib-card-desc">${c.desc}</div>
@@ -1253,6 +1323,15 @@ function renderLibrary(){
           <span class="badge badge-purple">MP ${c.maxMp+Math.round((lb.mp||0)*8*charGm(c.id,'mp'))}</span>
           <span class="badge badge-teal">会心 ${c.crit+Math.round((lb.crit||0)*charGm(c.id,'crit'))}%</span>
           ${c.dodge>0?`<span class="badge badge-gray">回避 ${c.dodge+Math.round((lb.dodge||0)*charGm(c.id,'dodge'))}%</span>`:''}
+        </div>
+        <div style="margin-top:5px;font-size:10px;color:#5f5e5a;display:flex;gap:6px;flex-wrap:wrap">
+          <span>才能↑</span>
+          <span>HP:<span class="gr-${_lg.hp}">${_lg.hp}</span></span>
+          <span>ATK:<span class="gr-${_lg.atk}">${_lg.atk}</span></span>
+          <span>DEF:<span class="gr-${_lg.def}">${_lg.def}</span></span>
+          <span>MP:<span class="gr-${_lg.mp}">${_lg.mp}</span></span>
+          <span>会心:<span class="gr-${_lg.crit}">${_lg.crit}</span></span>
+          <span>回避:<span class="gr-${_lg.dodge}">${_lg.dodge}</span></span>
         </div>
         ${myUniques.length?`<div style="margin-top:6px">
           <div style="font-size:10px;color:#5f5e5a;margin-bottom:3px">ユニークスキル</div>
@@ -1377,7 +1456,7 @@ function renderChars(){
       const accDetails=accs.map(id=>{const acc=ACCESSORIES[id];return acc?`${acc.icon} ${acc.name}`:'';}).filter(Boolean);
 
       const subLabel=document.createElement('div');
-      subLabel.className='sub';subLabel.textContent='前回と同じ設定で挑む';
+      subLabel.className='sub';subLabel.textContent='同じキャラ・装備でダンジョンを選ぶ';
       lastContainer.appendChild(subLabel);
 
       const card=document.createElement('div');
@@ -1386,7 +1465,7 @@ function renderChars(){
         <div style="display:flex;gap:12px;align-items:flex-start">
           <div style="font-size:28px">${c.icon}</div>
           <div style="flex:1;min-width:0">
-            <div class="card-title">${c.name} — クイック再挑戦</div>
+            <div class="card-title">${c.name} — 構成引き継ぎ</div>
             <div style="font-size:11px;color:#888780;margin-top:4px;line-height:1.7">
               <div>🗡️ <span style="color:#EF9F27">${w.icon||''}${w.name}</span>
                 <span style="color:#5f5e5a;font-size:10px"> ATK+${w.atk}${w.mp?` MP+${w.mp}`:''}${w.crit?` 会心+${w.crit}%`:''}</span>
@@ -1525,19 +1604,20 @@ function selectChar(id){
 }
 
 function quickStartRun() {
-  bState={over:true};paused=true;
   if(!GS.lastRun||!GS.lastRun.config){showInlineAlert('前回データがありません');return;}
   const lr = GS.lastRun.config;
   if(!lr.charId||!lr.weaponId||!lr.armorId){showInlineAlert('前回の装備データが不完全です');return;}
   if(!isUnlocked(lr.charId)||!isUnlocked(lr.weaponId)||!isUnlocked(lr.armorId)){showInlineAlert('前回の装備がアンロックされていません');return;}
+  // キャラ・装備・スキル状態を復元（フロアは引き継がない）
   GS.run.charId = lr.charId;
   GS.run.weaponId = lr.weaponId;
   GS.run.armorId = lr.armorId;
-  GS.run.floorId = lr.floorId || currentFloorId || 1;
   GS.run.accessories = Array.isArray(lr.accessories) ? [...lr.accessories] : [];
   GS.run.activeSkills = Array.isArray(lr.activeSkills) ? [...lr.activeSkills] : [];
   GS.run.passiveSkills = Array.isArray(lr.passiveSkills) ? [...lr.passiveSkills] : [];
-  startRun();
+  // フロア選択画面へ（GS.runは保持したまま）
+  goTo('s-floor');
+  renderFloors();
 }
 
 // ─── 装備選択 ─────────────────────────────────────────────
@@ -2094,12 +2174,11 @@ function renderActiveBtns(){
     else cls+=' cd-no-mp';
     btn.className=cls;
     btn.disabled=!canUse;
+    const costLabel=id==='apocalypse'?displayCost+'(半分)':cost;
     if(onCooldown){
-      btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><div class="cd-bar"><div class="cd-fill" style="width:${cdPct.toFixed(1)}%"></div></div><span class="cd-secs">${(cdRemain/1000).toFixed(1)}s</span>`;
-    } else if(canUse){
-      btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><span class="sk-cost">MP ${id==='apocalypse'?displayCost+'(半分)':cost}</span><span class="cd-status">✓ 使用可能</span>`;
+      btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><div class="cd-bar"><div class="cd-fill" style="width:${cdPct.toFixed(1)}%"></div></div><span class="sk-desc">${s.desc}</span>`;
     } else {
-      btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><span class="sk-cost">MP ${id==='apocalypse'?displayCost+'(半分)':cost}</span><span class="sk-desc">${s.desc}</span>`;
+      btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><span class="sk-cost">MP ${costLabel}</span><span class="sk-desc">${s.desc}</span>`;
     }
     btn.onclick=()=>useActiveSkill(id);
     el.appendChild(btn);
@@ -3008,9 +3087,7 @@ function initButtons(){
   const btnRetreat=document.getElementById('btn-retreat');
   if(btnRetreat) btnRetreat.addEventListener('click',showRetreatConfirm);
 
-  // 一時停止ボタン
-  const pauseBtn=document.getElementById('pause-btn');
-  if(pauseBtn) pauseBtn.addEventListener('click',togglePause);
+  // 一時停止ボタン（onclick は startBattle 内で毎回設定するため、ここでは登録しない）
 
   // ライブラリ画面
   const btnLibraryBack=document.getElementById('btn-library-back');
