@@ -275,7 +275,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="title-hero">
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604101019</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604101022</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -983,12 +983,6 @@ function resetRunState(){
 
 function proceedToChar(){
   GS.run.floorId = currentFloorId;
-  // quickStartRun 経由（装備引き継ぎ）: startRun() でダンジョン初期化
-  if(GS.run._quickStart && GS.run.charId && GS.run.weaponId && GS.run.armorId){
-    GS.run._quickStart = false;
-    startRun();
-    return;
-  }
   resetRunState();
   goTo('s-char');
 }
@@ -1608,19 +1602,17 @@ function quickStartRun() {
   const lr = GS.lastRun.config;
   if(!lr.charId||!lr.weaponId||!lr.armorId){showInlineAlert('前回の装備データが不完全です');return;}
   if(!isUnlocked(lr.charId)||!isUnlocked(lr.weaponId)||!isUnlocked(lr.armorId)){showInlineAlert('前回の装備がアンロックされていません');return;}
-  // キャラ・装備・スキル状態を復元（フロアは引き継がない）
+  // キャラ・装備・スキルを引き継ぎ、フロアは現在選択中のものをそのまま使う
   GS.run = {
     charId: lr.charId,
     weaponId: lr.weaponId,
     armorId: lr.armorId,
+    floorId: currentFloorId || lr.floorId || 1,
     accessories: Array.isArray(lr.accessories) ? [...lr.accessories] : [],
     activeSkills: Array.isArray(lr.activeSkills) ? [...lr.activeSkills] : [],
-    passiveSkills: Array.isArray(lr.passiveSkills) ? [...lr.passiveSkills] : [],
-    _quickStart: true   // フラグ: proceedToChar で startRun() を呼ぶ
+    passiveSkills: Array.isArray(lr.passiveSkills) ? [...lr.passiveSkills] : []
   };
-  currentFloorId = lr.floorId || currentFloorId || 1;
-  goTo('s-floor');
-  renderFloors();
+  startRun();
 }
 
 // ─── 装備選択 ─────────────────────────────────────────────
