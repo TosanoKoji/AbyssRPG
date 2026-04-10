@@ -1214,9 +1214,9 @@
           "name": "溶岩竜",
           "icon": "🐉",
           "hp": 2400,
-          "atk": 90,
+          "atk": 70,
           "def": 55,
-          "crit": 8,
+          "crit": 10,
           "dodge": 8,
           "souls": 70,
           "exp": 120,
@@ -1334,7 +1334,7 @@
           "atk": 175,
           "def": 100,
           "crit": 10,
-          "dodge": 8,
+          "dodge": 10,
           "souls": 150,
           "exp": 250,
           "kind": "boss"
@@ -1431,7 +1431,7 @@
       ],
       "bosses": [
         {
-          "id": "f5b_god",
+          "id": "f5b_kami",
           "name": "終焉の神",
           "icon": "☠️",
           "hp": 9000,
@@ -1694,8 +1694,8 @@
           "def": 550,
           "crit": 10,
           "dodge": 10,
-          "souls": 2500,
-          "exp": 3500,
+          "souls": 1200,
+          "exp": 2200,
           "kind": "boss"
         }
       ]
@@ -1802,8 +1802,8 @@
           "def": 1000,
           "crit": 10,
           "dodge": 8,
-          "souls": 6000,
-          "exp": 9000,
+          "souls": 2500,
+          "exp": 3500,
           "kind": "boss"
         },
         {
@@ -1815,8 +1815,8 @@
           "def": 1200,
           "crit": 10,
           "dodge": 8,
-          "souls": 8000,
-          "exp": 12000,
+          "souls": 2000,
+          "exp": 3000,
           "kind": "boss"
         }
       ]
@@ -1923,8 +1923,8 @@
           "def": 3500,
           "crit": 12,
           "dodge": 8,
-          "souls": 20000,
-          "exp": 30000,
+          "souls": 3000,
+          "exp": 4500,
           "kind": "boss"
         },
         {
