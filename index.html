@@ -206,6 +206,18 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .title-btn-explore:hover{background:#2d2865;border-color:#7c6fe0;color:#c084fc}
 .title-btn-sub{background:#1f1f24;border:0.5px solid #3a3a38;border-radius:10px;padding:10px;font-size:13px;color:#888780;cursor:pointer;font-family:inherit;transition:background .15s}
 .title-btn-sub:hover{background:#2c2c2a;color:#e0ddd8}
+/* 設定画面 */
+.settings-section{background:#1f1f24;border:0.5px solid #3a3a38;border-radius:12px;padding:16px;margin-bottom:12px}
+.settings-section-title{font-size:11px;font-weight:600;color:#5f5e5a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+.settings-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.settings-row-label{font-size:14px;color:#e0ddd8}
+.settings-row-sub{font-size:11px;color:#5f5e5a;margin-top:2px}
+.settings-toggle{display:flex;gap:3px;background:#141418;border-radius:8px;padding:3px}
+.settings-toggle-btn{background:transparent;border:none;border-radius:6px;padding:6px 14px;font-size:12px;color:#5f5e5a;cursor:pointer;font-family:inherit;transition:all .15s}
+.settings-toggle-btn.active{background:#2c2c2a;color:#e0ddd8;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+.settings-preview{background:#141418;border-radius:10px;padding:12px;margin-top:12px}
+.settings-preview-label{font-size:10px;color:#5f5e5a;margin-bottom:8px;letter-spacing:0.5px}
+.settings-future{opacity:0.35;pointer-events:none}
 
 /* 達成報酬バッジ通知 */
 .ach-notify{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a1a1f;border:1px solid #FCD34D;border-radius:12px;padding:12px 18px;font-size:13px;color:#FCD34D;z-index:9999;box-shadow:0 0 20px rgba(252,211,77,.3);animation:achPop .4s ease-out;max-width:300px;text-align:center;pointer-events:none}
@@ -273,9 +285,10 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 <!-- タイトル -->
 <div id="s-title" class="screen active">
   <div class="title-hero">
+    <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604101048</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111210</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -313,6 +326,41 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div style="font-size:11px;color:#3a3a38;text-align:center;padding-bottom:8px">ランを重ねるごとに新たな力が解放される</div>
   <div style="text-align:center; margin-top:24px;">
     <span id="btn-hard-reset" style="font-size:10px; color:#4a4a4a; cursor:pointer; text-decoration:underline;">全ての状態をリセット</span>
+  </div>
+</div>
+
+<!-- 設定 -->
+<div id="s-settings" class="screen">
+  <div class="title">設定</div>
+  <div class="sub">ゲームの各種設定</div>
+  <button class="btn" id="btn-settings-back" style="margin-bottom:18px">← 戻る</button>
+
+  <div class="settings-section">
+    <div class="settings-section-title">🖼 グラフィック</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">アイコン表示モード</div>
+        <div class="settings-row-sub">絵文字 / PNG画像（要画像ファイル）</div>
+      </div>
+      <div class="settings-toggle">
+        <button id="stg-icon-emoji" class="settings-toggle-btn" onclick="setIconMode('emoji')">絵文字</button>
+        <button id="stg-icon-png"   class="settings-toggle-btn" onclick="setIconMode('png')">PNG</button>
+      </div>
+    </div>
+    <div class="settings-preview">
+      <div class="settings-preview-label">プレビュー（解放済みキャラクター）</div>
+      <div id="settings-preview-chars" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;min-height:52px"></div>
+    </div>
+  </div>
+
+  <div class="settings-section settings-future">
+    <div class="settings-section-title">🔊 サウンド</div>
+    <div style="font-size:12px;color:#5f5e5a;text-align:center;padding:6px 0">今後追加予定</div>
+  </div>
+
+  <div class="settings-section settings-future">
+    <div class="settings-section-title">🎮 ゲームプレイ</div>
+    <div style="font-size:12px;color:#5f5e5a;text-align:center;padding:6px 0">今後追加予定</div>
   </div>
 </div>
 
@@ -609,6 +657,42 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 </div>
 
 <script>
+
+// ═══ 設定データ ═══════════════════════════════════════════
+const SETTINGS = JSON.parse(localStorage.getItem('abyss_settings') || '{"iconMode":"emoji"}');
+function saveSettings(){ localStorage.setItem('abyss_settings', JSON.stringify(SETTINGS)); }
+
+// アイコン表示ヘルパー
+// category: 'chars' / 'enemies' / 'items'  id: データID  emoji: フォールバック絵文字  sizePx: 表示サイズ
+function renderIcon(category, id, emoji, sizePx=28){
+  if(SETTINGS.iconMode !== 'png') return `<span style="font-size:${sizePx}px;line-height:1">${emoji}</span>`;
+  const esc = emoji.replace(/\\/g,'\\\\').replace(/"/g,'&quot;');
+  return `<img src="images/${category}/${id}.png" width="${sizePx}" height="${sizePx}" `+
+    `style="object-fit:contain;vertical-align:middle;border-radius:4px" `+
+    `onerror="this.outerHTML='<span style=\\"font-size:${sizePx}px;line-height:1\\">${esc}</span>'" alt="${esc}">`;
+}
+
+function setIconMode(mode){
+  SETTINGS.iconMode = mode;
+  saveSettings();
+  renderSettings();
+}
+
+function renderSettings(){
+  const emojiBtn = document.getElementById('stg-icon-emoji');
+  const pngBtn   = document.getElementById('stg-icon-png');
+  if(emojiBtn) emojiBtn.classList.toggle('active', SETTINGS.iconMode !== 'png');
+  if(pngBtn)   pngBtn.classList.toggle('active',   SETTINGS.iconMode === 'png');
+  const preview = document.getElementById('settings-preview-chars');
+  if(!preview) return;
+  const chars = Object.values(CHARS).filter(c => isUnlocked(c.id)).slice(0,8);
+  preview.innerHTML = chars.map(c =>
+    `<div style="text-align:center">
+      ${renderIcon('chars', c.id, c.icon, 34)}
+      <div style="font-size:9px;color:#5f5e5a;margin-top:3px;max-width:40px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</div>
+    </div>`
+  ).join('');
+}
 
 // null安全なtextContent setter
 function setTC(id,val){const e=document.getElementById(id);if(e)e.textContent=val;}
@@ -3026,6 +3110,10 @@ function initButtons(){
   if(btnAchieve) btnAchieve.addEventListener('click',()=>goTo('s-achieve'));
   const btnLibrary=document.getElementById('btn-title-library');
   if(btnLibrary) btnLibrary.addEventListener('click',()=>goTo('s-library'));
+  const btnTitleSettings=document.getElementById('btn-title-settings');
+  if(btnTitleSettings) btnTitleSettings.addEventListener('click',()=>{ renderSettings(); goTo('s-settings'); });
+  const btnSettingsBack=document.getElementById('btn-settings-back');
+  if(btnSettingsBack) btnSettingsBack.addEventListener('click',()=>goTo('s-title'));
   const btnHardReset=document.getElementById('btn-hard-reset');
   if(btnHardReset) btnHardReset.addEventListener('click',openResetModal);
   const titleAchBar=document.getElementById('title-ach-bar-inner');
