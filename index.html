@@ -288,7 +288,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111305</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111327</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1399,8 +1399,8 @@ function renderLibrary(){
         u.charId===c.id&&(u.initial||GS.unlockedUniqueSkills.includes(u.id))
       );
       const _lg=c.lvGrowth||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
-      el.innerHTML+=`<div class="lib-card">
-        <div class="lib-card-title" style="display:flex;align-items:center;gap:6px">${renderIcon('chars', c.id, c.icon, 18)} ${c.name}</div>
+      const _charInfoHtml=`
+        <div class="lib-card-title">${SETTINGS.iconMode==='png'?'':renderIcon('chars',c.id,c.icon,18)+' '}${c.name}</div>
         <div class="lib-card-desc">${c.desc}</div>
         <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
           <span class="badge badge-red">HP ${c.hp+Math.round((lb.hp||0)*10*charGm(c.id,'hp'))}</span>
@@ -1422,8 +1422,15 @@ function renderLibrary(){
         ${myUniques.length?`<div style="margin-top:6px">
           <div style="font-size:10px;color:#5f5e5a;margin-bottom:3px">ユニークスキル</div>
           ${myUniques.map(u=>`<div style="font-size:11px;color:#FCD34D;margin-bottom:2px">${u.icon} ${u.name} — <span style="color:#888780">${u.desc}</span></div>`).join('')}
-        </div>`:''}
-      </div>`;
+        </div>`:''}`;
+      if(SETTINGS.iconMode==='png'){
+        el.innerHTML+=`<div class="lib-card" style="display:flex;gap:14px;align-items:flex-start">
+          <div style="flex-shrink:0">${renderIcon('chars',c.id,c.icon,130)}</div>
+          <div style="flex:1;min-width:0">${_charInfoHtml}</div>
+        </div>`;
+      } else {
+        el.innerHTML+=`<div class="lib-card">${_charInfoHtml}</div>`;
+      }
     });
     if(!el.innerHTML) el.innerHTML='<div style="color:#5f5e5a;font-size:12px;padding:10px">アンロック済みキャラがいません</div>';
   } else if(libTab==='equip'){
@@ -1495,18 +1502,28 @@ function renderLibrary(){
         </div>`
       ).join('');
       const noteHtml=e.libNote?`<div style="font-size:10px;color:#5f5e5a;margin-top:3px;font-style:italic">${e.libNote}</div>`:'';
-      el.innerHTML+=`<div class="lib-card">
-        <div class="lib-card-title">${e.icon} ${e.name} ${isBoss?'<span class="badge badge-red" style="font-size:9px">BOSS</span>':''}</div>
+      const _enemyStatsHtml=`
         <div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">
           <span class="badge badge-red">HP ${e.hp}</span>
           <span class="badge badge-amber">ATK ${e.atk}</span>
           <span class="badge badge-blue">DEF ${e.def}</span>
           <span class="badge badge-gray">魂 ${e.souls}</span>
           <span class="badge badge-green">EXP ${e.exp}</span>
-        </div>
-        ${specialsHtml}
-        ${noteHtml}
-      </div>`;
+        </div>${specialsHtml}${noteHtml}`;
+      if(SETTINGS.iconMode==='png' && isBoss){
+        el.innerHTML+=`<div class="lib-card" style="display:flex;gap:14px;align-items:flex-start">
+          <div style="flex-shrink:0">${renderIcon('enemies',e.id||e.name,e.icon,130)}</div>
+          <div style="flex:1;min-width:0">
+            <div class="lib-card-title">${e.name} <span class="badge badge-red" style="font-size:9px">BOSS</span></div>
+            ${_enemyStatsHtml}
+          </div>
+        </div>`;
+      } else {
+        el.innerHTML+=`<div class="lib-card">
+          <div class="lib-card-title">${e.icon} ${e.name} ${isBoss?'<span class="badge badge-red" style="font-size:9px">BOSS</span>':''}</div>
+          ${_enemyStatsHtml}
+        </div>`;
+      }
     });
   }
 }
