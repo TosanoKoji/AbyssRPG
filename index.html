@@ -288,7 +288,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111451</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111507</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1139,7 +1139,7 @@ function renderLevel(){
       const effMp =c.maxMp+Math.round((lb.mp||0)*8*charGm(c.id,'mp'));
       const effCrit=c.crit+Math.round((lb.crit||0)*charGm(c.id,'crit'));
       const effDodge=c.dodge+Math.round((lb.dodge||0)*charGm(c.id,'dodge'));
-      const g=c.lvGrowth||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
+      const g=effectiveLvGrowth(c.id)||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
       const card=document.createElement('div');
       card.style.cssText='min-width:82px;background:#1f1f24;border:0.5px solid #3a3a38;border-radius:8px;padding:7px 7px 6px;flex-shrink:0';
       card.innerHTML=`
@@ -1195,7 +1195,7 @@ function renderLevel(){
     growthRow.style.cssText='display:flex;flex-wrap:wrap;gap:4px;padding:2px 0 8px 0;border-bottom:0.5px solid #3a3a38';
     Object.values(CHARS).forEach(c=>{
       if(!isUnlocked(c.id)) return;
-      const g=(c.lvGrowth||{})[s.key]||'B';
+      const g=(effectiveLvGrowth(c.id)||{})[s.key]||'B';
       const span=document.createElement('span');
       span.style.cssText='font-size:10px;padding:1px 6px;border-radius:4px;background:#1f1f24;border:0.5px solid #3a3a38;white-space:nowrap';
       span.innerHTML=`${renderIcon('chars', charImgId(c.id), c.icon, 16)} <span class="gr-${g}">${g}</span>`;
@@ -1443,7 +1443,7 @@ function renderLibrary(){
         </div>`:''}`;
       if(SETTINGS.iconMode==='png'){
         el.innerHTML+=`<div class="lib-card" style="display:flex;gap:14px;align-items:flex-start">
-          <div style="flex-shrink:0">${renderIcon('chars',c.id,c.icon,130)}</div>
+          <div style="flex-shrink:0">${renderIcon('chars',charImgId(c.id),c.icon,130)}</div>
           <div style="flex:1;min-width:0">${_charInfoHtml}</div>
         </div>`;
       } else {
