@@ -288,7 +288,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111507</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111838</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1827,8 +1827,11 @@ function renderSkills(){
   GS.run.activeSkills=GS.run.activeSkills||[];
   GS.run.passiveSkills=GS.run.passiveSkills||[];
   const c=CHARS[GS.run.charId];
-  // 旅スキル優先、次にシステム開放
-  const hasJourney=(GS.run.uniqueSkills||[]).includes('traveler_journey');
+  // 旅スキル優先、次にシステム開放（run.uniqueSkillsはstartRun後に確定するため、事前はunlockedUniqueSkillsで判定）
+  const hasJourney=GS.run.charId==='traveler'&&(
+    (GS.run.uniqueSkills||[]).includes('traveler_journey')||
+    (GS.unlockedUniqueSkills||[]).includes('traveler_journey')
+  );
   const activeBonus=(GS.systemUnlocked||[]).includes('active_slot_up')?1:0;
   const activeBonus2=(GS.systemUnlocked||[]).includes('active_slot_up2')?1:0;
   const passiveBonus=(GS.systemUnlocked||[]).includes('passive_slot_up')?1:0;
@@ -1868,7 +1871,10 @@ function renderSkills(){
   if(psMax) psMax.textContent=passiveSlots;
 }
 function toggleActiveSkill(id){
-  const hasJourney=(GS.run.uniqueSkills||[]).includes('traveler_journey');
+  const hasJourney=GS.run.charId==='traveler'&&(
+    (GS.run.uniqueSkills||[]).includes('traveler_journey')||
+    (GS.unlockedUniqueSkills||[]).includes('traveler_journey')
+  );
   const activeBonus=(GS.systemUnlocked||[]).includes('active_slot_up')?1:0;
   const activeBonus2=(GS.systemUnlocked||[]).includes('active_slot_up2')?1:0;
   const slots=hasJourney?6:(CHARS[GS.run.charId]?.activeSlots||3)+activeBonus+activeBonus2;
@@ -1878,7 +1884,10 @@ function toggleActiveSkill(id){
   renderSkills();
 }
 function togglePassiveSkill(id){
-  const hasJourney=(GS.run.uniqueSkills||[]).includes('traveler_journey');
+  const hasJourney=GS.run.charId==='traveler'&&(
+    (GS.run.uniqueSkills||[]).includes('traveler_journey')||
+    (GS.unlockedUniqueSkills||[]).includes('traveler_journey')
+  );
   const passiveBonus=(GS.systemUnlocked||[]).includes('passive_slot_up')?1:0;
   const passiveBonus2=(GS.systemUnlocked||[]).includes('passive_slot_up2')?1:0;
   const slots=hasJourney?6:2+passiveBonus+passiveBonus2;
