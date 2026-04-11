@@ -44,7 +44,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .mp-bar{height:100%;border-radius:4px;background:#534AB7;transition:width .4s}
 
 /* バトルエリア */
-.battle-area{background:#2c2c2a;border-radius:12px;padding:40px 16px 10px;margin:8px 0;position:relative;overflow:hidden}
+.battle-area{background:#2c2c2a;border-radius:12px;padding:40px 16px 10px;margin:8px 0;position:relative;overflow:hidden;background-size:cover;background-position:center;background-repeat:no-repeat}
 .fighter{display:inline-block;transition:transform .15s}
 
 /* 攻撃アニメーション（武器別） */
@@ -288,7 +288,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111327</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111451</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -664,6 +664,16 @@ function saveSettings(){ localStorage.setItem('abyss_settings', JSON.stringify(S
 
 // アイコン表示ヘルパー
 // category: 'chars' / 'enemies' / 'items'  id: データID  emoji: フォールバック絵文字  sizePx: 表示サイズ
+// 旅取得後のトラベラーはtraveler2.pngを使用
+function charImgId(id){
+  if(id==='traveler'&&GS.unlockedUniqueSkills.includes('traveler_journey')) return 'traveler2';
+  return id;
+}
+// バトル中用（run.uniqueSkillsで判定）
+function charImgIdBattle(id){
+  if(id==='traveler'&&(GS.run.uniqueSkills||[]).includes('traveler_journey')) return 'traveler2';
+  return id;
+}
 function renderIcon(category, id, emoji, sizePx=28){
   if(SETTINGS.iconMode !== 'png') return `<span style="font-size:${sizePx}px;line-height:1">${emoji}</span>`;
   // PNG失敗時: imgを非表示にして兄弟の絵文字spanを表示（エスケープ不要）
@@ -691,7 +701,7 @@ function renderSettings(){
   const chars = Object.values(CHARS).filter(c => isUnlocked(c.id)).slice(0,8);
   preview.innerHTML = chars.map(c =>
     `<div style="text-align:center">
-      ${renderIcon('chars', c.id, c.icon, 54)}
+      ${renderIcon('chars', charImgId(c.id), c.icon, 54)}
       <div style="font-size:9px;color:#5f5e5a;margin-top:3px;max-width:40px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</div>
     </div>`
   ).join('');
@@ -767,8 +777,16 @@ const LV_STATS=[
 const MAX_LV=9999;
 // 成長倍率テーブル: S=2.0, A=1.5, B=1.0(基準), C=0.75, D=0.45
 const GROWTH_RATES={S:2.0,A:1.5,B:1.0,C:0.75,D:0.45};
+// 旅取得後のトラベラーはHP/ATK/DEF/MPがA昇格
+function effectiveLvGrowth(charId){
+  const base=CHARS?.[charId]?.lvGrowth||{};
+  if(charId==='traveler'&&GS.unlockedUniqueSkills.includes('traveler_journey')){
+    return {...base,hp:'A',atk:'A',def:'A',mp:'A'};
+  }
+  return base;
+}
 function charGm(charId,stat){
-  const g=(CHARS?.[charId]?.lvGrowth||{})[stat]||'B';
+  const g=(effectiveLvGrowth(charId)||{})[stat]||'B';
   return GROWTH_RATES[g]||1.0;
 }
 function calcLevel(){
@@ -1126,7 +1144,7 @@ function renderLevel(){
       card.style.cssText='min-width:82px;background:#1f1f24;border:0.5px solid #3a3a38;border-radius:8px;padding:7px 7px 6px;flex-shrink:0';
       card.innerHTML=`
         <div style="text-align:center;margin-bottom:4px">
-          ${renderIcon('chars', c.id, c.icon, 36)}
+          ${renderIcon('chars', charImgId(c.id), c.icon, 36)}
           <div style="font-size:9px;color:#888780;margin-top:1px">${c.name}</div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:5px;font-size:10px">
@@ -1180,7 +1198,7 @@ function renderLevel(){
       const g=(c.lvGrowth||{})[s.key]||'B';
       const span=document.createElement('span');
       span.style.cssText='font-size:10px;padding:1px 6px;border-radius:4px;background:#1f1f24;border:0.5px solid #3a3a38;white-space:nowrap';
-      span.innerHTML=`${renderIcon('chars', c.id, c.icon, 16)} <span class="gr-${g}">${g}</span>`;
+      span.innerHTML=`${renderIcon('chars', charImgId(c.id), c.icon, 16)} <span class="gr-${g}">${g}</span>`;
       span.title=`${c.name}: ${g}ランク成長`;
       growthRow.appendChild(span);
     });
@@ -1398,7 +1416,7 @@ function renderLibrary(){
       const myUniques=Object.values(UNIQUE_SKILLS).filter(u=>
         u.charId===c.id&&(u.initial||GS.unlockedUniqueSkills.includes(u.id))
       );
-      const _lg=c.lvGrowth||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
+      const _lg=effectiveLvGrowth(c.id)||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
       const _charInfoHtml=`
         <div class="lib-card-title">${SETTINGS.iconMode==='png'?'':renderIcon('chars',c.id,c.icon,18)+' '}${c.name}</div>
         <div class="lib-card-desc">${c.desc}</div>
@@ -1566,7 +1584,7 @@ function renderChars(){
       card.className='card last-run-card';
       card.innerHTML=`
         <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="line-height:1">${renderIcon('chars', lr.charId, c.icon, 54)}</div>
+          <div style="line-height:1">${renderIcon('chars', charImgId(lr.charId), c.icon, 54)}</div>
           <div style="flex:1;min-width:0">
             <div class="card-title">${c.name} — 構成引き継ぎ</div>
             <div style="font-size:11px;color:#888780;margin-top:4px;line-height:1.7">
@@ -1597,6 +1615,7 @@ function renderChars(){
   const el=document.getElementById('char-list');el.innerHTML='';
   Object.values(CHARS).forEach(c=>{
     const ok=isUnlocked(c.id);
+    if(!ok) return; // 未取得キャラは表示しない
     const lb=GS.lvBonus;
     const effHp=c.hp+Math.round((lb.hp||0)*10*charGm(c.id,'hp'));
     const effAtk=c.atk+Math.round((lb.atk||0)*1*charGm(c.id,'atk'));
@@ -1619,7 +1638,7 @@ function renderChars(){
     _cd.className=`card ${GS.run.charId===c.id?'selected':''} ${ok?'':'locked'}`;
     _cd.innerHTML=`
       <div class="row" style="gap:12px">
-        <div style="line-height:1">${renderIcon('chars', c.id, c.icon, 60)}</div>
+        <div style="line-height:1">${renderIcon('chars', charImgId(c.id), c.icon, 60)}</div>
         <div style="flex:1">
           <div class="card-title">${c.name}</div>
           <div class="card-sub">${c.desc}</div>
@@ -1674,7 +1693,7 @@ function renderChars(){
       card.style.cssText=`min-width:90px;background:${isSelected?'#1f2922':'#1f1f24'};border:0.5px solid ${isSelected?'#4ade80':'#3a3a38'};border-radius:8px;padding:8px 8px 6px;flex-shrink:0;cursor:pointer;transition:border-color .15s`;
       card.innerHTML=`
         <div style="text-align:center;margin-bottom:4px">
-          ${renderIcon('chars', c.id, c.icon, 34)}
+          ${renderIcon('chars', charImgId(c.id), c.icon, 34)}
           <div style="font-size:10px;color:#888780;margin-top:1px">${c.name}</div>
         </div>
         <div style="font-size:10px;line-height:1.9">
@@ -1945,7 +1964,7 @@ function startRun(){
   }
   // ユニークスキル効果: 神罰（ATKにDEFの50%上乗せ）
   if(GS.run.uniqueSkills.includes('paladin_judgement')){
-    GS.run.atk += Math.floor(GS.run.def * 0.5);
+    GS.run.atk += Math.floor(GS.run.def * 0.3);
   }
 
   GS.run.lichUsed = false;
@@ -2030,7 +2049,7 @@ function renderDungeon(){
   const charIconEl=document.getElementById('dng-char-icon');
   const charNameEl=document.getElementById('dng-char-name');
   const equipNamesEl=document.getElementById('dng-equip-names');
-  if(charIconEl) charIconEl.innerHTML=renderIcon('chars', GS.run.charId, c.icon||'⚔', 44);
+  if(charIconEl) charIconEl.innerHTML=renderIcon('chars', charImgIdBattle(GS.run.charId), c.icon||'⚔', 44);
   if(charNameEl) charNameEl.textContent=c.name||'';
   if(equipNamesEl) equipNamesEl.textContent=`${w.icon||''}${w.name||''} / ${a.icon||''}${a.name||''}`;
 
@@ -2173,7 +2192,16 @@ function startBattle(enemy,isBoss){
   if(_locEl&&_battleFloor) _locEl.textContent=`${_battleFloor.name}「${_battleFloor.sub}」— ${GS.run.room+1}${_battleFloor.areaMode?'エリア目':'部屋目'}`;
   setTC('b-hero-name',GS.run.name);
   setTC('b-souls',GS.run.runSouls);
-  const _hs=document.getElementById('hero-sprite');if(_hs)_hs.innerHTML=renderIcon('chars',GS.run.charId,GS.run.icon,112);
+  // バトル背景画像設定
+  const _battleAreaEl=document.getElementById('battle-area');
+  if(_battleAreaEl){
+    const _floorId=GS.run.floorId||1;
+    const _bgImg=new Image();
+    _bgImg.onload=()=>{_battleAreaEl.style.backgroundImage=`url('assets/back/floor${_floorId}.png')`;};
+    _bgImg.onerror=()=>{_battleAreaEl.style.backgroundImage='none';};
+    _bgImg.src=`assets/back/floor${_floorId}.png`;
+  }
+  const _hs=document.getElementById('hero-sprite');if(_hs)_hs.innerHTML=renderIcon('chars',charImgIdBattle(GS.run.charId),GS.run.icon,112);
   setTC('enemy-sprite',enemy.icon);
   setTC('b-enemy-name',enemy.name);
   document.getElementById('battle-result').style.display='none';
@@ -2303,7 +2331,8 @@ function useActiveSkill(id){
   // クールタイム設定
   if(s.cooldown>0){
     bState.skillCooldownEnd=bState.skillCooldownEnd||{};
-    bState.skillCooldownEnd[id]=Date.now()+(s.cooldown||0)*1000;
+    const _boosterMult=(GS.run.accessories||[]).includes('booster')?0.8:1.0;
+    bState.skillCooldownEnd[id]=Date.now()+Math.floor((s.cooldown||0)*1000*_boosterMult);
     startCdTimer();
   }
   addLog(`【${s.name}】発動！`,'log-skill');
@@ -2474,6 +2503,13 @@ function autoBattleTick(){
     bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+3);
     showDmg('hero-sprite',3,true,false,false);
   }
+  // 天の恵み（3ターンに1回 最大HPの10%回復）
+  if((GS.run.uniqueSkills||[]).includes('angel_blessing')&&bState.turn%3===0){
+    const _blessHeal=Math.floor(bState.heroMaxHp*0.1);
+    bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+_blessHeal);
+    showDmg('hero-sprite',_blessHeal,true,false,false);
+    addLog(`✨ 天の恵み: HP+${_blessHeal}`,'log-heal');
+  }
 
   bState.heroMp=Math.min(bState.heroMaxMp,bState.heroMp+3+(hasMpRecover?5:0));
   // 魂の収穫（敵撃破時MP+10）はendBattleで処理
@@ -2540,6 +2576,11 @@ function autoBattleTick(){
     if(isCrit)showCritFlash();
     addLog((isCrit?'💥会心！':'')+`${heroDmg}ダメージ`,isCrit?'log-crit':'log-enemy-dmg');
     applyVampiric(heroDmg,bState);
+    // 威厳: 5%でスタン3ターン
+    if(bState.enemyHp>0&&(GS.run.uniqueSkills||[]).includes('god_dignity')&&Math.random()<0.05){
+      bState.stunTurns=(bState.stunTurns||0)+3;
+      addLog('👁️ 威厳発動！ 敵の行動が3ターン停止！','log-skill');showSkillFlash();
+    }
     // 必殺: 会心時1%で即死（ボス無効）
     if(isCrit&&!bState.isBoss&&(GS.run.uniqueSkills||[]).includes('ninja_deathblow')&&Math.random()<0.01){
       bState.enemyHp=0;addLog('💀 必殺発動！ 即死！','log-skill');showSkillFlash();
@@ -2784,6 +2825,13 @@ function endBattle(won){
     if((GS.run.uniqueSkills||[]).includes('mage_overload')&&Math.random()<0.1){
       const bonus=Math.floor(GS.run.maxMp*0.3);
       GS.run.maxMp+=bonus;addLog(`魔力過負荷発動！ 最大MP+${bonus}`,'log-skill');
+    }
+    // ナノマシン: 敵撃破時 最大HP+10%（ステージ内累積）
+    if((GS.run.uniqueSkills||[]).includes('you_nanomachine')){
+      const _nanoBn=Math.floor(GS.run.maxHp*0.1);
+      GS.run.maxHp+=_nanoBn;
+      GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp);
+      addLog(`🔬 ナノマシン発動！ 最大HP+${_nanoBn}`,'log-skill');
     }
     setTC('b-souls',GS.run.runSouls);
     addLog(`${bState.enemy.name}を撃破！ 魂+${souls} EXP+${exp}`,'log-heal');

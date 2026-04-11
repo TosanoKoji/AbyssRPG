@@ -230,6 +230,56 @@
         "crit": "A",
         "dodge": "S"
       }
+    },
+    "god": {
+      "id": "god",
+      "name": "大神",
+      "icon": "⛩️",
+      "hp": 200,
+      "atk": 24,
+      "def": 20,
+      "mp": 120,
+      "maxMp": 120,
+      "crit": 10,
+      "dodge": 5,
+      "hdodge": 8,
+      "activeSlots": 3,
+      "accSlots": 2,
+      "desc": "地上に降り立つ神。威厳の眼差しで敵の動きを封じる",
+      "unlockCond": "achievement",
+      "lvGrowth": {
+        "hp": "A",
+        "atk": "B",
+        "def": "A",
+        "mp": "B",
+        "crit": "C",
+        "dodge": "D"
+      }
+    },
+    "you": {
+      "id": "you",
+      "name": "オートマトン",
+      "icon": "🤖",
+      "hp": 280,
+      "atk": 18,
+      "def": 22,
+      "mp": 40,
+      "maxMp": 40,
+      "crit": 5,
+      "dodge": 0,
+      "hdodge": 0,
+      "activeSlots": 2,
+      "accSlots": 3,
+      "desc": "空中都市生まれの生体機械。戦うほど堅牢になる",
+      "unlockCond": "achievement",
+      "lvGrowth": {
+        "hp": "S",
+        "atk": "C",
+        "def": "S",
+        "mp": "D",
+        "crit": "D",
+        "dodge": "D"
+      }
     }
   },
   "weapons": {
@@ -518,6 +568,13 @@
         "soulsMult": 0.1
       },
       "unlockCost": 100000
+    },
+    "booster": {
+      "id": "booster",
+      "name": "加速装置",
+      "icon": "⚡",
+      "desc": "スキルのクールタイムを20%短縮する",
+      "unlockCost": 30000
     }
   },
   "activeSkills": {
@@ -773,7 +830,7 @@
       "name": "神罰",
       "icon": "⚡",
       "initial": false,
-      "desc": "DEFが高いほどATKにボーナス（DEF×0.5）"
+      "desc": "DEFが高いほどATKにボーナス（DEF×0.3）"
     },
     "paladin_shield": {
       "id": "paladin_shield",
@@ -855,6 +912,30 @@
       "icon": "💀",
       "initial": false,
       "desc": "会心ダメージ時1%で敵を即死（ボス無効）"
+    },
+    "god_dignity": {
+      "id": "god_dignity",
+      "charId": "god",
+      "name": "威厳",
+      "icon": "👁️",
+      "initial": true,
+      "desc": "通常攻撃時に5%の確率で敵の行動を攻撃ヒット後の3ターン停止させる"
+    },
+    "you_nanomachine": {
+      "id": "you_nanomachine",
+      "charId": "you",
+      "name": "ナノマシン",
+      "icon": "🔬",
+      "initial": true,
+      "desc": "そのステージ内に限り、敵を倒した後に最大HPが10%上昇する"
+    },
+    "angel_blessing": {
+      "id": "angel_blessing",
+      "charId": "angel",
+      "name": "天の恵み",
+      "icon": "✨",
+      "initial": false,
+      "desc": "3ターンに一回HPが最大HPの10%分回復する"
     }
   },
   "floors": [
@@ -2045,7 +2126,7 @@
       {
         "id": "samurai",
         "label": "侍",
-        "cost": 1000,
+        "cost": 500,
         "sub": "反撃の達人・被弾時反撃",
         "achReq": "ach_samurai_unlock",
         "lvReq": 25
@@ -2053,9 +2134,23 @@
       {
         "id": "ninja",
         "label": "忍者",
-        "cost": 50000,
+        "cost": 5000,
         "sub": "二刀流で2連撃・高回避",
         "achReq": "ach_ninja_unlock"
+      },
+      {
+        "id": "god",
+        "label": "大神",
+        "cost": 500,
+        "sub": "高HP・高DEF・威厳スキル・装飾品2枠",
+        "achReq": "ach_god_unlock"
+      },
+      {
+        "id": "you",
+        "label": "オートマトン",
+        "cost": 800,
+        "sub": "超高HP・高DEF・ナノマシンスキル・装飾品3枠",
+        "achReq": "ach_you_unlock"
       }
     ],
     "equip": [
@@ -2207,6 +2302,12 @@
         "label": "リボン",
         "cost": 100000,
         "sub": "戦闘獲得魂+10%"
+      },
+      {
+        "id": "booster",
+        "label": "加速装置",
+        "cost": 30000,
+        "sub": "スキルCD -20%"
       }
     ],
     "skill": [
@@ -2667,6 +2768,49 @@
       },
       "icon": "🥷",
       "desc": "忍者で任意のステージを5回クリア"
+    },
+    {
+      "id": "ach_god_unlock",
+      "title": "神の降臨",
+      "cond": {
+        "kind": "floorClearId",
+        "val": 6
+      },
+      "reward": {
+        "type": "unlockChar",
+        "id": "god"
+      },
+      "icon": "⛩️",
+      "desc": "地上「光の聖域」をクリアして大神をアンロックショップに解放する"
+    },
+    {
+      "id": "ach_you_unlock",
+      "title": "機械仕掛けの夢",
+      "cond": {
+        "kind": "floorClearId",
+        "val": 7
+      },
+      "reward": {
+        "type": "unlockChar",
+        "id": "you"
+      },
+      "icon": "🤖",
+      "desc": "空中都市をクリアしてオートマトンをアンロックショップに解放する"
+    },
+    {
+      "id": "ach_angel_blessing",
+      "title": "天使の慈悲",
+      "cond": {
+        "kind": "floorClear",
+        "val": 3,
+        "charId": "angel"
+      },
+      "reward": {
+        "type": "uniqueSkill",
+        "id": "angel_blessing"
+      },
+      "icon": "✨",
+      "desc": "天使で任意のステージを3回クリア — 天の恵みを習得"
     }
   ]
 }
