@@ -288,7 +288,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111300</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111305</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -691,7 +691,7 @@ function renderSettings(){
   const chars = Object.values(CHARS).filter(c => isUnlocked(c.id)).slice(0,8);
   preview.innerHTML = chars.map(c =>
     `<div style="text-align:center">
-      ${renderIcon('chars', c.id, c.icon, 44)}
+      ${renderIcon('chars', c.id, c.icon, 54)}
       <div style="font-size:9px;color:#5f5e5a;margin-top:3px;max-width:40px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</div>
     </div>`
   ).join('');
@@ -1126,7 +1126,7 @@ function renderLevel(){
       card.style.cssText='min-width:82px;background:#1f1f24;border:0.5px solid #3a3a38;border-radius:8px;padding:7px 7px 6px;flex-shrink:0';
       card.innerHTML=`
         <div style="text-align:center;margin-bottom:4px">
-          ${renderIcon('chars', c.id, c.icon, 30)}
+          ${renderIcon('chars', c.id, c.icon, 36)}
           <div style="font-size:9px;color:#888780;margin-top:1px">${c.name}</div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:5px;font-size:10px">
@@ -1549,7 +1549,7 @@ function renderChars(){
       card.className='card last-run-card';
       card.innerHTML=`
         <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="line-height:1">${renderIcon('chars', lr.charId, c.icon, 44)}</div>
+          <div style="line-height:1">${renderIcon('chars', lr.charId, c.icon, 54)}</div>
           <div style="flex:1;min-width:0">
             <div class="card-title">${c.name} — 構成引き継ぎ</div>
             <div style="font-size:11px;color:#888780;margin-top:4px;line-height:1.7">
@@ -1602,7 +1602,7 @@ function renderChars(){
     _cd.className=`card ${GS.run.charId===c.id?'selected':''} ${ok?'':'locked'}`;
     _cd.innerHTML=`
       <div class="row" style="gap:12px">
-        <div style="line-height:1">${renderIcon('chars', c.id, c.icon, 48)}</div>
+        <div style="line-height:1">${renderIcon('chars', c.id, c.icon, 60)}</div>
         <div style="flex:1">
           <div class="card-title">${c.name}</div>
           <div class="card-sub">${c.desc}</div>
@@ -1657,7 +1657,7 @@ function renderChars(){
       card.style.cssText=`min-width:90px;background:${isSelected?'#1f2922':'#1f1f24'};border:0.5px solid ${isSelected?'#4ade80':'#3a3a38'};border-radius:8px;padding:8px 8px 6px;flex-shrink:0;cursor:pointer;transition:border-color .15s`;
       card.innerHTML=`
         <div style="text-align:center;margin-bottom:4px">
-          ${renderIcon('chars', c.id, c.icon, 28)}
+          ${renderIcon('chars', c.id, c.icon, 34)}
           <div style="font-size:10px;color:#888780;margin-top:1px">${c.name}</div>
         </div>
         <div style="font-size:10px;line-height:1.9">
@@ -2013,7 +2013,7 @@ function renderDungeon(){
   const charIconEl=document.getElementById('dng-char-icon');
   const charNameEl=document.getElementById('dng-char-name');
   const equipNamesEl=document.getElementById('dng-equip-names');
-  if(charIconEl) charIconEl.innerHTML=renderIcon('chars', GS.run.charId, c.icon||'⚔', 36);
+  if(charIconEl) charIconEl.innerHTML=renderIcon('chars', GS.run.charId, c.icon||'⚔', 44);
   if(charNameEl) charNameEl.textContent=c.name||'';
   if(equipNamesEl) equipNamesEl.textContent=`${w.icon||''}${w.name||''} / ${a.icon||''}${a.name||''}`;
 
@@ -2156,7 +2156,7 @@ function startBattle(enemy,isBoss){
   if(_locEl&&_battleFloor) _locEl.textContent=`${_battleFloor.name}「${_battleFloor.sub}」— ${GS.run.room+1}${_battleFloor.areaMode?'エリア目':'部屋目'}`;
   setTC('b-hero-name',GS.run.name);
   setTC('b-souls',GS.run.runSouls);
-  const _hs=document.getElementById('hero-sprite');if(_hs)_hs.innerHTML=renderIcon('chars',GS.run.charId,GS.run.icon,90);
+  const _hs=document.getElementById('hero-sprite');if(_hs)_hs.innerHTML=renderIcon('chars',GS.run.charId,GS.run.icon,112);
   setTC('enemy-sprite',enemy.icon);
   setTC('b-enemy-name',enemy.name);
   document.getElementById('battle-result').style.display='none';
