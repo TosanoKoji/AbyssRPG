@@ -290,7 +290,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121407</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121417</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1966,9 +1966,9 @@ function startRun(){
   GS.run.skillUsed=0; GS.run.dodgeCount=0;
   GS.run.accessories=accs;
   
-  // ユニークスキル: 初期付与 + 達成解放済みを収集
+  // ユニークスキル: 初期付与 + 達成解放済みを収集（unlocked/unlockedUniqueSkills 両方チェック）
   GS.run.uniqueSkills = Object.values(UNIQUE_SKILLS)
-    .filter(u=>u.charId===GS.run.charId && (u.initial || GS.unlockedUniqueSkills.includes(u.id)))
+    .filter(u=>u.charId===GS.run.charId && (u.initial || GS.unlockedUniqueSkills.includes(u.id) || GS.unlocked.includes(u.id)))
     .map(u=>u.id);
 
   // 旅スキル: アイコン変化・装飾品8枠
@@ -3443,6 +3443,16 @@ async function loadAndInit(){
     Object.keys(SKILL_FNS).forEach(id=>{if(ACTIVE_SKILLS[id])ACTIVE_SKILLS[id].fn=SKILL_FNS[id];});
     // マイグレーション: travelerは初期キャラなので常に解放済み扱い
     if(!GS.unlocked.includes('traveler')){GS.unlocked.push('traveler');save();}
+    // マイグレーション: GS.unlocked に混入したユニークスキルを unlockedUniqueSkills へ移動
+    let _migrated=false;
+    Object.keys(UNIQUE_SKILLS).forEach(uid=>{
+      if(GS.unlocked.includes(uid)){
+        GS.unlocked=GS.unlocked.filter(x=>x!==uid);
+        if(!GS.unlockedUniqueSkills.includes(uid)) GS.unlockedUniqueSkills.push(uid);
+        _migrated=true;
+      }
+    });
+    if(_migrated) save();
     checkAchievements();
   }catch(e){
     document.body.innerHTML='<div style="color:#ef4444;padding:40px;font-family:monospace;background:#1a1a18;min-height:100vh">⚠ データ読み込みエラー<br><br>'+e.message+'<br><br><small>ローカルサーバー経由でアクセスしてください<br>例: python3 -m http.server 8000</small></div>';
