@@ -245,6 +245,12 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 
 /* ユニークスキルバッジ */
 .unique-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:8px;margin-right:4px;margin-bottom:3px;cursor:default;background:#1a1208;color:#FCD34D;border:0.5px solid #7a5c00;transition:box-shadow .3s}
+/* バトル中プレイヤーバフアイコン */
+.buf{display:inline-flex;align-items:center;gap:2px;font-size:9px;padding:1px 4px;border-radius:4px;white-space:nowrap;font-weight:500}
+.buf-green{background:rgba(74,222,128,.18);border:0.5px solid rgba(74,222,128,.5);color:#6ee7b7}
+.buf-gold{background:rgba(252,211,77,.18);border:0.5px solid rgba(252,211,77,.5);color:#FCD34D}
+.buf-purple{background:rgba(167,139,250,.18);border:0.5px solid rgba(167,139,250,.5);color:#c4b5fd}
+.buf-red{background:rgba(239,68,68,.18);border:0.5px solid rgba(239,68,68,.5);color:#fca5a5}
 .unique-badge:hover{box-shadow:0 0 8px rgba(252,211,77,.3)}
 
 /* バトルスキルツールチップ（ボタンに常時表示） */
@@ -296,7 +302,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121741</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121814</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -552,6 +558,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="battle-area" id="battle-area">
     <div style="display:flex;justify-content:space-between;align-items:center;height:100%;padding:0 4px">
       <div id="hero-side-wrap" style="text-align:center;width:128px;flex-shrink:0">
+        <div id="hero-buff-icons" style="display:flex;flex-wrap:wrap;gap:2px;justify-content:flex-start;min-height:14px;margin-bottom:2px"></div>
         <div id="hero-sprite" style="font-size:44px;margin-bottom:2px;display:inline-block" class="fighter">⚔</div>
         <div style="font-size:11px;font-weight:500" id="b-hero-name"></div>
         <div class="hp-bar-wrap"><div class="hp-bar hp-hero" id="b-hero-hp" style="width:100%"></div></div>
@@ -822,8 +829,8 @@ function startCdTimer(){
     const now=Date.now();
     const anyActive=Object.values(bState.skillCooldownEnd||{}).some(t=>now<t);
     if(anyActive)renderActiveBtns();
-    else stopCdTimer();
-  },100);
+    renderBuffIcons();
+  },200);
 }
 function stopCdTimer(){if(_cdTimer){clearInterval(_cdTimer);_cdTimer=null;}}
 let skillTab='active';
@@ -2213,6 +2220,7 @@ function startBattle(enemy,isBoss){
     poisonTurns:0, poisonDmgPer:0,
     samuraiMikiriReady:false,
     limiterActive:0,
+    godProtectionEnd:0,
     warriorBraveMult:(GS.run.uniqueSkills&&GS.run.uniqueSkills.includes('warrior_brave'))?Math.pow(1.03,GS.run.room):1,
     skillCooldownEnd: {}
   };
@@ -2534,8 +2542,33 @@ function animAttack(spriteId, animType, onHit){
 }
 function animShake(spriteId){const el=document.getElementById(spriteId);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),300);}
 
+function renderBuffIcons(){
+  const el=document.getElementById('hero-buff-icons');
+  if(!el||!bState)return;
+  el.innerHTML='';
+  const now=Date.now();
+  const b=(icon,label,cls)=>{const s=document.createElement('span');s.className='buf buf-'+cls;s.textContent=icon+' '+label;el.appendChild(s);};
+  // 加護（大神）: 10秒タイマー
+  if((bState.godProtectionEnd||0)>now){
+    const sec=Math.ceil((bState.godProtectionEnd-now)/1000);
+    b('✨','加護'+sec+'s','purple');
+  }
+  // リミッター解除（オートマトン）
+  if((bState.limiterActive||0)>0) b('⚙️','解除'+bState.limiterActive+'T','gold');
+  // 鬨の声（怒り）
+  if((bState.rageStacks||0)>0) b('💢','激怒×'+bState.rageStacks,'red');
+  // 影踏み（次ターン回避確定）
+  if(bState.dodgeNext) b('🎯','次回避','green');
+  // 幻影（回避ごとにATK累積）
+  if((bState.phantomAtkBonus||0)>0) b('💨','+'+bState.phantomAtkBonus+'%','gold');
+  // 見きり（完全回避後に3連撃準備中）
+  if(bState.samuraiMikiriReady) b('👁','見きり','green');
+  // 影刃（次攻撃が会心確定）
+  if(GS.run&&GS.run.shadowbladeReady) b('◆','影刃','gold');
+}
 function updateBattleUI(){
   if(!bState||!bState.heroMaxHp)return;
+  renderBuffIcons();
   const hPct=Math.max(0,bState.heroHp/bState.heroMaxHp*100);
   const ePct=Math.max(0,bState.enemyHp/bState.enemyMaxHp*100);
   const mPct=Math.max(0,bState.heroMp/bState.heroMaxMp*100);
@@ -2916,14 +2949,18 @@ function autoBattleTick(){
             if(dmgToHero>0) bState.heroHp-=dmgToHero;
             showDmg('hero-sprite',dmgToHero,false,false,false);
             addLog(`${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
-            // 加護: 攻撃受けるたびCD-20%
+            // 加護: 攻撃受けた瞬間に発動（10秒間有効、重複なし）→効果中はCD-20%を毎ターン適用
             if((GS.run.uniqueSkills||[]).includes('god_protection')){
               const now=Date.now();
-              Object.keys(bState.skillCooldownEnd).forEach(sid=>{
-                const remaining=bState.skillCooldownEnd[sid]-now;
-                if(remaining>0) bState.skillCooldownEnd[sid]=now+Math.floor(remaining*0.8);
-              });
-              addLog('✨ 加護: 全CDが20%短縮','log-skill');
+              if((bState.godProtectionEnd||0)<=now){
+                bState.godProtectionEnd=now+10000;
+                Object.keys(bState.skillCooldownEnd).forEach(sid=>{
+                  const remaining=bState.skillCooldownEnd[sid]-now;
+                  if(remaining>0) bState.skillCooldownEnd[sid]=now+Math.floor(remaining*0.8);
+                });
+                addLog('✨ 加護発動！ 10秒間全CDが20%短縮','log-skill');
+                showSkillFlash('rgba(167,139,250,.25)');
+              }
             }
           }
         }
