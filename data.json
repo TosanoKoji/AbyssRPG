@@ -1318,7 +1318,7 @@
       ],
       "bosses": [
         {
-          "id": "f3b_hao",
+          "id": "f3b_haou",
           "name": "炎獄の覇王",
           "icon": "😈",
           "hp": 2000,
@@ -2035,19 +2035,6 @@
         }
       ],
       "bosses": [
-        {
-          "id": "f9b_maou",
-          "name": "魔王",
-          "icon": "👿",
-          "hp": 800000,
-          "atk": 8000,
-          "def": 3500,
-          "crit": 12,
-          "dodge": 8,
-          "souls": 3000,
-          "exp": 4500,
-          "kind": "boss"
-        },
         {
           "id": "f9b_souzou",
           "name": "地獄の創造主",
