@@ -296,7 +296,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121503</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121741</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2895,7 +2895,7 @@ function autoBattleTick(){
           addLog(`かすった！ ${bState.enemy.name}から${dmgToHero}ダメージ（半減）`,'log-hero-dmg');
         } else {
           // 全集中: 3%で攻撃無効化
-          if(dmgToHero>0&&(GS.run.uniqueSkills||[]).includes('paladin_focus')&&Math.random()<0.03){
+          if((GS.run.uniqueSkills||[]).includes('paladin_focus')&&Math.random()<0.03){
             dmgToHero=0;
             addLog('🛡 全集中発動！ 攻撃を無効化！','log-skill');
             showSkillFlash('rgba(74,222,128,.25)');
@@ -2910,9 +2910,10 @@ function autoBattleTick(){
               showSkillFlash('rgba(139,92,246,.3)');
             }
           }
-          if(dmgToHero>0){
+          // ダメージ0でも常に被弾アニメ＋表示する
+          {
             animShake('hero-sprite');showHeroFlash();
-            bState.heroHp-=dmgToHero;
+            if(dmgToHero>0) bState.heroHp-=dmgToHero;
             showDmg('hero-sprite',dmgToHero,false,false,false);
             addLog(`${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
             // 加護: 攻撃受けるたびCD-20%
