@@ -290,7 +290,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121348</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121407</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1297,7 +1297,7 @@ function renderUnlock(){
     return;
   }
   UNLOCK_GROUPS[unlockTab].forEach(u=>{
-    const done=isUnlocked(u.id);
+    const done=isUnlocked(u.id)||(u.kind==='uniqueSkill'&&(GS.unlockedUniqueSkills||[]).includes(u.id));
     // キャラタブ: achReqが未達成かつ未解放のキャラはネタバレ防止のため非表示
     if(unlockTab==='char'&&u.achReq&&!GS.achDone.includes(u.achReq)&&!done) return;
     const lvOk=!u.lvReq||GS.totalLv>=u.lvReq;
@@ -1305,9 +1305,9 @@ function renderUnlock(){
     const achOk=!u.achReq||GS.achDone.includes(u.achReq);
     let kindBadge='';
     if(unlockTab==='skill'){
-      kindBadge=u.kind==='active'
-        ?'<span class="badge badge-purple" style="margin-left:6px;font-size:10px">アクティブ</span>'
-        :'<span class="badge badge-green"  style="margin-left:6px;font-size:10px">パッシブ</span>';
+      if(u.kind==='active')       kindBadge='<span class="badge badge-purple" style="margin-left:6px;font-size:10px">アクティブ</span>';
+      else if(u.kind==='uniqueSkill') kindBadge='<span class="badge badge-gold"   style="margin-left:6px;font-size:10px">ユニーク</span>';
+      else                            kindBadge='<span class="badge badge-green"   style="margin-left:6px;font-size:10px">パッシブ</span>';
     }
     const lvBadge=u.lvReq?`<span class="badge badge-amber" style="font-size:10px">総Lv${u.lvReq}〜</span> `:'';
     const locked=(!lvOk||!achOk)&&!done;
@@ -1321,7 +1321,7 @@ function renderUnlock(){
     _ud.innerHTML=`
       <div class="row" style="justify-content:space-between;align-items:flex-start">
         <div>
-          <div class="card-title">${lvBadge}${u.label}${kindBadge}</div>
+          <div class="card-title">${lvBadge}${u.label}${kindBadge}${u.kind==='uniqueSkill'&&UNIQUE_SKILLS[u.id]?`<span style="font-size:10px;color:#888780;margin-left:6px">${CHARS[UNIQUE_SKILLS[u.id].charId]?.name||''}</span>`:''}${u.kind==='uniqueSkill'&&UNIQUE_SKILLS[u.id]?' '+UNIQUE_SKILLS[u.id].icon:''}</div>
           ${u.sub?`<div class="card-sub">${u.sub}</div>`:''}
           ${lockReason}
         </div>
@@ -1341,7 +1341,13 @@ function unlockItem(id,cost){
   const label=u?u.label:id;
   _showBuyConfirm(label,cost,()=>{
     if(GS.souls<cost){showInlineAlert('魂の欠片が足りない');return;}
-    GS.souls-=cost;GS.unlocked.push(id);save();renderUnlock();
+    GS.souls-=cost;
+    if(u&&u.kind==='uniqueSkill'){
+      if(!GS.unlockedUniqueSkills.includes(id)) GS.unlockedUniqueSkills.push(id);
+    } else {
+      GS.unlocked.push(id);
+    }
+    save();renderUnlock();
     document.getElementById('unlock-souls-disp').textContent=GS.souls;
   });
 }
