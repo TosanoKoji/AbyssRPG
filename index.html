@@ -56,9 +56,11 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .fighter.enemy-attack{animation:enemy-atk .3s}
 .fighter.skill-attack{animation:sklatk .5s}
 .fighter.shake{animation:shk .3s}
+.fighter.dodge-back{animation:dodge-back .3s}
+@keyframes dodge-back{0%{transform:translateX(0)}40%{transform:translateX(-14px)}100%{transform:translateX(0)}}
 
 @keyframes atk{0%{transform:translateX(0)}40%{transform:translateX(18px)}100%{transform:translateX(0)}}
-@keyframes atk-slash{0%{transform:translateX(0) rotate(0deg)}40%{transform:translateX(18px) rotate(15deg)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes atk-slash{0%{transform:translateX(0)}40%{transform:translateX(18px)}100%{transform:translateX(0)}}
 @keyframes atk-pierce{0%{transform:translateX(0)}40%{transform:translateX(24px)}100%{transform:translateX(0)}}
 @keyframes atk-smash{0%{transform:translate(0,0) rotate(0deg)}30%{transform:translate(-5px,-15px) rotate(-10deg)}50%{transform:translate(20px,10px) rotate(20deg)}100%{transform:translate(0,0) rotate(0deg)}}
 @keyframes atk-strike{0%{transform:translateX(0)}40%{transform:translateX(18px) scale(1.1)}100%{transform:translateX(0) scale(1)}}
@@ -288,7 +290,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604111838</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121348</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -447,7 +449,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div id="weapon-list"></div>
   <div style="font-size:13px;font-weight:500;margin:10px 0 6px">防具</div>
   <div id="armor-list"></div>
-  <div style="font-size:13px;font-weight:500;margin:10px 0 6px">💍 装飾品 <span style="font-size:11px;color:#888780">（<span id="acc-slots-label">1</span>枠）</span></div>
+  <div style="font-size:13px;font-weight:500;margin:10px 0 6px">💍 装飾品 <span style="font-size:11px;color:#888780">（<span id="acc-slots-label">1</span>枠 <span id="acc-selected-count" style="color:#FCD34D;font-size:10px"></span>）</span></div>
   <div id="accessory-list"></div>
   <hr class="divider">
   <button class="btn btn-primary" id="btn-to-skill" disabled>スキルを設定する</button>
@@ -803,9 +805,9 @@ const SKILL_FNS={
   lifedrain:  bs=>{const dmg=Math.max(1,Math.floor(GS.run.atk*1.5)-bs.enemy.def);bs.heroHp=Math.min(bs.heroMaxHp,bs.heroHp+dmg);showDmg('hero-sprite',dmg,true,false,false);skillHitEnemy(bs,dmg,'生命吸収');},
   blaze:      bs=>{skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*4)-Math.floor(bs.enemy.def*0.5)),'地獄炎');},
   shadowstep: bs=>{bs.dodgeNext=true;skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*2)-bs.enemy.def),'影踏み');},
-  rallycry:   bs=>{bs.rageStacks=(bs.rageStacks||0)+3;addLog('鬨の声！ 3ターン攻撃+50%','log-skill');showSkillFlash();updateBattleUI();renderActiveBtns();},
+  rallycry:   bs=>{bs.rageStacks=(bs.rageStacks||0)+3;addLog('鬨の声！ 3ターン攻撃+50%','log-skill');showSkillFlash('rgba(251,191,36,.22)');updateBattleUI();renderActiveBtns();},
   soulburst:  bs=>{const cost=Math.floor(bs.heroMaxHp*0.3);bs.heroHp=Math.max(1,bs.heroHp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*6)-bs.enemy.def),'魂の爆発');updateBattleUI();},
-  timestop:   bs=>{bs.stunTurns=(bs.stunTurns||0)+2;addLog('時間停止！ 敵の攻撃を2回無効化','log-skill');showSkillFlash();renderActiveBtns();},
+  timestop:   bs=>{bs.stunTurns=(bs.stunTurns||0)+2;addLog('時間停止！ 敵の攻撃を2回無効化','log-skill');showSkillFlash('rgba(96,165,250,.25)');renderActiveBtns();},
   divinewrath:bs=>{skillHitEnemy(bs,Math.floor(GS.run.atk*5),'天罰');},
   apocalypse: bs=>{const cost=Math.floor(bs.heroMaxMp*0.5);bs.heroMp=Math.max(0,bs.heroMp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(bs.enemyHp*0.3)),'終焉');updateBattleUI();}
 };
@@ -1755,6 +1757,8 @@ function renderEquip(){
   const accSlotBonus2=(GS.systemUnlocked||[]).includes('acc_slot_up2')?1:0;
   const slots=hasJourney?8:(c?c.accSlots:1)+accSlotBonus+accSlotBonus2;
   document.getElementById('acc-slots-label').textContent=slots;
+  const _accSelCount=document.getElementById('acc-selected-count');
+  if(_accSelCount) _accSelCount.textContent=(GS.run.accessories||[]).length?`(選択中 ${(GS.run.accessories||[]).length}/${slots})`:'';
   const wl=document.getElementById('weapon-list'),al=document.getElementById('armor-list'),acl=document.getElementById('accessory-list');
   wl.innerHTML='';al.innerHTML='';acl.innerHTML='';
   Object.values(WEAPONS).forEach(w=>{
@@ -1967,10 +1971,6 @@ function startRun(){
     GS.run.name='旅人';
   }
 
-  // ユニークスキル効果: 難攻不落（DEFにATKの20%上乗せ）
-  if(GS.run.uniqueSkills.includes('warrior_fortress')){
-    GS.run.def += Math.floor(GS.run.atk * 0.2);
-  }
   // ユニークスキル効果: 神罰（ATKにDEFの50%上乗せ）
   if(GS.run.uniqueSkills.includes('paladin_judgement')){
     GS.run.atk += Math.floor(GS.run.def * 0.3);
@@ -1978,12 +1978,17 @@ function startRun(){
 
   GS.run.lichUsed = false;
   GS.run.nextSkillDiscount = 0;
-  GS.run.counterReady = false;
-  GS.run.phantomTurns = GS.run.uniqueSkills.includes('rogue_phantom') ? 2 : 0;
   GS.run.shadowbladeReady = false;
   // 侍の反撃確率（日本刀装備で2倍）
   GS.run.samuraiCounterChance = GS.run.uniqueSkills.includes('samurai_counter')
     ? (WEAPONS[GS.run.weaponId]?.special==='samuraiDoubleCounter' ? 0.20 : 0.10) : 0;
+  // 捨身: DEF-20%, ATK+30%
+  if(GS.run.uniqueSkills.includes('warrior_sacrifice')){
+    GS.run.def=Math.floor(GS.run.def*0.8);
+    GS.run.atk=Math.floor(GS.run.atk*1.3);
+  }
+  // 勇敢: 開始時は0、部屋移動で加算（bState側で適用）
+  GS.run.warriorBraveBonus=0;
 
   // 部屋構成のランダム生成
   // 1〜3部屋目: battle / 10部屋目: boss
@@ -2189,8 +2194,11 @@ function startBattle(enemy,isBoss){
     enemy, isBoss, turn:0, over:false,
     rageStacks:0, dodgeNext:false, stunTurns:0,
     fullGuardTurns:0,
-    phantomTurns: GS.run.phantomTurns||0,
-    curseTick: (GS.run.uniqueSkills||[]).includes('necro_curse') ? Math.floor(enemy.hp*0.05) : 0,
+    phantomAtkBonus:0,
+    poisonTurns:0, poisonDmgPer:0,
+    samuraiMikiriReady:false,
+    limiterActive:0,
+    warriorBraveMult:(GS.run.uniqueSkills&&GS.run.uniqueSkills.includes('warrior_brave'))?Math.pow(1.03,GS.run.room):1,
     skillCooldownEnd: {}
   };
   stopCdTimer();
@@ -2211,7 +2219,12 @@ function startBattle(enemy,isBoss){
     _bgImg.src=`assets/back/floor${_floorId}.png`;
   }
   const _hs=document.getElementById('hero-sprite');if(_hs)_hs.innerHTML=renderIcon('chars',charImgIdBattle(GS.run.charId),GS.run.icon,112);
-  setTC('enemy-sprite',enemy.icon);
+  const _ess=document.getElementById('enemy-sprite');
+  if(isBoss&&SETTINGS.iconMode==='png'){
+    _ess.innerHTML=renderIcon('enemies',enemy.id,enemy.icon,112);
+  } else {
+    _ess.innerHTML=`<span style="font-size:44px">${enemy.icon}</span>`;
+  }
   setTC('b-enemy-name',enemy.name);
   document.getElementById('battle-result').style.display='none';
   document.getElementById('battle-log').innerHTML='';
@@ -2345,7 +2358,12 @@ function useActiveSkill(id){
     startCdTimer();
   }
   addLog(`【${s.name}】発動！`,'log-skill');
+  // 魔力暴走: 10%でスキル効果3倍（bStateフラグで skillHitEnemy に伝達）
+  const _mageRunaway=(GS.run.uniqueSkills||[]).includes('mage_runaway')&&Math.random()<0.1;
+  if(_mageRunaway){addLog('🌀 魔力暴走！ 効果3倍！','log-skill');showSkillFlash('rgba(251,191,36,.25)');}
+  bState.mageRunaway=_mageRunaway;
   s.fn(bState);
+  bState.mageRunaway=false;
   // 天使の奇跡: 50%の確率で1回追加発動（MP消費0.5回分追加=合計1.5回分）
   if(!bState.over&&(GS.run.uniqueSkills||[]).includes('angel_miracle')){
     const miracleCount=1;
@@ -2370,9 +2388,12 @@ function useActiveSkill(id){
       s.fn(bState);
     }
   });
-  // 連鎖魔法: 次のスキルコスト-10MP
-  if((GS.run.uniqueSkills||[]).includes('mage_chain'))
-    GS.run.nextSkillDiscount=10;
+  // 魔力過負荷: 10%でCDゼロ
+  if((GS.run.uniqueSkills||[]).includes('mage_overload')&&Math.random()<0.1){
+    bState.skillCooldownEnd[id]=0;
+    addLog('✦ 魔力過負荷！ クールタイムゼロ！','log-skill');
+    showSkillFlash('rgba(96,165,250,.25)');
+  }
   // スキル使用カウント（達成報酬用）
   GS.run.skillUsed=(GS.run.skillUsed||0)+1;
   updateBattleUI();renderActiveBtns();
@@ -2383,26 +2404,22 @@ function skillHitEnemy(bs,baseDmg,skillName){
   const critBonus=passives.includes('critup')?20:0;
   const critChance=(GS.run.crit+critBonus)/100;
   const isCrit=Math.random()<critChance;
-  
+
   let rawDmg=isCrit?Math.floor(baseDmg*1.5):baseDmg;
   if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
 
-  const dmg=randVar(Math.floor(rawDmg*(GS.run.dmgBonus||1)));
+  const runawayMult=bs.mageRunaway?3:1;
+  const dmg=randVar(Math.floor(rawDmg*(GS.run.dmgBonus||1)*runawayMult));
 
   const el=document.getElementById('enemy-sprite');
   el.classList.add('skill-attack');
   setTimeout(()=>el.classList.remove('skill-attack'),500);
-  showSkillFlash();
+  showSkillFlash('rgba(168,85,247,.18)');
   if(isCrit){showCritFlash();}
   animShake('enemy-sprite');
   bs.enemyHp-=dmg;
   showDmg('enemy-sprite',dmg,false,true,isCrit);
   addLog(`${isCrit?'💥会心！':''}${skillName}で${dmg}ダメージ！`,isCrit?'log-crit':'log-skill');
-  // 洞察の眼: 会心時MP+15
-  if(isCrit&&(GS.run.uniqueSkills||[]).includes('mage_insight')){
-    bs.heroMp=Math.min(bs.heroMaxMp,bs.heroMp+15);
-    addLog('洞察の眼: MP+15','log-heal');
-  }
   applyVampiric(dmg,bs);
   updateBattleUI();renderActiveBtns();
   if(bs.enemyHp<=0)setTimeout(()=>endBattle(true),200);
@@ -2415,7 +2432,14 @@ function applyVampiric(dmg,bs){
     triggerPassiveBadge('vampiric');
   }
 }
-function showSkillFlash(){const area=document.getElementById('battle-area');const fl=document.createElement('div');fl.className='skill-flash';area.appendChild(fl);setTimeout(()=>fl.remove(),400);}
+function showSkillFlash(color){
+  const area=document.getElementById('battle-area');
+  const fl=document.createElement('div');
+  fl.className='skill-flash';
+  if(color) fl.style.background=color;
+  area.appendChild(fl);
+  setTimeout(()=>fl.remove(),400);
+}
 function showCritFlash(){const area=document.getElementById('battle-area');const fl=document.createElement('div');fl.className='crit-flash';area.appendChild(fl);setTimeout(()=>fl.remove(),300);}
 function showHeroFlash(){const area=document.getElementById('battle-area');const fl=document.createElement('div');fl.className='hero-flash';area.appendChild(fl);setTimeout(()=>fl.remove(),250);}
 
@@ -2479,6 +2503,42 @@ function updateBattleUI(){
   setTC('b-hero-hp-text',`${Math.max(0,bState.heroHp||0)}/${bState.heroMaxHp||0}`);
   setTC('b-enemy-hp-text',`${Math.max(0,bState.enemyHp||0)}/${bState.enemyMaxHp||0}`);
   setTC('b-hero-mp-text',`MP ${Math.max(0,bState.heroMp||0)}/${bState.heroMaxMp||0}`);
+  // スタン・毒のビジュアル
+  const _enemyEl=document.getElementById('enemy-sprite');
+  if(_enemyEl){
+    if((bState.stunTurns||0)>0){
+      _enemyEl.style.filter='sepia(1) hue-rotate(180deg) brightness(0.7)';
+      let _stunBadge=document.getElementById('enemy-stun-badge');
+      if(!_stunBadge){
+        _stunBadge=document.createElement('div');
+        _stunBadge.id='enemy-stun-badge';
+        _stunBadge.style.cssText='position:absolute;top:4px;right:4px;background:rgba(96,165,250,.85);color:#fff;font-size:10px;padding:1px 5px;border-radius:8px;pointer-events:none';
+        document.getElementById('battle-area').appendChild(_stunBadge);
+      }
+      _stunBadge.textContent=`⏸ 停止 ${bState.stunTurns}T`;
+      _stunBadge.style.display='';
+    } else {
+      _enemyEl.style.filter='';
+      const _stunBadge=document.getElementById('enemy-stun-badge');
+      if(_stunBadge) _stunBadge.style.display='none';
+    }
+    // 毒ビジュアル
+    if((bState.poisonTurns||0)>0){
+      _enemyEl.style.filter=(bState.stunTurns>0?'sepia(1) hue-rotate(180deg) brightness(0.7) ':'')+'hue-rotate(90deg) brightness(0.8)';
+      let _poisonBadge=document.getElementById('enemy-poison-badge');
+      if(!_poisonBadge){
+        _poisonBadge=document.createElement('div');
+        _poisonBadge.id='enemy-poison-badge';
+        _poisonBadge.style.cssText='position:absolute;top:4px;left:4px;background:rgba(74,222,128,.85);color:#1a1a18;font-size:10px;padding:1px 5px;border-radius:8px;pointer-events:none';
+        document.getElementById('battle-area').appendChild(_poisonBadge);
+      }
+      _poisonBadge.textContent=`☠ 毒 ${bState.poisonTurns}T`;
+      _poisonBadge.style.display='';
+    } else {
+      const _poisonBadge=document.getElementById('enemy-poison-badge');
+      if(_poisonBadge) _poisonBadge.style.display='none';
+    }
+  }
 }
 
 function randVar(dmg){return Math.max(1,Math.floor(dmg*(0.85+Math.random()*0.3)));}
@@ -2494,23 +2554,26 @@ function autoBattleTick(){
   const hasRage=passives.includes('rage');
   const hasMpRecover=passives.includes('mprecover');
 
-  // 呪いの刻印（ターン毎に敵HP削る）
+  // 呪いの刻印（ターン毎に敵HP削る）0.5%
   if(passives.includes('cursedmark')){
-    const curseDmg=Math.max(1,Math.floor(bState.enemyMaxHp*0.02));
+    const curseDmg=Math.max(1,Math.floor(bState.enemyMaxHp*0.005));
     bState.enemyHp-=curseDmg;
     addLog(`呪いの刻印: ${curseDmg}ダメージ`,'log-skill');
     if(bState.enemyHp<=0){endBattle(true);return;}
   }
-  // 死の呪縛（毎ターン呪いダメージ）
-  if((GS.run.uniqueSkills||[]).includes('necro_curse')&&bState.curseTick>0){
-    bState.enemyHp-=bState.curseTick;
-    addLog(`死の呪縛: ${bState.curseTick}ダメージ`,'log-skill');
+  // 毒: 3ターンかけて最大HPの3%ダメージ
+  if((bState.poisonTurns||0)>0){
+    bState.enemyHp-=bState.poisonDmgPer;
+    bState.poisonTurns--;
+    showDmg('enemy-sprite',bState.poisonDmgPer,false,false,false);
+    addLog(`☠ 毒ダメージ: ${bState.poisonDmgPer}（残${bState.poisonTurns}T）`,'log-skill');
     if(bState.enemyHp<=0){endBattle(true);return;}
   }
-  // 聖なる加護（毎ターンHP回復）
+  // 聖なる加護（毎ターンHP回復）最大HPの1%
   if((GS.run.uniqueSkills||[]).includes('paladin_aura')){
-    bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+3);
-    showDmg('hero-sprite',3,true,false,false);
+    const _auraHeal=Math.max(1,Math.floor(bState.heroMaxHp*0.01));
+    bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+_auraHeal);
+    showDmg('hero-sprite',_auraHeal,true,false,false);
   }
   // 天の恵み（3ターンに1回 最大HPの10%回復）
   if((GS.run.uniqueSkills||[]).includes('angel_blessing')&&bState.turn%3===0){
@@ -2523,35 +2586,62 @@ function autoBattleTick(){
   bState.heroMp=Math.min(bState.heroMaxMp,bState.heroMp+3+(hasMpRecover?5:0));
   // 魂の収穫（敵撃破時MP+10）はendBattleで処理
 
-  let heroAtk=GS.run.atk;
+  let heroAtk=Math.floor(GS.run.atk*(bState.warriorBraveMult||1));
   if(hasRage&&bState.heroHp<bState.heroMaxHp*0.5){heroAtk=Math.floor(heroAtk*1.3);triggerPassiveBadge('rage');}
   if(bState.rageStacks>0){heroAtk=Math.floor(heroAtk*1.5);bState.rageStacks--;}
   // 血戦の心得: HP30%以下で攻撃+50%・被ダメ-20%
   if((GS.run.uniqueSkills||[]).includes('warrior_berserk')&&bState.heroHp<bState.heroMaxHp*0.3)
     heroAtk=Math.floor(heroAtk*1.5);
-  // リッチの目覚め: HP10%以下で全ステータス+40%（1回限り）
-  if((GS.run.uniqueSkills||[]).includes('necro_lich')&&!GS.run.lichUsed&&bState.heroHp<bState.heroMaxHp*0.1){
-    GS.run.lichUsed=true;
-    heroAtk=Math.floor(heroAtk*1.4);
-    bState.heroMaxHp=Math.floor(bState.heroMaxHp*1.4);
-    addLog('リッチの目覚め発動！ 全ステータス+40%','log-skill');showSkillFlash();
+  // 使役: 3ターンに1回、MP3%消費→その5倍のDEF無視攻撃
+  if((GS.run.uniqueSkills||[]).includes('necro_servant')&&bState.turn%3===0){
+    const _servCost=Math.max(1,Math.floor(bState.heroMaxMp*0.03));
+    if(bState.heroMp>=_servCost){
+      bState.heroMp-=_servCost;
+      const _servDmg=_servCost*5;
+      bState.enemyHp-=_servDmg;
+      showDmg('enemy-sprite',_servDmg,false,false,false);
+      addLog(`🦴 使役: MP${_servCost}消費 → ${_servDmg}ダメージ（防御無視）`,'log-skill');
+      showSkillFlash('rgba(139,92,246,.3)');
+      if(bState.enemyHp<=0){endBattle(true);return;}
+    }
   }
-  // 鉄の反撃: 被ダメ後次の攻撃+30%
-  if(GS.run.counterReady){heroAtk=Math.floor(heroAtk*1.3);GS.run.counterReady=false;}
+  // リミッター解除: 5ターンに1回発動
+  if((GS.run.uniqueSkills||[]).includes('you_limiter')&&bState.turn>0&&bState.turn%5===0){
+    const _limCost=Math.floor(bState.heroMaxHp/5);
+    if(bState.heroHp>_limCost){
+      bState.heroHp-=_limCost;
+      bState.limiterActive=3;
+      addLog(`⚙️ リミッター解除！ HP-${_limCost} → 3ターン攻撃力1.5倍`,'log-skill');
+      showSkillFlash('rgba(251,191,36,.25)');
+    }
+  }
+  if((bState.limiterActive||0)>0) bState.limiterActive--;
   // 影刃: 回避成功後次の攻撃が会心確定
   const shadowbladeActive=GS.run.shadowbladeReady||false;
   if(shadowbladeActive) GS.run.shadowbladeReady=false;
   heroAtk=Math.floor(heroAtk*(GS.run.dmgBonus||1));
+  // 幻影: 回避累積ボーナス
+  if((bState.phantomAtkBonus||0)>0) heroAtk=Math.floor(heroAtk*(1+bState.phantomAtkBonus/100));
+  // リミッター解除: 発動中は攻撃1.5倍
+  if((bState.limiterActive||0)>0) heroAtk=Math.floor(heroAtk*1.5);
   // 二刀流: 各攻撃を75%威力に調整
   const hasDual=(GS.run.uniqueSkills||[]).includes('ninja_dual');
   if(hasDual) heroAtk=Math.floor(heroAtk*0.75);
   const critChance=(GS.run.crit+(hasCritUp?20:0))/100;
   const isCrit=shadowbladeActive||Math.random()<critChance;
-  
+
+  // 断骨: 3%で4回攻撃（ただし最大HP10%ダメージ）
+  const _dankotsu=(GS.run.uniqueSkills||[]).includes('samurai_dankotsu')&&Math.random()<0.03;
+
   let rawDmg=heroAtk+(isCrit?Math.floor(heroAtk*0.5):0);
   if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
 
+  // 天罰: 行動停止中の敵へ2倍ダメージ
+  let _punishMult=1;
+  if((GS.run.uniqueSkills||[]).includes('god_punishment')&&bState.stunTurns>0) _punishMult=2;
+
   let heroDmg=randVar(Math.max(1,rawDmg-bState.enemy.def));
+  heroDmg=Math.floor(heroDmg*_punishMult);
 
   const wAnim = WEAPONS[GS.run.weaponId]?.anim || 'slash';
   animAttack('hero-sprite', wAnim, ()=>{
@@ -2585,14 +2675,45 @@ function autoBattleTick(){
     if(isCrit)showCritFlash();
     addLog((isCrit?'💥会心！':'')+`${heroDmg}ダメージ`,isCrit?'log-crit':'log-enemy-dmg');
     applyVampiric(heroDmg,bState);
-    // 威厳: 5%でスタン3ターン
-    if(bState.enemyHp>0&&(GS.run.uniqueSkills||[]).includes('god_dignity')&&Math.random()<0.05){
+    // 威厳: 8%でスタン3ターン
+    if(bState.enemyHp>0&&(GS.run.uniqueSkills||[]).includes('god_dignity')&&Math.random()<0.08){
       bState.stunTurns=(bState.stunTurns||0)+3;
       addLog('👁️ 威厳発動！ 敵の行動が3ターン停止！','log-skill');showSkillFlash();
+    }
+    // 毒薬: 2%で毒付与
+    if(!bState.poisonTurns&&(GS.run.uniqueSkills||[]).includes('ninja_poison')&&Math.random()<0.02){
+      bState.poisonTurns=3;
+      bState.poisonDmgPer=Math.floor(bState.enemyMaxHp*0.03);
+      addLog('☠️ 毒付与！ 3ターンで最大HPの3%ダメージ','log-skill');
+      showSkillFlash('rgba(74,222,128,.25)');
     }
     // 必殺: 会心時1%で即死（ボス無効）
     if(isCrit&&!bState.isBoss&&(GS.run.uniqueSkills||[]).includes('ninja_deathblow')&&Math.random()<0.01){
       bState.enemyHp=0;addLog('💀 必殺発動！ 即死！','log-skill');showSkillFlash();
+    }
+    // 見きり: 完全回避後20%で3回攻撃（追加2撃）
+    if(bState.samuraiMikiriReady&&(GS.run.uniqueSkills||[]).includes('samurai_mikiri')&&Math.random()<0.2){
+      bState.samuraiMikiriReady=false;
+      for(let _mi=0;_mi<2;_mi++){
+        if(bState.enemyHp<=0) break;
+        const _miDmg=randVar(Math.max(1,heroAtk-bState.enemy.def));
+        bState.enemyHp-=_miDmg;
+        showDmg('enemy-sprite',_miDmg,false,false,false);
+        addLog(`👁 見きり ${_mi+2}撃目: ${_miDmg}ダメージ`,'log-crit');
+      }
+    } else if(bState.samuraiMikiriReady) bState.samuraiMikiriReady=false;
+    // 断骨: 4回攻撃（自HP-10%）
+    if(_dankotsu&&bState.enemyHp>0){
+      bState.heroHp-=Math.floor(bState.heroMaxHp*0.1);
+      addLog(`💥 断骨発動！ 自身HP-${Math.floor(bState.heroMaxHp*0.1)}`,'log-hero-dmg');
+      showSkillFlash('rgba(239,68,68,.2)');
+      for(let _dk=1;_dk<4;_dk++){
+        if(bState.enemyHp<=0) break;
+        const _dkDmg=randVar(Math.max(1,heroAtk-bState.enemy.def));
+        bState.enemyHp-=_dkDmg;
+        showDmg('enemy-sprite',_dkDmg,false,false,false);
+        addLog(`断骨 ${_dk+1}撃目: ${_dkDmg}ダメージ`,'log-crit');
+      }
     }
     // 二刀流: 2回目の攻撃
     if(!bState.over&&bState.enemyHp>0&&hasDual){
@@ -2685,11 +2806,6 @@ function autoBattleTick(){
       // 血戦の心得: HP30%以下で被ダメ-20%
       if((GS.run.uniqueSkills||[]).includes('warrior_berserk')&&bState.heroHp<bState.heroMaxHp*0.3)
         dmgToHero=Math.floor(dmgToHero*0.8);
-      // 聖盾の意志: HP50%以下で被ダメ-25%
-      if((GS.run.uniqueSkills||[]).includes('paladin_shield')&&bState.heroHp<bState.heroMaxHp*0.5)
-        dmgToHero=Math.floor(dmgToHero*0.75);
-
-      // 幻影: 最初の2ターン完全回避
       const r=Math.random()*100;
       let dodgeResult='none';
       // 侍の反撃チェック（回避より先に判定）
@@ -2699,8 +2815,7 @@ function autoBattleTick(){
       }
       if(samuraiCountered){
         // 反撃発動：ダメージなし
-      } else if(bState.phantomTurns>0){dodgeResult='full';bState.phantomTurns--;if(bState.turn===1)addLog('幻影発動！ 攻撃を回避','log-skill');}
-      else if(bState.dodgeNext){dodgeResult='full';bState.dodgeNext=false;}
+      } else if(bState.dodgeNext){dodgeResult='full';bState.dodgeNext=false;}
       else if(r<GS.run.dodge) dodgeResult='full';
       else if(r<GS.run.dodge+GS.run.hdodge) dodgeResult='half';
 
@@ -2715,25 +2830,59 @@ function autoBattleTick(){
           showDmg('enemy-sprite',counterDmg,false,true,false);
           addLog(`反撃で${counterDmg}ダメージ！`,'log-crit');
         } else if(dodgeResult==='full'){
+          const _hsEl=document.getElementById('hero-sprite');
+          _hsEl.classList.add('dodge-back');
+          setTimeout(()=>_hsEl.classList.remove('dodge-back'),300);
           showTextPop('hero-sprite','回避！','dodge-txt');
           addLog('敵の攻撃を完全回避！','log-dodge');
           GS.run.dodgeCount=(GS.run.dodgeCount||0)+1;
           // 影刃: 回避成功で次の攻撃が会心確定
           if((GS.run.uniqueSkills||[]).includes('rogue_shadowblade'))
             GS.run.shadowbladeReady=true;
+          // 幻影: 回避するたびATK+1%（戦闘中）最大50%
+          if((GS.run.uniqueSkills||[]).includes('rogue_phantom')){
+            bState.phantomAtkBonus=Math.min(50,((bState.phantomAtkBonus||0)+1));
+            addLog(`💨 幻影: 攻撃力+1%（累計+${bState.phantomAtkBonus}%）`,'log-skill');
+          }
+          // 見きり: 完全回避後フラグON
+          if((GS.run.uniqueSkills||[]).includes('samurai_mikiri')) bState.samuraiMikiriReady=true;
         } else if(dodgeResult==='half'){
           animShake('hero-sprite');showHeroFlash();
           bState.heroHp-=dmgToHero;
           showGrazePop('hero-sprite',dmgToHero);
           addLog(`かすった！ ${bState.enemy.name}から${dmgToHero}ダメージ（半減）`,'log-hero-dmg');
         } else {
-          animShake('hero-sprite');showHeroFlash();
-          bState.heroHp-=dmgToHero;
-          showDmg('hero-sprite',dmgToHero,false,false,false);
-          addLog(`${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
-          // 鉄の反撃: 被ダメ後の次の攻撃+30%
-          if((GS.run.uniqueSkills||[]).includes('warrior_counter'))
-            GS.run.counterReady=true;
+          // 全集中: 3%で攻撃無効化
+          if(dmgToHero>0&&(GS.run.uniqueSkills||[]).includes('paladin_focus')&&Math.random()<0.03){
+            dmgToHero=0;
+            addLog('🛡 全集中発動！ 攻撃を無効化！','log-skill');
+            showSkillFlash('rgba(74,222,128,.25)');
+          }
+          // 身代り: 3%でダメージゼロ（maxMP3%消費）
+          if(dmgToHero>0&&(GS.run.uniqueSkills||[]).includes('necro_substitute')&&Math.random()<0.03){
+            const _subCost=Math.floor(bState.heroMaxMp*0.03);
+            if(bState.heroMp>=_subCost){
+              bState.heroMp-=_subCost;
+              dmgToHero=0;
+              addLog(`🌑 身代り発動！ ダメージ無効（MP-${_subCost}）`,'log-skill');
+              showSkillFlash('rgba(139,92,246,.3)');
+            }
+          }
+          if(dmgToHero>0){
+            animShake('hero-sprite');showHeroFlash();
+            bState.heroHp-=dmgToHero;
+            showDmg('hero-sprite',dmgToHero,false,false,false);
+            addLog(`${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
+            // 加護: 攻撃受けるたびCD-20%
+            if((GS.run.uniqueSkills||[]).includes('god_protection')){
+              const now=Date.now();
+              Object.keys(bState.skillCooldownEnd).forEach(sid=>{
+                const remaining=bState.skillCooldownEnd[sid]-now;
+                if(remaining>0) bState.skillCooldownEnd[sid]=now+Math.floor(remaining*0.8);
+              });
+              addLog('✨ 加護: 全CDが20%短縮','log-skill');
+            }
+          }
         }
         // 不死身
         if(bState.heroHp<=0&&passives.includes('undying')&&!GS.run.undyingUsed){
@@ -2800,14 +2949,14 @@ function endBattle(won){
     const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
     const sm=floor?floor.soulsMult:1;
     const em=floor?floor.expMult:1;
-    // 成長スキル: 魂・EXP×1.1
-    const growthMult=(GS.run.uniqueSkills||[]).includes('traveler_growth')?1.1:1.0;
+    // 成長スキル: EXP×1.1（魂は対象外）
+    const growthExpMult=(GS.run.uniqueSkills||[]).includes('traveler_growth')?1.1:1.0;
     // 鉄アレイ: EXP×1.2
     const dumbbellMult=GS.run.dumbbellEquipped?1.2:1.0;
     // リボン: 魂+10%
     const ribbonMult=(GS.run.accessories||[]).some(a=>{const ac=ACCESSORIES[a];return ac&&ac.kind==='soulsMult';})?1.10:1.0;
-    let souls=Math.floor((bState.enemy.souls||0)*sm*growthMult*ribbonMult);
-    const exp=Math.floor((bState.enemy.exp||(bState.isBoss?20:4))*em*growthMult*dumbbellMult);
+    let souls=Math.floor((bState.enemy.souls||0)*sm*ribbonMult);
+    const exp=Math.floor((bState.enemy.exp||(bState.isBoss?20:4))*em*growthExpMult*dumbbellMult);
 
     // アクセサリ: onKill（魂喰いの護符）
     (GS.run.accessories||[]).forEach(id=>{
@@ -2818,23 +2967,23 @@ function endBattle(won){
       }
     });
 
-    // 僥倖: 10%で魂3倍
+    // 僥倖: 10%で魂とEXP3倍
     if((GS.run.uniqueSkills||[]).includes('rogue_jackpot')&&Math.random()<0.1){
-      souls*=3;addLog('僥倖発動！ 獲得魂が3倍！','log-skill');showSkillFlash();
+      souls*=3;
+      GS.run.runExp=(GS.run.runExp||0)+Math.floor(exp*2); // 3倍合計（既に1倍加算後なので+2倍分）
+      addLog('💰 僥倖発動！ 獲得魂とEXPが3倍！','log-skill');showSkillFlash();
     }
     GS.run.runSouls+=souls;GS.run.kills++;
     GS.run.runExp=(GS.run.runExp||0)+exp;
     GS.run.hp=Math.max(1,bState.heroHp);GS.run.mp=bState.heroMp;
     if(passives.includes('souleat')){GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+10);addLog('魂喰い: HP+10','log-heal');triggerPassiveBadge('souleat');}
-    // 魂の収穫: 敵撃破時MP+10
+    // 魂の収穫: 敵撃破後 最大MP+5%（ステージ内）
     if((GS.run.uniqueSkills||[]).includes('necro_soulharvest')){
-      GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+10);addLog('魂の収穫: MP+10','log-heal');
+      const _shBonus=Math.floor(GS.run.maxMp*0.05);
+      GS.run.maxMp+=_shBonus;
+      addLog(`💀 魂の収穫: 最大MP+${_shBonus}`,'log-heal');
     }
-    // 魔力過負荷: 10%で最大MP+30%（階層中）
-    if((GS.run.uniqueSkills||[]).includes('mage_overload')&&Math.random()<0.1){
-      const bonus=Math.floor(GS.run.maxMp*0.3);
-      GS.run.maxMp+=bonus;addLog(`魔力過負荷発動！ 最大MP+${bonus}`,'log-skill');
-    }
+    // 魔力過負荷: 戦闘内でスキル使用後に判定（useSkill内）
     // ナノマシン: 敵撃破時 最大HP+10%（ステージ内累積）
     if((GS.run.uniqueSkills||[]).includes('you_nanomachine')){
       const _nanoBn=Math.floor(GS.run.maxHp*0.1);

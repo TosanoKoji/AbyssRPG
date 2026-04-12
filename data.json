@@ -273,7 +273,7 @@
       "desc": "空中都市生まれの生体機械。戦うほど堅牢になる",
       "unlockCond": "achievement",
       "lvGrowth": {
-        "hp": "S",
+        "hp": "A",
         "atk": "C",
         "def": "S",
         "mp": "D",
@@ -714,7 +714,7 @@
       "id": "cursedmark",
       "name": "呪いの刻印",
       "icon": "🩸",
-      "desc": "毎ターン敵に最大HPの2%の呪いダメージ",
+      "desc": "毎ターン敵に最大HPの0.5%の呪いダメージ",
       "lvReq": 30,
       "unlockCost": 30
     },
@@ -752,45 +752,13 @@
       "initial": true,
       "desc": "HP30%以下で攻撃+50%・被ダメ-20%"
     },
-    "warrior_fortress": {
-      "id": "warrior_fortress",
-      "charId": "warrior",
-      "name": "難攻不落",
-      "icon": "🛡",
-      "initial": false,
-      "desc": "防御力をATKの20%分上乗せ"
-    },
-    "warrior_counter": {
-      "id": "warrior_counter",
-      "charId": "warrior",
-      "name": "鉄の反撃",
-      "icon": "⚔",
-      "initial": false,
-      "desc": "被ダメ後の次の攻撃+30%"
-    },
     "mage_overload": {
       "id": "mage_overload",
       "charId": "mage",
       "name": "魔力過負荷",
       "icon": "✦",
       "initial": true,
-      "desc": "戦闘終了後10%で最大MP+30%上昇（階層中）"
-    },
-    "mage_insight": {
-      "id": "mage_insight",
-      "charId": "mage",
-      "name": "洞察の眼",
-      "icon": "👁",
-      "initial": false,
-      "desc": "会心発生時に追加でMP+15回復"
-    },
-    "mage_chain": {
-      "id": "mage_chain",
-      "charId": "mage",
-      "name": "連鎖魔法",
-      "icon": "🔥",
-      "initial": false,
-      "desc": "スキル発動後、次のスキルコスト-10MP"
+      "desc": "10%の確率でスキルのクールタイムをゼロにする"
     },
     "rogue_jackpot": {
       "id": "rogue_jackpot",
@@ -798,7 +766,7 @@
       "name": "僥倖",
       "icon": "💰",
       "initial": true,
-      "desc": "戦闘勝利後10%の確率で獲得魂が3倍"
+      "desc": "戦闘勝利後10%の確率で獲得魂とEXPが3倍"
     },
     "rogue_phantom": {
       "id": "rogue_phantom",
@@ -806,7 +774,7 @@
       "name": "幻影",
       "icon": "💨",
       "initial": false,
-      "desc": "戦闘開始時2ターン完全回避状態"
+      "desc": "回避するたびに攻撃力が1%上昇する（その戦闘中）。最大値は50%"
     },
     "rogue_shadowblade": {
       "id": "rogue_shadowblade",
@@ -822,7 +790,7 @@
       "name": "聖なる加護",
       "icon": "✨",
       "initial": true,
-      "desc": "毎ターンHP+3自然回復"
+      "desc": "毎ターン最大HPの1%分HP自然回復"
     },
     "paladin_judgement": {
       "id": "paladin_judgement",
@@ -832,37 +800,13 @@
       "initial": false,
       "desc": "DEFが高いほどATKにボーナス（DEF×0.3）"
     },
-    "paladin_shield": {
-      "id": "paladin_shield",
-      "charId": "paladin",
-      "name": "聖盾の意志",
-      "icon": "🛡",
-      "initial": false,
-      "desc": "HP50%以下で被ダメ-25%"
-    },
     "necro_soulharvest": {
       "id": "necro_soulharvest",
       "charId": "necromancer",
       "name": "魂の収穫",
       "icon": "💀",
       "initial": true,
-      "desc": "敵撃破時MP+10追加回復"
-    },
-    "necro_lich": {
-      "id": "necro_lich",
-      "charId": "necromancer",
-      "name": "リッチの目覚め",
-      "icon": "👾",
-      "initial": false,
-      "desc": "HP10%以下で全ステータス+40%（1回限り）"
-    },
-    "necro_curse": {
-      "id": "necro_curse",
-      "charId": "necromancer",
-      "name": "死の呪縛",
-      "icon": "🌑",
-      "initial": false,
-      "desc": "戦闘開始時に敵にHP最大値の5%の呪い付与"
+      "desc": "敵を倒すたびに最大MPが5%上昇する（そのダンジョン内のみ）"
     },
     "samurai_counter": {
       "id": "samurai_counter",
@@ -919,7 +863,7 @@
       "name": "威厳",
       "icon": "👁️",
       "initial": true,
-      "desc": "通常攻撃時に5%の確率で敵の行動を攻撃ヒット後の3ターン停止させる"
+      "desc": "通常攻撃時に8%の確率で敵の行動を攻撃ヒット後の3ターン停止させる"
     },
     "you_nanomachine": {
       "id": "you_nanomachine",
@@ -936,6 +880,102 @@
       "icon": "✨",
       "initial": false,
       "desc": "3ターンに一回HPが最大HPの10%分回復する"
+    },
+    "warrior_brave": {
+      "id": "warrior_brave",
+      "charId": "warrior",
+      "name": "勇敢",
+      "icon": "🔥",
+      "initial": false,
+      "desc": "ダンジョン内で階層を進むたびに攻撃力が3%上昇する（そのダンジョン内のみ）"
+    },
+    "warrior_sacrifice": {
+      "id": "warrior_sacrifice",
+      "charId": "warrior",
+      "name": "捨身",
+      "icon": "💢",
+      "initial": false,
+      "desc": "防御力を20%減し、攻撃力を30%上げる"
+    },
+    "mage_runaway": {
+      "id": "mage_runaway",
+      "charId": "mage",
+      "name": "魔力暴走",
+      "icon": "🌀",
+      "initial": false,
+      "desc": "10%の確率でスキルの効果が3倍になる"
+    },
+    "necro_servant": {
+      "id": "necro_servant",
+      "charId": "necromancer",
+      "name": "使役",
+      "icon": "🦴",
+      "initial": false,
+      "desc": "3ターンに一回、MPの3%を消費しその数値の5倍の防御力無視攻撃を敵に与える"
+    },
+    "necro_substitute": {
+      "id": "necro_substitute",
+      "charId": "necromancer",
+      "name": "身代り",
+      "icon": "🌑",
+      "initial": false,
+      "desc": "3%の確率で攻撃を受けた際、最大MPの3%を消費してダメージをゼロにする"
+    },
+    "paladin_focus": {
+      "id": "paladin_focus",
+      "charId": "paladin",
+      "name": "全集中",
+      "icon": "🛡",
+      "initial": false,
+      "desc": "あらゆる攻撃を3%の確率で無効化する"
+    },
+    "samurai_mikiri": {
+      "id": "samurai_mikiri",
+      "charId": "samurai",
+      "name": "見きり",
+      "icon": "👁",
+      "initial": false,
+      "desc": "完全回避後の通常攻撃が20%の確率で3回攻撃となる"
+    },
+    "samurai_dankotsu": {
+      "id": "samurai_dankotsu",
+      "charId": "samurai",
+      "name": "断骨",
+      "icon": "💥",
+      "initial": false,
+      "desc": "3%の確率で通常攻撃が4回になる。ただし最大HPの10%のダメージを負う"
+    },
+    "god_punishment": {
+      "id": "god_punishment",
+      "charId": "god",
+      "name": "天罰",
+      "icon": "⚡",
+      "initial": false,
+      "desc": "行動停止状態の敵への攻撃が2倍のダメージを与える"
+    },
+    "god_protection": {
+      "id": "god_protection",
+      "charId": "god",
+      "name": "加護",
+      "icon": "✨",
+      "initial": false,
+      "desc": "攻撃を受けるたびに全スキルのクールタイムが20%短縮される"
+    },
+    "you_limiter": {
+      "id": "you_limiter",
+      "charId": "you",
+      "name": "リミッター解除",
+      "icon": "⚙️",
+      "initial": false,
+      "desc": "5ターンに一回、最大HPの1/5を消費して3ターン攻撃力を1.5倍にする"
+    },
+    "ninja_poison": {
+      "id": "ninja_poison",
+      "charId": "ninja",
+      "name": "毒薬",
+      "icon": "☠️",
+      "initial": false,
+      "desc": "通常攻撃ヒット時に2%の確率で敵を毒状態にする。毒を食らった敵は3ターンかけて最大HPの3%を失う"
     }
   },
   "floors": [
@@ -2416,6 +2456,92 @@
         "sub": "与ダメ+20% 被ダメ-15%",
         "kind": "passive",
         "lvReq": 100
+      },
+      {
+        "id": "warrior_brave",
+        "label": "勇敢",
+        "cost": 500,
+        "sub": "階層進行で攻撃力+3%",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "warrior_sacrifice",
+        "label": "捨身",
+        "cost": 500,
+        "sub": "DEF-20% ATK+30%",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "mage_runaway",
+        "label": "魔力暴走",
+        "cost": 500,
+        "sub": "10%でスキル効果3倍",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "necro_servant",
+        "label": "使役",
+        "cost": 500,
+        "sub": "3Tに1回 MP3%→5倍防御無視攻撃",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "necro_substitute",
+        "label": "身代り",
+        "cost": 500,
+        "sub": "3%でダメージ無効（MP消費）",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "paladin_focus",
+        "label": "全集中",
+        "cost": 500,
+        "sub": "3%で攻撃無効化",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "samurai_mikiri",
+        "label": "見きり",
+        "cost": 500,
+        "sub": "完全回避後20%で3回攻撃",
+        "kind": "uniqueSkill",
+        "lvReq": 25
+      },
+      {
+        "id": "samurai_dankotsu",
+        "label": "断骨",
+        "cost": 500,
+        "sub": "3%で4回攻撃（自HP-10%）",
+        "kind": "uniqueSkill",
+        "lvReq": 25
+      },
+      {
+        "id": "god_punishment",
+        "label": "天罰",
+        "cost": 500,
+        "sub": "停止中の敵へ2倍ダメージ",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "god_protection",
+        "label": "加護",
+        "cost": 500,
+        "sub": "被攻撃時全CD-20%",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "you_limiter",
+        "label": "リミッター解除",
+        "cost": 500,
+        "sub": "5Tに1回 HP消費で攻撃1.5倍",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "ninja_poison",
+        "label": "毒薬",
+        "cost": 500,
+        "sub": "2%で毒付与（最大HP3%×3T）",
+        "kind": "uniqueSkill"
       }
     ]
   },
