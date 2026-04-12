@@ -302,7 +302,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121814</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604121906</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -673,7 +673,7 @@ function saveSettings(){ localStorage.setItem('abyss_settings', JSON.stringify(S
 
 // アイコン表示ヘルパー
 // category: 'chars' / 'enemies' / 'items'  id: データID  emoji: フォールバック絵文字  sizePx: 表示サイズ
-// 旅取得後のトラベラーはtraveler2.pngを使用
+// 旅取得後の旅人はtraveler2.pngを使用
 function charImgId(id){
   if(id==='traveler'&&GS.unlockedUniqueSkills.includes('traveler_journey')) return 'traveler2';
   return id;
@@ -786,7 +786,7 @@ const LV_STATS=[
 const MAX_LV=9999;
 // 成長倍率テーブル: S=2.0, A=1.5, B=1.0(基準), C=0.75, D=0.45
 const GROWTH_RATES={S:2.0,A:1.5,B:1.0,C:0.75,D:0.45};
-// 旅取得後のトラベラーはHP/ATK/DEF/MPがA昇格
+// 旅取得後の旅人はHP/ATK/DEF/MPがA昇格
 function effectiveLvGrowth(charId){
   const base=CHARS?.[charId]?.lvGrowth||{};
   if(charId==='traveler'&&GS.unlockedUniqueSkills.includes('traveler_journey')){
@@ -987,7 +987,7 @@ function renderAchievements(){
     if(!done){
       if(a.cond.charId&&!GS.unlocked.includes(a.cond.charId)) return;
     }
-    // 宇宙クリア前はトラベラーの「旅」スキル解放情報も非表示
+    // 宇宙クリア前は旅人の「旅」スキル解放情報も非表示
     if(!done&&a.reward.type==='uniqueSkill'&&a.reward.id==='traveler_journey'&&!GS.unlockedUniqueSkills.includes('traveler_journey')) return;
     // 「旅の証」は旅スキル習得後のみ表示
     if(!done&&a.id==='ach_traveler_3clear'&&!GS.unlockedUniqueSkills.includes('traveler_journey')) return;
@@ -2553,7 +2553,7 @@ function renderBuffIcons(){
     const sec=Math.ceil((bState.godProtectionEnd-now)/1000);
     b('✨','加護'+sec+'s','purple');
   }
-  // リミッター解除（オートマトン）
+  // リミッター解除（アンノウン）
   if((bState.limiterActive||0)>0) b('⚙️','解除'+bState.limiterActive+'T','gold');
   // 鬨の声（怒り）
   if((bState.rageStacks||0)>0) b('💢','激怒×'+bState.rageStacks,'red');
@@ -2680,13 +2680,13 @@ function autoBattleTick(){
       if(bState.enemyHp<=0){endBattle(true);return;}
     }
   }
-  // リミッター解除: 5ターンに1回発動
+  // リミッター解除: 5ターンに1回発動（現在HPが最大HPの半分以下なら不発）
   if((GS.run.uniqueSkills||[]).includes('you_limiter')&&bState.turn>0&&bState.turn%5===0){
-    const _limCost=Math.floor(bState.heroMaxHp/5);
-    if(bState.heroHp>_limCost){
+    const _limCost=Math.floor(bState.heroMaxHp/10);
+    if(bState.heroHp>bState.heroMaxHp*0.5&&bState.heroHp>_limCost){
       bState.heroHp-=_limCost;
       bState.limiterActive=3;
-      addLog(`⚙️ リミッター解除！ HP-${_limCost} → 3ターン攻撃力1.5倍`,'log-skill');
+      addLog(`⚙️ リミッター解除！ HP-${_limCost} → 3ターン攻撃力2倍`,'log-skill');
       showSkillFlash('rgba(251,191,36,.25)');
     }
   }
@@ -2697,8 +2697,8 @@ function autoBattleTick(){
   heroAtk=Math.floor(heroAtk*(GS.run.dmgBonus||1));
   // 幻影: 回避累積ボーナス
   if((bState.phantomAtkBonus||0)>0) heroAtk=Math.floor(heroAtk*(1+bState.phantomAtkBonus/100));
-  // リミッター解除: 発動中は攻撃1.5倍
-  if((bState.limiterActive||0)>0) heroAtk=Math.floor(heroAtk*1.5);
+  // リミッター解除: 発動中は攻撃2倍
+  if((bState.limiterActive||0)>0) heroAtk=Math.floor(heroAtk*2);
   // 二刀流: 各攻撃を75%威力に調整
   const hasDual=(GS.run.uniqueSkills||[]).includes('ninja_dual');
   if(hasDual) heroAtk=Math.floor(heroAtk*0.75);
@@ -3097,14 +3097,14 @@ function endBattle(won){
           setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .6s';setTimeout(()=>el.remove(),600);},3500);
         },500);
       }
-      // 宇宙クリアでトラベラーの「旅」スキル解放
+      // 宇宙クリアで旅人の「旅」スキル解放
       if(fid===8&&!GS.unlockedUniqueSkills.includes('traveler_journey')){
         GS.unlockedUniqueSkills.push('traveler_journey');
-        addLog('🌍 旅の力が目覚めた！ トラベラーのユニークスキル「旅」が解放されました','log-heal');
+        addLog('🌍 旅の力が目覚めた！ 旅人のユニークスキル「旅」が解放されました','log-heal');
         setTimeout(()=>{
           const el=document.createElement('div');
           el.style.cssText='position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:2px solid #a78bfa;border-radius:16px;padding:20px 28px;font-size:15px;color:#ede9fe;z-index:9999;text-align:center;pointer-events:none;animation:achPop .4s ease-out';
-          el.innerHTML=`🌍 旅の力が目覚めた！<br><span style="font-size:13px;color:#888780">トラベラー専用「旅」スキルが解放されました</span>`;
+          el.innerHTML=`🌍 旅の力が目覚めた！<br><span style="font-size:13px;color:#888780">旅人専用「旅」スキルが解放されました</span>`;
           document.body.appendChild(el);
           setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .6s';setTimeout(()=>el.remove(),600);},3500);
         },800);
@@ -3210,7 +3210,7 @@ function endRun(won){
       GS.achStats.angelCleared=GS.achStats.angelCleared||[];
       if(!GS.achStats.angelCleared.includes(fid)) GS.achStats.angelCleared.push(fid);
     }
-    // 旅の証: 旅スキル習得済みトラベラーのクリア数を記録
+    // 旅の証: 旅スキル習得済み旅人のクリア数を記録
     if(cid==='traveler'&&GS.unlockedUniqueSkills.includes('traveler_journey')){
       GS.achStats.travelerJourneyClears=(GS.achStats.travelerJourneyClears||0)+1;
     }
