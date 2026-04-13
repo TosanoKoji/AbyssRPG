@@ -17,7 +17,9 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .btn:disabled{opacity:.4;cursor:not-allowed}
 
 /* カード全般 */
-.card{background:#1f1f24;border:0.5px solid #3a3a38;border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:border-color .15s, background .15s, box-shadow .15s}
+.card{background:linear-gradient(135deg,#1f1f24 0%,#1a1a1f 100%);border:0.5px solid #3a3a38;border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:border-color .15s, background .15s, box-shadow .15s}
+/* 選択カード（宝箱・休憩・選択画面）のダンジョン風 */
+.choice-list .card{background:linear-gradient(135deg,#1c1814 0%,#221e18 50%,#1c1814 100%);border-color:#3a3530}
 .card:hover:not(.locked){border-color:#888780}
 /* 選択中のハイライトを明るい緑に変更 */
 .card.selected{background:#1f2922;border-color:#4ade80;box-shadow:0 0 8px rgba(74,222,128,0.15)}
@@ -44,7 +46,13 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .mp-bar{height:100%;border-radius:4px;background:#534AB7;transition:width .4s}
 
 /* バトルエリア */
-.battle-area{background:#2c2c2a;border-radius:12px;padding:36px 8px 8px;margin:8px 0;position:relative;overflow:hidden;background-size:cover;background-position:center;background-repeat:no-repeat;min-height:180px}
+.battle-area{background:linear-gradient(160deg,#1c1510 0%,#2a1e14 35%,#1a1210 65%,#221916 100%);border-radius:12px;padding:36px 8px 8px;margin:8px 0;position:relative;overflow:hidden;background-size:cover;background-position:center;background-repeat:no-repeat;min-height:180px;box-shadow:inset 0 0 40px rgba(0,0,0,0.6),0 2px 8px rgba(0,0,0,0.4)}
+/* フロア別バトル背景 */
+.battle-area.floor-bg-underground{background:linear-gradient(160deg,#130a08 0%,#2a1208 40%,#180e06 70%,#231510 100%)}
+.battle-area.floor-bg-surface{background:linear-gradient(160deg,#0d1a0d 0%,#1a2e12 40%,#0e1a0e 70%,#182416 100%)}
+.battle-area.floor-bg-sky{background:linear-gradient(160deg,#080d1f 0%,#10183a 40%,#090e20 70%,#0f162e 100%)}
+.battle-area.floor-bg-space{background:linear-gradient(160deg,#050508 0%,#0a0a18 40%,#05050a 70%,#080814 100%)}
+.battle-area.floor-bg-hell{background:linear-gradient(160deg,#1f0505 0%,#3a0808 40%,#1f0303 70%,#2e0606 100%)}
 /* ボスPNGモード: 敵サイドを拡張 */
 .battle-area.boss-png #enemy-side-wrap{flex:1;width:auto;max-width:58%}
 .battle-area.boss-png #enemy-sprite{height:100%;display:flex;align-items:center;justify-content:center}
@@ -165,11 +173,15 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 
 /* バトル内ステータスパネル（非表示 → mini-statsに移行） */
 .battle-stats{display:none}
-/* battle内mini stats */
-.battle-mini-stats{font-size:11px;color:#c8c4bc;margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;line-height:1.6}
-.battle-mini-stats span{white-space:nowrap}
-/* battle内アクセサリアイコン行 */
-.battle-acc-row{font-size:14px;margin-top:2px;display:flex;gap:3px;flex-wrap:wrap;justify-content:center}
+/* バトル ステータス＋アクセサリ統合行（スキルボタン上） */
+.battle-stats-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:3px 2px;font-size:11px;color:#c8c4bc;min-height:22px}
+.battle-stats-row .bsr-stat{white-space:nowrap}
+.battle-stats-row .bsr-acc{font-size:14px}
+.battle-stats-row .bsr-sep{color:#3a3a38;font-size:10px}
+/* リアクターゲージ */
+.reactor-gauge{margin:3px 0;width:100%}
+.reactor-gauge-bar{height:4px;background:#1a1a2e;border-radius:2px;overflow:hidden;margin-top:1px}
+.reactor-gauge-fill{height:100%;background:linear-gradient(90deg,#4a9eff,#00d4ff);border-radius:2px;transition:width .3s}
 
 /* レベル強化画面 */
 .lv-stat-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:0.5px solid #3a3a38}
@@ -202,8 +214,9 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .lv-mult-btn.active-mult{border-color:#534AB7;color:#AFA9EC;background:#26215C}
 
 /* タイトル画面 */
-.title-hero{text-align:center;padding:28px 0 16px;position:relative}
-.title-logo{font-size:32px;font-weight:500;letter-spacing:3px;margin-bottom:4px;background:linear-gradient(135deg,#e0ddd8 40%,#AFA9EC 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.title-hero{text-align:center;padding:28px 16px 16px;position:relative;background:linear-gradient(180deg,#0e0b18 0%,#1a1228 40%,#14101e 70%,#1a1a1f 100%);border-radius:16px;margin-bottom:12px;box-shadow:inset 0 0 60px rgba(83,74,183,0.08),0 4px 20px rgba(0,0,0,0.5)}
+.title-hero::before{content:'';position:absolute;inset:0;border-radius:16px;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(83,74,183,0.12) 0%,transparent 70%);pointer-events:none}
+.title-logo{font-size:32px;font-weight:500;letter-spacing:3px;margin-bottom:4px;background:linear-gradient(135deg,#e0ddd8 40%,#AFA9EC 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:none}
 .title-sub-text{font-size:12px;color:#5f5e5a;letter-spacing:1px;margin-bottom:20px}
 .title-stats-bar{display:flex;justify-content:center;gap:16px;margin-bottom:20px;flex-wrap:wrap}
 .title-stat-item{text-align:center;background:#1f1f24;border:0.5px solid #3a3a38;border-radius:10px;padding:8px 16px;min-width:90px}
@@ -302,7 +315,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604122113</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604131313</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -565,8 +578,13 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
         <div style="font-size:11px;color:#F09595;font-weight:500" id="b-hero-hp-text"></div>
         <div class="mp-bar-wrap"><div class="mp-bar" id="b-hero-mp" style="width:100%"></div></div>
         <div class="mp-display" id="b-hero-mp-text"></div>
-        <div class="battle-mini-stats" id="battle-mini-stats"></div>
-        <div class="battle-acc-row" id="battle-acc-row"></div>
+        <!-- リアクターゲージ（アンノウン専用） -->
+        <div class="reactor-gauge" id="reactor-gauge" style="display:none">
+          <div style="font-size:9px;color:#4a9eff;display:flex;justify-content:space-between">
+            <span>⚛ リアクター</span><span id="reactor-hits-text">0/3</span>
+          </div>
+          <div class="reactor-gauge-bar"><div class="reactor-gauge-fill" id="reactor-gauge-fill" style="width:0%"></div></div>
+        </div>
       </div>
       <div style="font-size:16px;color:#5f5e5a;flex-shrink:0">VS</div>
       <div id="enemy-side-wrap" style="text-align:center;width:128px;flex-shrink:0">
@@ -585,9 +603,10 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <div class="bs-item" style="display:none"><div class="bs-label">半回避</div><div class="bs-val" id="bs-hdodge">--</div></div>
   </div>
   <div id="passive-badges" style="margin:4px 0;min-height:18px;display:flex;flex-wrap:wrap;gap:3px"></div>
-  
+  <!-- ステータス＋アクセサリ統合行 -->
+  <div class="battle-stats-row" id="battle-stats-row"></div>
   <!-- スキルボタンとポーズボタンをログの上に配置 -->
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0">
     <div id="active-skill-btns" style="display:flex;gap:8px;flex-wrap:wrap;flex:1"></div>
     <button id="pause-btn" style="background:#2c2c2a;border:0.5px solid #5f5e5a;border-radius:8px;padding:6px 12px;font-size:12px;color:#888780;cursor:pointer;font-family:inherit;white-space:nowrap">⏸ 一時停止</button>
   </div>
@@ -1784,7 +1803,9 @@ function renderEquip(){
         ${ok
           ? w.special==='dumbbellEffect'
             ? `<span class="badge badge-amber">ATK×1/3 EXP×1.2</span>`
-            : `<span class="badge badge-amber">攻撃+${w.atk}${w.mp?` MP+${w.mp}`:''}${w.crit?` 会心+${w.crit}%`:''}</span>`
+            : w.special==='chainsawEffect'
+            ? `<span class="badge badge-amber">ATK×1.3 会心${w.crit}%</span>`
+            : `<span class="badge badge-amber">攻撃+${w.atk}${w.mp?` MP+${w.mp}`:''}${w.crit?` 会心${w.crit>0?'+':''}${w.crit}%`:''}</span>`
           : '<span class="badge badge-red" style="font-weight:bold;">未解放</span>'}
       </div>`;
     if(ok) _wd.addEventListener('click',()=>selWeapon(w.id));
@@ -1797,7 +1818,10 @@ function renderEquip(){
     _ad.innerHTML=`
       <div class="row" style="justify-content:space-between">
         <div><div class="card-title">${a.icon||'🛡'} ${a.name}</div><div class="card-sub">${a.desc}</div></div>
-        ${ok?`<span class="badge badge-blue">防御+${a.def}${a.hp?` HP+${a.hp}`:''}${a.mp?` MP+${a.mp}`:''}</span>`:'<span class="badge badge-red" style="font-weight:bold;">未解放</span>'}
+        ${ok ? a.special==='fundoshiEffect'
+            ? `<span class="badge badge-blue">回避+10% 防御-50%</span>`
+            : `<span class="badge badge-blue">防御+${a.def}${a.hp?` HP+${a.hp}`:''}${a.mp?` MP+${a.mp}`:''}</span>`
+          : '<span class="badge badge-red" style="font-weight:bold;">未解放</span>'}
       </div>`;
     if(ok) _ad.addEventListener('click',()=>selArmor(a.id));
     al.appendChild(_ad);
@@ -1966,6 +1990,16 @@ function startRun(){
   GS.run.dumbbellEquipped = (GS.run.weaponId==='dumbbell');
   if(GS.run.dumbbellEquipped){
     GS.run.atk = Math.max(1, Math.floor(GS.run.atk / 3));
+  }
+  // チェーンソー: ATK×1.3
+  if(GS.run.weaponId==='chainsaw'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.3);
+  }
+  // 褌: DEF-50%、回避+10%、忍者なら会心+30%
+  if(GS.run.armorId==='fundoshi'){
+    GS.run.def = Math.max(0, Math.floor(GS.run.def * 0.5));
+    GS.run.dodge += 10;
+    if(cid==='ninja') GS.run.crit += 30;
   }
   GS.run.undyingUsed = false;
   GS.run.icon=c.icon; GS.run.name=c.name;
@@ -2221,6 +2255,7 @@ function startBattle(enemy,isBoss){
     samuraiMikiriReady:false,
     limiterActive:0,
     godProtectionEnd:0,
+    reactorHits:0, reactorAccum:0,
     warriorBraveMult:(GS.run.uniqueSkills&&GS.run.uniqueSkills.includes('warrior_brave'))?Math.pow(1.03,GS.run.room):1,
     skillCooldownEnd: {}
   };
@@ -2236,9 +2271,15 @@ function startBattle(enemy,isBoss){
   const _battleAreaEl=document.getElementById('battle-area');
   if(_battleAreaEl){
     const _floorId=GS.run.floorId||1;
+    // フロア別CSSクラス（CSS gradient背景）
+    ['underground','surface','sky','space','hell'].forEach(c=>_battleAreaEl.classList.remove('floor-bg-'+c));
+    const _floorBgMap={1:'underground',2:'underground',3:'underground',4:'underground',5:'underground',6:'surface',7:'sky',8:'space',9:'hell'};
+    const _floorBgClass=_floorBgMap[_floorId]||'underground';
+    _battleAreaEl.classList.add('floor-bg-'+_floorBgClass);
+    // PNG背景があれば上書き（なければCSSグラデーションを維持）
     const _bgImg=new Image();
     _bgImg.onload=()=>{_battleAreaEl.style.backgroundImage=`url('assets/back/floor${_floorId}.png')`;};
-    _bgImg.onerror=()=>{_battleAreaEl.style.backgroundImage='none';};
+    _bgImg.onerror=()=>{_battleAreaEl.style.backgroundImage='';};
     _bgImg.src=`assets/back/floor${_floorId}.png`;
     // ボスPNGモードクラス
     if(isBoss&&SETTINGS.iconMode==='png') _battleAreaEl.classList.add('boss-png');
@@ -2251,25 +2292,34 @@ function startBattle(enemy,isBoss){
   } else {
     _ess.innerHTML=`<span style="font-size:44px">${enemy.icon}</span>`;
   }
-  // mini-stats（ATK/DEF/CRIT/DODGE）を hero 下部に表示
-  const _mst=document.getElementById('battle-mini-stats');
-  if(_mst) _mst.innerHTML=
-    `<span>⚔${GS.run.atk}</span><span>🛡${GS.run.def}</span><span>💥${GS.run.crit}%</span>${GS.run.dodge>0?`<span>💨${GS.run.dodge}%</span>`:''}`;
-  // アクセサリアイコン行
-  const _accRow=document.getElementById('battle-acc-row');
-  if(_accRow){
-    _accRow.innerHTML='';
+  // ステータス＋アクセサリ統合行
+  const _statsRow=document.getElementById('battle-stats-row');
+  if(_statsRow){
+    _statsRow.innerHTML='';
+    // ステータス
+    const _addStat=(icon,val)=>{const s=document.createElement('span');s.className='bsr-stat';s.textContent=icon+val;_statsRow.appendChild(s);};
+    _addStat('⚔',GS.run.atk); _addStat('🛡',GS.run.def); _addStat('💥',GS.run.crit+'%');
+    if(GS.run.dodge>0) _addStat('💨',GS.run.dodge+'%');
+    // セパレータ
+    if((GS.run.accessories||[]).length>0){
+      const sep=document.createElement('span');sep.className='bsr-sep';sep.textContent='|';_statsRow.appendChild(sep);
+    }
+    // アクセサリアイコン
     (GS.run.accessories||[]).forEach(aid=>{
       const ac=ACCESSORIES[aid];if(!ac)return;
       const sp=document.createElement('span');
+      sp.className='bsr-acc';
       sp.textContent=ac.icon||'💍';
       sp.title=ac.name+': '+ac.desc;
-      sp.style.cssText='cursor:pointer;font-size:13px';
+      sp.style.cursor='pointer';
       sp.addEventListener('click',e=>{e.stopPropagation();showAccTooltip(e,ac.name+'\n'+ac.desc);setTimeout(hideAccTooltip,2500);});
       sp.addEventListener('touchstart',e=>{e.preventDefault();showAccTooltip(e.touches[0],ac.name+': '+ac.desc);setTimeout(hideAccTooltip,2500);},{passive:false});
-      _accRow.appendChild(sp);
+      _statsRow.appendChild(sp);
     });
   }
+  // リアクターゲージ表示（アンノウン専用）
+  const _reactorGauge=document.getElementById('reactor-gauge');
+  if(_reactorGauge) _reactorGauge.style.display=(GS.run.charId==='you'&&(GS.run.uniqueSkills||[]).includes('you_reactor'))?'block':'none';
   setTC('b-enemy-name',enemy.name);
   document.getElementById('battle-result').style.display='none';
   document.getElementById('battle-log').innerHTML='';
@@ -2542,6 +2592,21 @@ function animAttack(spriteId, animType, onHit){
 }
 function animShake(spriteId){const el=document.getElementById(spriteId);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),300);}
 
+// リアクターゲージ更新
+function updateReactorGauge(){
+  const gWrap=document.getElementById('reactor-gauge');
+  const gFill=document.getElementById('reactor-gauge-fill');
+  const gText=document.getElementById('reactor-hits-text');
+  if(!gWrap||!bState)return;
+  const active=(GS.run.uniqueSkills||[]).includes('you_reactor');
+  gWrap.style.display=active?'block':'none';
+  if(!active)return;
+  const hits=bState.reactorHits||0;
+  const accum=bState.reactorAccum||0;
+  if(gFill) gFill.style.width=(hits/3*100)+'%';
+  if(gText) gText.textContent=`${hits}/3 (${accum}蓄積)`;
+}
+
 function renderBuffIcons(){
   const el=document.getElementById('hero-buff-icons');
   if(!el||!bState)return;
@@ -2565,6 +2630,10 @@ function renderBuffIcons(){
   if(bState.samuraiMikiriReady) b('👁','見きり','green');
   // 影刃（次攻撃が会心確定）
   if(GS.run&&GS.run.shadowbladeReady) b('◆','影刃','gold');
+  // リアクター（蓄積中の場合アイコン表示）
+  if((bState.reactorHits||0)>0) b('⚛️','蓄積'+(bState.reactorHits)+'/'+'3','gold');
+  // リアクターゲージ更新
+  updateReactorGauge();
 }
 function updateBattleUI(){
   if(!bState||!bState.heroMaxHp)return;
@@ -2667,12 +2736,12 @@ function autoBattleTick(){
   // 血戦の心得: HP30%以下で攻撃+50%・被ダメ-20%
   if((GS.run.uniqueSkills||[]).includes('warrior_berserk')&&bState.heroHp<bState.heroMaxHp*0.3)
     heroAtk=Math.floor(heroAtk*1.5);
-  // 使役: 3ターンに1回、MP3%消費→その5倍のDEF無視攻撃
-  if((GS.run.uniqueSkills||[]).includes('necro_servant')&&bState.turn%3===0){
+  // 使役: 5ターンに1回、MP3%消費→その10倍のDEF無視攻撃
+  if((GS.run.uniqueSkills||[]).includes('necro_servant')&&bState.turn>0&&bState.turn%5===0){
     const _servCost=Math.max(1,Math.floor(bState.heroMaxMp*0.03));
     if(bState.heroMp>=_servCost){
       bState.heroMp-=_servCost;
-      const _servDmg=_servCost*5;
+      const _servDmg=_servCost*10;
       bState.enemyHp-=_servDmg;
       showDmg('enemy-sprite',_servDmg,false,false,false);
       addLog(`🦴 使役: MP${_servCost}消費 → ${_servDmg}ダメージ（防御無視）`,'log-skill');
@@ -2697,12 +2766,13 @@ function autoBattleTick(){
   heroAtk=Math.floor(heroAtk*(GS.run.dmgBonus||1));
   // 幻影: 回避累積ボーナス
   if((bState.phantomAtkBonus||0)>0) heroAtk=Math.floor(heroAtk*(1+bState.phantomAtkBonus/100));
-  // リミッター解除: 発動中は攻撃2倍
-  if((bState.limiterActive||0)>0) heroAtk=Math.floor(heroAtk*2);
+  // リミッター解除: 発動中は攻撃2倍・会心100%
+  const _limiterOn=(bState.limiterActive||0)>0;
+  if(_limiterOn) heroAtk=Math.floor(heroAtk*2);
   // 二刀流: 各攻撃を75%威力に調整
   const hasDual=(GS.run.uniqueSkills||[]).includes('ninja_dual');
   if(hasDual) heroAtk=Math.floor(heroAtk*0.75);
-  const critChance=(GS.run.crit+(hasCritUp?20:0))/100;
+  const critChance=_limiterOn?1.0:(GS.run.crit+(hasCritUp?20:0))/100;
   const isCrit=shadowbladeActive||Math.random()<critChance;
 
   // 断骨: 3%で4回攻撃（ただし最大HP10%ダメージ）
@@ -2761,6 +2831,10 @@ function autoBattleTick(){
       bState.poisonDmgPer=Math.floor(bState.enemyMaxHp*0.03);
       addLog('☠️ 毒付与！ 3ターンで最大HPの3%ダメージ','log-skill');
       showSkillFlash('rgba(74,222,128,.25)');
+    }
+    // チェーンソー: 大神装備時5%で即死（ボス無効）
+    if(bState.enemyHp>0&&GS.run.weaponId==='chainsaw'&&GS.run.charId==='god'&&!bState.isBoss&&Math.random()<0.05){
+      bState.enemyHp=0;addLog('⚙️ チェーンソー即死発動！','log-skill');showSkillFlash('rgba(251,100,36,.3)');
     }
     // 必殺: 会心時1%で即死（ボス無効）
     if(isCrit&&!bState.isBoss&&(GS.run.uniqueSkills||[]).includes('ninja_deathblow')&&Math.random()<0.01){
@@ -2875,7 +2949,9 @@ function autoBattleTick(){
         }
       }
 
-      let dmgToHero=randVar(Math.max(1,Math.floor(bState.enemy.atk*1.3)-GS.run.def));
+      // 生の敵攻撃値（リアクター用）
+      const rawEnemyAtk=randVar(Math.floor(bState.enemy.atk*1.3));
+      let dmgToHero=Math.max(1,rawEnemyAtk-GS.run.def);
       if(passives.includes('ironwall')){dmgToHero=Math.floor(dmgToHero*(GS.run.defBonus||1)*0.9);triggerPassiveBadge('ironwall');}
       else if(GS.run.defBonus<1) dmgToHero=Math.floor(dmgToHero*GS.run.defBonus);
       // 血戦の心得: HP30%以下で被ダメ-20%
@@ -2926,6 +3002,22 @@ function autoBattleTick(){
           bState.heroHp-=dmgToHero;
           showGrazePop('hero-sprite',dmgToHero);
           addLog(`かすった！ ${bState.enemy.name}から${dmgToHero}ダメージ（半減）`,'log-hero-dmg');
+          // リアクター: 半回避も被弾カウント
+          if((GS.run.uniqueSkills||[]).includes('you_reactor')){
+            bState.reactorAccum=(bState.reactorAccum||0)+rawEnemyAtk;
+            bState.reactorHits=(bState.reactorHits||0)+1;
+            updateReactorGauge();
+            if(bState.reactorHits>=3){
+              const _reactDmg=bState.reactorAccum;
+              bState.reactorHits=0; bState.reactorAccum=0;
+              bState.enemyHp-=_reactDmg;
+              showDmg('enemy-sprite',_reactDmg,false,true,false);
+              addLog(`⚛️ リアクター発動！ 蓄積${_reactDmg}ダメージを解放！`,'log-crit');
+              showSkillFlash('rgba(74,158,255,.3)');
+              updateReactorGauge();
+              if(bState.enemyHp<=0){endBattle(true);return;}
+            }
+          }
         } else {
           // 全集中: 3%で攻撃無効化
           if((GS.run.uniqueSkills||[]).includes('paladin_focus')&&Math.random()<0.03){
@@ -2933,8 +3025,8 @@ function autoBattleTick(){
             addLog('🛡 全集中発動！ 攻撃を無効化！','log-skill');
             showSkillFlash('rgba(74,222,128,.25)');
           }
-          // 身代り: 3%でダメージゼロ（maxMP3%消費）
-          if(dmgToHero>0&&(GS.run.uniqueSkills||[]).includes('necro_substitute')&&Math.random()<0.03){
+          // 身代り: 10%でダメージゼロ（maxMP3%消費）
+          if(dmgToHero>0&&(GS.run.uniqueSkills||[]).includes('necro_substitute')&&Math.random()<0.10){
             const _subCost=Math.floor(bState.heroMaxMp*0.03);
             if(bState.heroMp>=_subCost){
               bState.heroMp-=_subCost;
@@ -2949,17 +3041,33 @@ function autoBattleTick(){
             if(dmgToHero>0) bState.heroHp-=dmgToHero;
             showDmg('hero-sprite',dmgToHero,false,false,false);
             addLog(`${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
-            // 加護: 攻撃受けた瞬間に発動（10秒間有効、重複なし）→効果中はCD-20%を毎ターン適用
+            // 加護: 攻撃受けた瞬間に発動（10秒間有効、重複なし）→全CD-30%短縮
             if((GS.run.uniqueSkills||[]).includes('god_protection')){
               const now=Date.now();
               if((bState.godProtectionEnd||0)<=now){
                 bState.godProtectionEnd=now+10000;
                 Object.keys(bState.skillCooldownEnd).forEach(sid=>{
                   const remaining=bState.skillCooldownEnd[sid]-now;
-                  if(remaining>0) bState.skillCooldownEnd[sid]=now+Math.floor(remaining*0.8);
+                  if(remaining>0) bState.skillCooldownEnd[sid]=now+Math.floor(remaining*0.7);
                 });
-                addLog('✨ 加護発動！ 10秒間全CDが20%短縮','log-skill');
+                addLog('✨ 加護発動！ 10秒間全CDが30%短縮','log-skill');
                 showSkillFlash('rgba(167,139,250,.25)');
+              }
+            }
+            // リアクター: 被弾ごとに生ダメ蓄積、3回で返す
+            if((GS.run.uniqueSkills||[]).includes('you_reactor')){
+              bState.reactorAccum=(bState.reactorAccum||0)+rawEnemyAtk;
+              bState.reactorHits=(bState.reactorHits||0)+1;
+              updateReactorGauge();
+              if(bState.reactorHits>=3){
+                const _reactDmg=bState.reactorAccum;
+                bState.reactorHits=0; bState.reactorAccum=0;
+                bState.enemyHp-=_reactDmg;
+                showDmg('enemy-sprite',_reactDmg,false,true,false);
+                addLog(`⚛️ リアクター発動！ 蓄積${_reactDmg}ダメージを解放！`,'log-crit');
+                showSkillFlash('rgba(74,158,255,.3)');
+                updateReactorGauge();
+                if(bState.enemyHp<=0){endBattle(true);return;}
               }
             }
           }
@@ -3057,9 +3165,9 @@ function endBattle(won){
     GS.run.runExp=(GS.run.runExp||0)+exp;
     GS.run.hp=Math.max(1,bState.heroHp);GS.run.mp=bState.heroMp;
     if(passives.includes('souleat')){GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+10);addLog('魂喰い: HP+10','log-heal');triggerPassiveBadge('souleat');}
-    // 魂の収穫: 敵撃破後 最大MP+5%（ステージ内）
+    // 魂の収穫: 敵撃破後 最大MP+8%（ステージ内）
     if((GS.run.uniqueSkills||[]).includes('necro_soulharvest')){
-      const _shBonus=Math.floor(GS.run.maxMp*0.05);
+      const _shBonus=Math.floor(GS.run.maxMp*0.08);
       GS.run.maxMp+=_shBonus;
       addLog(`💀 魂の収穫: 最大MP+${_shBonus}`,'log-heal');
     }

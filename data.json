@@ -390,6 +390,18 @@
       "anim": "slash",
       "unlockCost": 50000,
       "unlockCond": "achievement"
+    },
+    "chainsaw": {
+      "id": "chainsaw",
+      "name": "チェーンソー",
+      "icon": "⚙️",
+      "atk": 18,
+      "mp": 0,
+      "crit": -10,
+      "desc": "ATK×1.3。会心-10%。大神装備時、攻撃ヒット時5%で即死（ボス除く）",
+      "anim": "slash",
+      "special": "chainsawEffect",
+      "unlockCost": 500
     }
   },
   "armors": {
@@ -454,6 +466,17 @@
       "desc": "骸骨の外套。MP+30",
       "unlockCost": 30,
       "lvReq": 15
+    },
+    "fundoshi": {
+      "id": "fundoshi",
+      "name": "褌",
+      "icon": "🩲",
+      "def": 0,
+      "hp": 0,
+      "mp": 0,
+      "desc": "回避+10%、防御-50%。忍者装備時のみ会心+30%",
+      "special": "fundoshiEffect",
+      "unlockCost": 200
     }
   },
   "accessories": {
@@ -806,7 +829,7 @@
       "name": "魂の収穫",
       "icon": "💀",
       "initial": true,
-      "desc": "敵を倒すたびに最大MPが5%上昇する（そのダンジョン内のみ）"
+      "desc": "敵を倒すたびに最大MPが8%上昇する（そのダンジョン内のみ）"
     },
     "samurai_counter": {
       "id": "samurai_counter",
@@ -911,7 +934,7 @@
       "name": "使役",
       "icon": "🦴",
       "initial": false,
-      "desc": "3ターンに一回、MPの3%を消費しその数値の5倍の防御力無視攻撃を敵に与える"
+      "desc": "5ターンに一回、MPの3%を消費しその数値の10倍の防御力無視攻撃を敵に与える"
     },
     "necro_substitute": {
       "id": "necro_substitute",
@@ -919,7 +942,7 @@
       "name": "身代り",
       "icon": "🌑",
       "initial": false,
-      "desc": "3%の確率で攻撃を受けた際、最大MPの3%を消費してダメージをゼロにする"
+      "desc": "10%の確率で攻撃を受けた際、最大MPの3%を消費してダメージをゼロにする"
     },
     "paladin_focus": {
       "id": "paladin_focus",
@@ -959,7 +982,7 @@
       "name": "加護",
       "icon": "✨",
       "initial": false,
-      "desc": "攻撃を受けるたびに全スキルのクールタイムが20%短縮される"
+      "desc": "攻撃を受けるたびに全スキルのクールタイムが30%短縮される"
     },
     "you_limiter": {
       "id": "you_limiter",
@@ -967,7 +990,15 @@
       "name": "リミッター解除",
       "icon": "⚙️",
       "initial": false,
-      "desc": "5ターンに一回、最大HPの1/10を消費して3ターン攻撃力を2倍にする（現在HPが最大値の半分以下の場合は発動しない）"
+      "desc": "5ターンに一回、最大HPの1/10を消費して3ターン攻撃力を2倍・会心率100%にする（現在HPが最大値の半分以下の場合は発動しない）"
+    },
+    "you_reactor": {
+      "id": "you_reactor",
+      "charId": "you",
+      "name": "リアクター",
+      "icon": "⚛️",
+      "initial": false,
+      "desc": "3回被弾するごとに、蓄積した被ダメージ（防御で相殺分も含む、回避は除く）を纏めて敵に返す"
     },
     "ninja_poison": {
       "id": "ninja_poison",
@@ -2266,6 +2297,18 @@
         "cost": 50000,
         "sub": "ATK+300 会心+10% スキルMP20%で半分",
         "achReq": "ach_traveler_3clear"
+      },
+      {
+        "id": "chainsaw",
+        "label": "チェーンソー",
+        "cost": 500,
+        "sub": "ATK×1.3 会心-10% 大神:5%即死"
+      },
+      {
+        "id": "fundoshi",
+        "label": "褌",
+        "cost": 200,
+        "sub": "回避+10% 防御-50% 忍者:会心+30%"
       }
     ],
     "accessory": [
@@ -2469,14 +2512,14 @@
         "id": "necro_servant",
         "label": "使役",
         "cost": 500,
-        "sub": "3Tに1回 MP3%→5倍防御無視攻撃",
+        "sub": "5Tに1回 MP3%→10倍防御無視攻撃",
         "kind": "uniqueSkill"
       },
       {
         "id": "necro_substitute",
         "label": "身代り",
         "cost": 500,
-        "sub": "3%でダメージ無効（MP消費）",
+        "sub": "10%でダメージ無効（MP消費）",
         "kind": "uniqueSkill"
       },
       {
@@ -2513,14 +2556,14 @@
         "id": "god_protection",
         "label": "加護",
         "cost": 500,
-        "sub": "被攻撃時全CD-20%",
+        "sub": "被攻撃時全CD-30%",
         "kind": "uniqueSkill"
       },
       {
         "id": "you_limiter",
         "label": "リミッター解除",
         "cost": 500,
-        "sub": "5Tに1回 HP消費で攻撃1.5倍",
+        "sub": "5Tに1回 HP消費で攻撃2倍・会心100%",
         "kind": "uniqueSkill"
       },
       {
@@ -2528,6 +2571,13 @@
         "label": "毒薬",
         "cost": 500,
         "sub": "2%で毒付与（最大HP3%×3T）",
+        "kind": "uniqueSkill"
+      },
+      {
+        "id": "you_reactor",
+        "label": "リアクター",
+        "cost": 500,
+        "sub": "3被弾→蓄積ダメージを敵に返す",
         "kind": "uniqueSkill"
       }
     ]
