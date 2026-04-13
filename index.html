@@ -315,7 +315,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604131408</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604131415</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -777,6 +777,41 @@ function save(){
   localStorage.setItem('abyss_charmem',  JSON.stringify(GS.charMemory));
 }
 function isUnlocked(id){return GS.unlocked.includes(id);}
+
+// キャラカードに前回装備のプレビューを表示するHTML生成
+function renderCharMemoryPreview(cid){
+  try{
+    const mem=GS.charMemory[cid];
+    if(!mem) return '';
+    const mw=WEAPONS&&WEAPONS[mem.weaponId];
+    const ma=ARMORS&&ARMORS[mem.armorId];
+    if(!mw&&!ma) return '';
+    const wTxt=mw?`<span style="color:#EF9F27">${mw.icon||'🗡️'}${mw.name}</span>`:'' ;
+    const aTxt=ma?`<span style="color:#85B7EB">${ma.icon||'🛡'}${ma.name}</span>`:'';
+    const sep=(mw&&ma)?' / ':'';
+    const accIcons=(mem.accessories||[]).map(aid=>{const a=ACCESSORIES&&ACCESSORIES[aid];return a?a.icon:'';}).filter(Boolean).join('');
+    const aSkIcons=(mem.activeSkills||[]).map(sid=>{const s=ACTIVE_SKILLS&&ACTIVE_SKILLS[sid];return s?s.icon:'';}).filter(Boolean).join('');
+    const pSkIcons=(mem.passiveSkills||[]).map(sid=>{const s=PASSIVE_SKILLS&&PASSIVE_SKILLS[sid];return s?s.icon:'';}).filter(Boolean).join('');
+    const line2=[accIcons&&`💍${accIcons}`,aSkIcons&&`⚡${aSkIcons}`,pSkIcons&&`🛡${pSkIcons}`].filter(Boolean).join(' ');
+    return `<div style="margin-top:4px;padding:3px 6px;background:rgba(74,222,128,0.05);border:0.5px solid rgba(74,222,128,0.15);border-radius:6px;font-size:10px;color:#888780;line-height:1.8">
+      ${wTxt}${sep}${aTxt}${line2?`<br>${line2}`:''}
+    </div>`;
+  }catch(e){return '';}
+}
+
+// キャラクター設定記憶を即時保存（装備・スキル変更のたびに呼ぶ）
+function saveCharMemory(){
+  const cid=GS.run&&GS.run.charId;
+  if(!cid) return;
+  GS.charMemory[cid]={
+    weaponId:     GS.run.weaponId||null,
+    armorId:      GS.run.armorId||null,
+    accessories:  [...(GS.run.accessories||[])],
+    activeSkills: [...(GS.run.activeSkills||[])],
+    passiveSkills:[...(GS.run.passiveSkills||[])]
+  };
+  localStorage.setItem('abyss_charmem', JSON.stringify(GS.charMemory));
+}
 
 // ─── リセット機能 ─────────────────────────────────────────
 function openResetModal(){
@@ -1680,22 +1715,7 @@ function renderChars(){
           <div class="card-title">${c.name}${GS.charMemory[c.id]?` <span style="font-size:9px;color:#4ade80;border:0.5px solid #4ade80;border-radius:4px;padding:1px 5px;vertical-align:middle">記憶あり</span>`:''}
           </div>
           <div class="card-sub">${c.desc}</div>
-          ${(()=>{
-            const _mem=GS.charMemory[c.id];
-            if(!_mem||!isUnlocked(c.id)) return '';
-            const _mw=WEAPONS[_mem.weaponId]; const _ma=ARMORS[_mem.armorId];
-            if(!_mw||!_ma) return '';
-            const _maSkills=(_mem.activeSkills||[]).map(sid=>{const s=ACTIVE_SKILLS[sid];return s?s.icon:null;}).filter(Boolean);
-            const _mpSkills=(_mem.passiveSkills||[]).map(sid=>{const s=PASSIVE_SKILLS[sid];return s?s.icon:null;}).filter(Boolean);
-            const _maccs=(_mem.accessories||[]).map(aid=>{const a=ACCESSORIES[aid];return a?a.icon:null;}).filter(Boolean);
-            return `<div style="margin-top:4px;padding:4px 6px;background:rgba(74,222,128,0.05);border:0.5px solid rgba(74,222,128,0.2);border-radius:6px;font-size:10px;color:#888780;line-height:1.7">
-              <span style="color:#EF9F27">${_mw.icon||'🗡️'}${_mw.name}</span> /
-              <span style="color:#85B7EB">${_ma.icon||'🛡'}${_ma.name}</span>
-              ${_maccs.length?` / <span style="color:#fb923c">${_maccs.join('')}</span>`:''}
-              ${_maSkills.length?`<br>⚡${_maSkills.join('')}`:''}
-              ${_mpSkills.length?` 🛡${_mpSkills.join('')}`:''}
-            </div>`;
-          })()}
+          ${renderCharMemoryPreview(c.id)}
           <div class="row" style="margin-top:4px;gap:4px;flex-wrap:wrap">
             <span class="badge badge-red">HP ${effHp}</span>
             <span class="badge badge-purple">MP ${effMp}</span>
@@ -1873,13 +1893,14 @@ function renderEquip(){
   }
   document.getElementById('btn-to-skill').disabled=!(GS.run.weaponId&&GS.run.armorId);
 }
-function selWeapon(id){GS.run.weaponId=id;renderEquip();}
-function selArmor(id){GS.run.armorId=id;renderEquip();}
+function selWeapon(id){GS.run.weaponId=id;saveCharMemory();renderEquip();}
+function selArmor(id){GS.run.armorId=id;saveCharMemory();renderEquip();}
 function selAccessory(id,slots){
   GS.run.accessories=GS.run.accessories||[];
   const idx=GS.run.accessories.indexOf(id);
   if(idx>=0) GS.run.accessories.splice(idx,1);
   else if(GS.run.accessories.length<slots) GS.run.accessories.push(id);
+  saveCharMemory();
   renderEquip();
 }
 
@@ -1949,6 +1970,7 @@ function toggleActiveSkill(id){
   const idx=GS.run.activeSkills.indexOf(id);
   if(idx>=0)GS.run.activeSkills.splice(idx,1);
   else if(GS.run.activeSkills.length<slots)GS.run.activeSkills.push(id);
+  saveCharMemory();
   renderSkills();
 }
 function togglePassiveSkill(id){
@@ -1962,6 +1984,7 @@ function togglePassiveSkill(id){
   const idx=GS.run.passiveSkills.indexOf(id);
   if(idx>=0)GS.run.passiveSkills.splice(idx,1);
   else if(GS.run.passiveSkills.length<slots)GS.run.passiveSkills.push(id);
+  saveCharMemory();
   renderSkills();
 }
 
