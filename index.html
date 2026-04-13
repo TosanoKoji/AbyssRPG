@@ -315,7 +315,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604131313</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604131408</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -754,6 +754,8 @@ const GS={
   lastRun:  JSON.parse(localStorage.getItem('abyss_last_run')||'null'),
   // ダークソウル方式：失った魂の回収データ
   lostSouls: JSON.parse(localStorage.getItem('abyss_lost_souls')||'null'),
+  // キャラクターごとの前回装備・スキル記憶
+  charMemory: JSON.parse(localStorage.getItem('abyss_charmem')||'{}'),
   // {souls, floorId, roomIdx, isBoss, bossId, bossHpRatio}
   run:{}
 };
@@ -772,6 +774,7 @@ function save(){
   localStorage.setItem('abyss_encounter',JSON.stringify(GS.encounterLog));
   localStorage.setItem('abyss_last_run',JSON.stringify(GS.lastRun));
   localStorage.setItem('abyss_lost_souls',JSON.stringify(GS.lostSouls));
+  localStorage.setItem('abyss_charmem',  JSON.stringify(GS.charMemory));
 }
 function isUnlocked(id){return GS.unlocked.includes(id);}
 
@@ -1674,8 +1677,25 @@ function renderChars(){
       <div class="row" style="gap:12px">
         <div style="line-height:1">${renderIcon('chars', charImgId(c.id), c.icon, 60)}</div>
         <div style="flex:1">
-          <div class="card-title">${c.name}</div>
+          <div class="card-title">${c.name}${GS.charMemory[c.id]?` <span style="font-size:9px;color:#4ade80;border:0.5px solid #4ade80;border-radius:4px;padding:1px 5px;vertical-align:middle">記憶あり</span>`:''}
+          </div>
           <div class="card-sub">${c.desc}</div>
+          ${(()=>{
+            const _mem=GS.charMemory[c.id];
+            if(!_mem||!isUnlocked(c.id)) return '';
+            const _mw=WEAPONS[_mem.weaponId]; const _ma=ARMORS[_mem.armorId];
+            if(!_mw||!_ma) return '';
+            const _maSkills=(_mem.activeSkills||[]).map(sid=>{const s=ACTIVE_SKILLS[sid];return s?s.icon:null;}).filter(Boolean);
+            const _mpSkills=(_mem.passiveSkills||[]).map(sid=>{const s=PASSIVE_SKILLS[sid];return s?s.icon:null;}).filter(Boolean);
+            const _maccs=(_mem.accessories||[]).map(aid=>{const a=ACCESSORIES[aid];return a?a.icon:null;}).filter(Boolean);
+            return `<div style="margin-top:4px;padding:4px 6px;background:rgba(74,222,128,0.05);border:0.5px solid rgba(74,222,128,0.2);border-radius:6px;font-size:10px;color:#888780;line-height:1.7">
+              <span style="color:#EF9F27">${_mw.icon||'🗡️'}${_mw.name}</span> /
+              <span style="color:#85B7EB">${_ma.icon||'🛡'}${_ma.name}</span>
+              ${_maccs.length?` / <span style="color:#fb923c">${_maccs.join('')}</span>`:''}
+              ${_maSkills.length?`<br>⚡${_maSkills.join('')}`:''}
+              ${_mpSkills.length?` 🛡${_mpSkills.join('')}`:''}
+            </div>`;
+          })()}
           <div class="row" style="margin-top:4px;gap:4px;flex-wrap:wrap">
             <span class="badge badge-red">HP ${effHp}</span>
             <span class="badge badge-purple">MP ${effMp}</span>
@@ -1748,15 +1768,22 @@ function renderChars(){
 
 function selectChar(id){
   GS.run.charId=id;
-  GS.run.weaponId=null;
-  GS.run.armorId=null;
-  GS.run.activeSkills=[];
-  GS.run.passiveSkills=[];
-  GS.run.accessories=[];
+  // キャラクターごとの前回設定を復元（アンロック済みのもののみ）
+  const mem=GS.charMemory[id];
+  if(mem){
+    GS.run.weaponId   = (mem.weaponId   && isUnlocked(mem.weaponId))  ? mem.weaponId   : null;
+    GS.run.armorId    = (mem.armorId    && isUnlocked(mem.armorId))   ? mem.armorId    : null;
+    GS.run.accessories= (mem.accessories||[]).filter(a=>isUnlocked(a));
+    GS.run.activeSkills = (mem.activeSkills||[]).filter(s=>isUnlocked(s));
+    GS.run.passiveSkills= (mem.passiveSkills||[]).filter(s=>isUnlocked(s));
+  } else {
+    GS.run.weaponId=null; GS.run.armorId=null;
+    GS.run.activeSkills=[]; GS.run.passiveSkills=[]; GS.run.accessories=[];
+  }
   renderChars();
   document.getElementById('btn-to-equip').disabled=false;
-  const btnSkill=document.getElementById('btn-to-skill');
-  if(btnSkill) btnSkill.disabled=true;
+  const btnSkip=document.getElementById('btn-to-skill');
+  if(btnSkip) btnSkip.disabled=!(GS.run.weaponId&&GS.run.armorId);
 }
 
 function quickStartRun() {
@@ -1951,6 +1978,14 @@ function startRun(){
   const passives=GS.run.passiveSkills||[];
   const accs=GS.run.accessories||[];
   
+  // キャラクターごとの設定を記憶（次回選択時に自動復元）
+  GS.charMemory[GS.run.charId]={
+    weaponId:  GS.run.weaponId,
+    armorId:   GS.run.armorId,
+    accessories:  [...accs],
+    activeSkills: [...(GS.run.activeSkills||[])],
+    passiveSkills:[...passives]
+  };
   // 前回設定保存 (配列は必ずコピー)
   GS.lastRun = {
     config: {
