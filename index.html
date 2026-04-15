@@ -330,7 +330,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604151946</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604152054</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1066,6 +1066,8 @@ function renderAchievements(){
       if(a.cond.charId&&!GS.unlocked.includes(a.cond.charId)) return;
       // silent な達成（シークレット）は達成するまで一覧にも表示しない
       if(a.silent) return;
+      // hintOnly: 創造主に一度負けてから初めてこっそり表示。ach_you_surface_special達成済みなら非表示
+      if(a.hintOnly&&(!GS.achStats.lostToCreator||GS.achDone.includes('ach_you_surface_special'))) return;
     }
     // 宇宙クリア前は旅人の「旅」スキル解放情報も非表示
     if(!done&&a.reward.type==='uniqueSkill'&&a.reward.id==='traveler_journey'&&!GS.unlockedUniqueSkills.includes('traveler_journey')) return;
@@ -1087,7 +1089,7 @@ function renderAchievements(){
     else if(r.type==='unlockSystem'){const s=SYSTEM_UNLOCKS.find(x=>x.id===r.id);rewardText=`⚙️ システム解放: ${s?s.icon+' '+s.name:r.id}（アンロックショップへ）`;}
     else if(r.type==='souls') rewardText=`💠 魂の欠片 +${r.soulsAmt||'?'}`;
     // 達成報酬としてのみ解放される項目は隠す（ワクワク感）
-    const isSecretReward=(r.type==='unlockChar'||r.type==='unlockWeapon'||r.type==='unlockSystem'||(r.type==='unlockAccessory'&&r.secret))&&!done;
+    const isSecretReward=(r.type==='unlockChar'||r.type==='unlockWeapon'||r.type==='unlockSystem'||(r.type==='unlockAccessory'&&r.secret)||r.type==='none')&&!done;
     const rewardDisplay=isSecretReward?'<span style="color:#5f5e5a">???（条件達成で解放）</span>':rewardText;
     el.innerHTML+=`<div class="ach-card ${done?'done':''}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -2121,6 +2123,22 @@ function startRun(){
   } else {
     GS.run.companionBuff = false;
   }
+  // エクスカリバー: ATK×1.3・DEF×0.9・戦士装備時 会心+20%（HP消費は攻撃時）
+  if(GS.run.weaponId==='excalibur'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.3);
+    GS.run.def = Math.max(0, Math.floor(GS.run.def * 0.9));
+    if(cid==='warrior') GS.run.crit += 20;
+  }
+  // クナイ: ATK×1.1・DEF×0.8
+  if(GS.run.weaponId==='kunai'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.1);
+    GS.run.def = Math.max(0, Math.floor(GS.run.def * 0.8));
+  }
+  // 死神のダガー: ATK×1.2・DEF×0.9
+  if(GS.run.weaponId==='death_dagger'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.2);
+    GS.run.def = Math.max(0, Math.floor(GS.run.def * 0.9));
+  }
   GS.run.undyingUsed = false;
   GS.run.icon=c.icon; GS.run.name=c.name;
   GS.run.room=0; GS.run.kills=0; GS.run.runSouls=0; GS.run.runExp=0;
@@ -3085,6 +3103,7 @@ function autoBattleTick(){
 
   let rawDmg=heroAtk+(isCrit?Math.floor(heroAtk*0.5):0);
   if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
+  if(isCrit && GS.run.weaponId === 'death_dagger' && GS.run.charId === 'rogue') rawDmg = Math.floor(rawDmg * 1.1); // 死神のダガー
 
   // 天罰: 行動停止中の敵へ2倍ダメージ
   let _punishMult=1;
@@ -3126,6 +3145,12 @@ function autoBattleTick(){
     if(isCrit)showCritFlash();
     addLog((isCrit?'💥会心！':'')+`${heroDmg}ダメージ`,isCrit?'log-crit':'log-enemy-dmg');
     applyVampiric(heroDmg,bState);
+    // エクスカリバー: 戦士装備時、攻撃のたびに最大HPの1%を失う
+    if(GS.run.weaponId==='excalibur'&&GS.run.charId==='warrior'){
+      const _exCost=Math.max(1,Math.floor(bState.heroMaxHp*0.01));
+      bState.heroHp=Math.max(1,bState.heroHp-_exCost);
+      showDmg('hero-sprite',_exCost,false,false,false);
+    }
     // トランス: 5%でトランス状態（5秒間CDゼロ×5回）
     if((GS.run.uniqueSkills||[]).includes('mage_trance')&&!bState.over&&!bState.tranceEnd&&Math.random()<0.05){
       bState.tranceEnd=Date.now()+5000;
@@ -3210,6 +3235,17 @@ function autoBattleTick(){
       // 必殺判定（2回目）
       if(isCrit2&&!bState.isBoss&&(GS.run.uniqueSkills||[]).includes('ninja_deathblow')&&Math.random()<0.01){
         bState.enemyHp=0;addLog('💀 必殺発動！ 即死！','log-skill');showSkillFlash();
+      }
+      // クナイ: 忍者装備時 10%で3撃目
+      if(!bState.over&&bState.enemyHp>0&&GS.run.weaponId==='kunai'&&GS.run.charId==='ninja'&&Math.random()<0.1){
+        const isCrit3=Math.random()<critChance;
+        let rawDmg3=heroAtk+(isCrit3?Math.floor(heroAtk*0.5):0);
+        const heroDmg3=randVar(Math.max(1,rawDmg3-bState.enemy.def));
+        bState.enemyHp-=heroDmg3;
+        showDmg('enemy-sprite',heroDmg3,false,false,isCrit3);
+        if(isCrit3)showCritFlash();
+        addLog((isCrit3?'💥会心！':'')+'🔪 クナイ 3撃目！ '+heroDmg3+'ダメージ',isCrit3?'log-crit':'log-skill');
+        applyVampiric(heroDmg3,bState);
       }
     }
 
@@ -3414,16 +3450,20 @@ function autoBattleTick(){
             if(dmgToHero>0) bState.heroHp-=dmgToHero;
             showDmg('hero-sprite',dmgToHero,false,false,false);
             addLog(`${bState.enemy.name}から${dmgToHero}ダメージ`,'log-hero-dmg');
-            // 加護: 攻撃受けた瞬間に発動（10秒間有効、重複なし）→全CD-30%短縮
+            // 加護: 攻撃受けた瞬間に発動（10秒間有効、重複なし）→全CD-30%短縮＋CD絶対値20%即短縮
             if((GS.run.uniqueSkills||[]).includes('god_protection')){
               const now=Date.now();
               if((bState.godProtectionEnd||0)<=now){
                 bState.godProtectionEnd=now+10000;
                 Object.keys(bState.skillCooldownEnd).forEach(sid=>{
                   const remaining=bState.skillCooldownEnd[sid]-now;
-                  if(remaining>0) bState.skillCooldownEnd[sid]=now+Math.floor(remaining*0.7);
+                  if(remaining>0){
+                    const baseCdMs=(ACTIVE_SKILLS[sid]?.cooldown||0)*1000;
+                    const absoluteCut=Math.floor(baseCdMs*0.2); // CD基準値の20%を即時短縮
+                    bState.skillCooldownEnd[sid]=now+Math.max(0,Math.floor(remaining*0.7)-absoluteCut);
+                  }
                 });
-                addLog('✨ 加護発動！ 10秒間全CDが30%短縮','log-skill');
+                addLog('✨ 加護発動！ 10秒間全CDが短縮（残り30%減＋基準値20%即短縮）','log-skill');
                 showSkillFlash('rgba(167,139,250,.25)');
               }
             }
@@ -3640,6 +3680,17 @@ function endBattle(won){
       };
     }
     GS.souls+=partial;GS.exp+=partialExp;
+    // 地獄の創造主に敗北時: こっそりヒントを解放
+    if(bState.isBoss&&bState.enemy.halfHpRevive&&!GS.achStats.lostToCreator){
+      GS.achStats.lostToCreator=true;
+      setTimeout(()=>{
+        const _hint=document.createElement('div');
+        _hint.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(10,5,5,.92);border:0.5px solid #3a2020;border-radius:10px;padding:10px 18px;font-size:12px;color:#888780;z-index:9999;text-align:center;pointer-events:none;max-width:280px';
+        _hint.textContent='地上で何かがあった様だ…。';
+        document.body.appendChild(_hint);
+        setTimeout(()=>{_hint.style.opacity='0';_hint.style.transition='opacity 1s';setTimeout(()=>_hint.remove(),1000);},4000);
+      },1500);
+    }
     checkAchievements();save();
     addLog(`戦闘不能... 魂の欠片${partial}個・EXP${partialExp}を回収`,'log-hero-dmg');
     resEl.innerHTML='';

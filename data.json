@@ -433,6 +433,24 @@
       "atk": 20, "mp": 0, "crit": 10,
       "desc": "ATK×1.4・会心+10%。アンノウン装備時、12ターンごとにATK×10の大ダメージ（防御無視）",
       "anim": "slash", "special": "railgunEffect", "unlockCost": 800
+    },
+    "excalibur": {
+      "id": "excalibur", "name": "エクスカリバー", "icon": "🗡️",
+      "atk": 15, "mp": 0, "crit": 0,
+      "desc": "ATK×1.3・DEF×0.9。戦士装備時、攻撃するたびに最大HPの1%を失う代わりに会心率+20%",
+      "anim": "slash", "special": "excaliburEffect", "unlockCost": 500
+    },
+    "kunai": {
+      "id": "kunai", "name": "クナイ", "icon": "🔪",
+      "atk": 10, "mp": 0, "crit": 0,
+      "desc": "ATK×1.1・DEF×0.8。忍者装備時、2回攻撃が10%の確率で3回攻撃になる",
+      "anim": "pierce", "special": "kunaiEffect", "unlockCost": 300
+    },
+    "death_dagger": {
+      "id": "death_dagger", "name": "死神のダガー", "icon": "🗡️",
+      "atk": 13, "mp": 0, "crit": 0,
+      "desc": "ATK×1.2・DEF×0.9。盗賊装備時、会心攻撃のダメージが+10%",
+      "anim": "pierce", "special": "deathDaggerEffect", "unlockCost": 400
     }
   },
   "armors": {
@@ -2386,7 +2404,10 @@
       {"id": "angeltrumpet", "label": "天使のラッパ", "cost": 600, "sub": "ATK×1.1 MP+10% 天使:天の光"},
       {"id": "buki", "label": "ぶき", "cost": 300, "sub": "ATK×1.1 忍者:毒付与率2倍"},
       {"id": "railgun", "label": "電磁砲", "cost": 800, "sub": "ATK×1.4 会心+10% 未知:12T大ダメ"},
-      {"id": "holyshield", "label": "聖なる盾", "cost": 600, "sub": "DEF×1.2 回避-10% 聖:10Tにdef×5"}
+      {"id": "holyshield", "label": "聖なる盾", "cost": 600, "sub": "DEF×1.2 回避-10% 聖:10Tにdef×5"},
+      {"id": "excalibur", "label": "エクスカリバー", "cost": 500, "sub": "ATK×1.3 DEF×0.9 戦士:会心+20%/攻撃のたびHP-1%"},
+      {"id": "kunai", "label": "クナイ", "cost": 300, "sub": "ATK×1.1 DEF×0.8 忍者:10%で3回攻撃"},
+      {"id": "death_dagger", "label": "死神のダガー", "cost": 400, "sub": "ATK×1.2 DEF×0.9 盗賊:会心ダメ+10%"}
     ],
     "accessory": [
       {
@@ -3061,6 +3082,16 @@
       "desc": "アンノウンで地上界に現れた謎の機械人形を倒す",
       "cond": {"kind": "specialBossKill", "id": "f6b_unknown_special", "val": 1},
       "reward": {"type": "unlockAccessory", "id": "mo_disk", "secret": true},
+      "silent": true
+    },
+    {
+      "id": "ach_creator_hint",
+      "icon": "🌑",
+      "title": "地上で何かがあった様だ…",
+      "desc": "『アンノウン』で地上界をクリアすれば何かが起こる",
+      "cond": {"kind": "specialBossKill", "id": "f6b_unknown_special", "val": 1},
+      "reward": {"type": "none"},
+      "hintOnly": true,
       "silent": true
     }
   ]
