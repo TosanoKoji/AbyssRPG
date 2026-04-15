@@ -330,7 +330,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604151751</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604151946</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2371,7 +2371,25 @@ function showLostSoulsRecovered(amt){
 }
 
 // ─── 戦闘 ────────────────────────────────────────────────
+function resetBattleScreen(){
+  // バトルログをクリア
+  const lg=document.getElementById('battle-log');
+  if(lg) lg.innerHTML='';
+  // 背景画像を非表示（新画像のasync読み込み完了まで空白にする）
+  const bgEl=document.getElementById('battle-bg-img-el');
+  if(bgEl){bgEl.src='';bgEl.style.display='none';}
+  // 前回バトルの動的要素（バッジ・ダメージ数字・フラッシュ）を除去
+  const area=document.getElementById('battle-area');
+  if(area){
+    area.querySelectorAll('.dmg-pop,.skill-flash,.crit-flash,.hero-flash').forEach(el=>el.remove());
+    const sb=document.getElementById('enemy-stun-badge');  if(sb) sb.remove();
+    const pb=document.getElementById('enemy-poison-badge');if(pb) pb.remove();
+  }
+  // バフアイコンエリアをクリア
+  const hbi=document.getElementById('hero-buff-icons');if(hbi) hbi.innerHTML='';
+}
 function startBattle(enemy,isBoss){
+  resetBattleScreen();
   let startMp=GS.run.mp;
   // アクセサリ: onBattleStart
   (GS.run.accessories||[]).forEach(id=>{
