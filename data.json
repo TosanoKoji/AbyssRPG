@@ -1759,6 +1759,7 @@
       "bosses": [
         {
           "id": "f6b_unknown_special",
+          "imgId": "f5c_robo",
           "name": "捨てられた機械人形",
           "icon": "🤖",
           "hp": 280000,
