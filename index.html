@@ -53,11 +53,14 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .battle-area.floor-bg-sky{background:linear-gradient(160deg,#080d1f 0%,#10183a 40%,#090e20 70%,#0f162e 100%)}
 .battle-area.floor-bg-space{background:linear-gradient(160deg,#050508 0%,#0a0a18 40%,#05050a 70%,#080814 100%)}
 .battle-area.floor-bg-hell{background:linear-gradient(160deg,#1f0505 0%,#3a0808 40%,#1f0303 70%,#2e0606 100%)}
-/* PNG背景レイヤー: 縦横比を保ったままエリア全体に収める */
+/* PNG背景レイヤー: 縦横比を保ったままエリア全体に収める（z-index:0 で最背面） */
 .battle-bg-img{position:absolute;inset:0;z-index:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .battle-bg-img img{width:100%;height:100%;object-fit:contain;object-position:center;opacity:.8;display:block}
-/* PNG画像の上にバトルコンテンツを重ねる */
-.battle-area>div:not(.battle-bg-img){position:relative;z-index:1}
+/* メインコンテンツ（キャラ・VS表示）は背景より前面 */
+.battle-main-content{position:relative;z-index:1}
+/* ダメージ数字・フラッシュ・バッジ類も背景より前面（position:absoluteは各要素のCSSで定義済み） */
+.dmg-pop{z-index:2}
+.skill-flash,.crit-flash,.hero-flash{z-index:2}
 /* ボスPNGモード: 敵サイドを拡張 */
 .battle-area.boss-png #enemy-side-wrap{flex:1;width:auto;max-width:58%}
 .battle-area.boss-png #enemy-sprite{height:100%;display:flex;align-items:center;justify-content:center}
@@ -327,7 +330,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604151606</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604151620</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -583,7 +586,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div class="battle-area" id="battle-area">
     <!-- フロア別PNG背景レイヤー（縦横比保持・opacity 80%） -->
     <div class="battle-bg-img"><img id="battle-bg-img-el" src="" alt="" style="display:none"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;height:100%;padding:0 4px">
+    <div class="battle-main-content" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 4px">
       <div id="hero-side-wrap" style="text-align:center;width:128px;flex-shrink:0">
         <div id="hero-buff-icons" style="display:flex;flex-wrap:wrap;gap:2px;justify-content:flex-start;min-height:14px;margin-bottom:2px"></div>
         <div id="hero-sprite" style="font-size:44px;margin-bottom:2px;display:inline-block" class="fighter">⚔</div>
@@ -2886,7 +2889,7 @@ function updateBattleUI(){
       if(!_stunBadge){
         _stunBadge=document.createElement('div');
         _stunBadge.id='enemy-stun-badge';
-        _stunBadge.style.cssText='position:absolute;top:4px;right:4px;background:rgba(96,165,250,.85);color:#fff;font-size:10px;padding:1px 5px;border-radius:8px;pointer-events:none';
+        _stunBadge.style.cssText='position:absolute;top:4px;right:4px;background:rgba(96,165,250,.85);color:#fff;font-size:10px;padding:1px 5px;border-radius:8px;pointer-events:none;z-index:2';
         document.getElementById('battle-area').appendChild(_stunBadge);
       }
       _stunBadge.textContent=`⏸ 停止 ${bState.stunTurns}T`;
@@ -2903,7 +2906,7 @@ function updateBattleUI(){
       if(!_poisonBadge){
         _poisonBadge=document.createElement('div');
         _poisonBadge.id='enemy-poison-badge';
-        _poisonBadge.style.cssText='position:absolute;top:4px;left:4px;background:rgba(74,222,128,.85);color:#1a1a18;font-size:10px;padding:1px 5px;border-radius:8px;pointer-events:none';
+        _poisonBadge.style.cssText='position:absolute;top:4px;left:4px;background:rgba(74,222,128,.85);color:#1a1a18;font-size:10px;padding:1px 5px;border-radius:8px;pointer-events:none;z-index:2';
         document.getElementById('battle-area').appendChild(_poisonBadge);
       }
       _poisonBadge.textContent=`☠ 毒 ${bState.poisonTurns}T`;
