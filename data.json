@@ -640,7 +640,8 @@
       "id": "mo_disk", "name": "MOディスク", "icon": "💿",
       "desc": "全パラメータ×1.1。地獄の創造主の全回復＆必殺を封じる",
       "kind": "statMult",
-      "effect": {"atkMult": 1.1, "defMult": 1.1, "hpMult": 1.1, "mpMult": 1.1}
+      "effect": {"atkMult": 1.1, "defMult": 1.1, "hpMult": 1.1, "mpMult": 1.1},
+      "secret": true
     }
   },
   "activeSkills": {
