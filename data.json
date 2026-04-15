@@ -383,11 +383,12 @@
       "id": "companion",
       "name": "相棒",
       "icon": "🗡️",
-      "atk": 300,
+      "atk": 80,
       "mp": 0,
       "crit": 10,
-      "desc": "旅人専用。スキル使用時20%の確率で消費MP半分",
+      "desc": "旅人装備時: ATK×1.2・スキル効果+20%・スキル追加発動1回・効果時間2倍",
       "anim": "slash",
+      "special": "companionEffect",
       "unlockCost": 50000,
       "unlockCond": "achievement"
     },
@@ -402,6 +403,36 @@
       "anim": "slash",
       "special": "chainsawEffect",
       "unlockCost": 500
+    },
+    "necronomicon": {
+      "id": "necronomicon", "name": "ネクロノミコン", "icon": "📖",
+      "atk": 12, "mp": 0, "crit": 0,
+      "desc": "ATK×1.1・回避+10%。死霊術師装備時、現在MPの1/5を攻撃力に加える",
+      "anim": "slash", "special": "necronomiconEffect", "unlockCost": 600
+    },
+    "breakstaff": {
+      "id": "breakstaff", "name": "破壊の杖", "icon": "🪄",
+      "atk": 16, "mp": 0, "crit": 0,
+      "desc": "ATK×1.3・DEF×0.9。魔術師装備時、通常攻撃10%でダメージ3倍＋敵DEFを6秒間ゼロにする",
+      "anim": "slash", "special": "breakstaffEffect", "unlockCost": 600
+    },
+    "angeltrumpet": {
+      "id": "angeltrumpet", "name": "天使のラッパ", "icon": "🎺",
+      "atk": 10, "mp": 40, "crit": 0,
+      "desc": "ATK×1.1・MP+10%。天使装備時、攻撃時10%で「天の光」発動→2ターンに1回ATK×3を5回",
+      "anim": "slash", "special": "angeltrumpetEffect", "unlockCost": 600
+    },
+    "buki": {
+      "id": "buki", "name": "ぶき", "icon": "🗡️",
+      "atk": 10, "mp": 0, "crit": 0,
+      "desc": "ATK×1.1。忍者装備時、毒付与率が2倍になる",
+      "anim": "slash", "special": "bukiEffect", "unlockCost": 300
+    },
+    "railgun": {
+      "id": "railgun", "name": "電磁砲", "icon": "⚡",
+      "atk": 20, "mp": 0, "crit": 10,
+      "desc": "ATK×1.4・会心+10%。アンノウン装備時、12ターンごとにATK×10の大ダメージ（防御無視）",
+      "anim": "slash", "special": "railgunEffect", "unlockCost": 800
     }
   },
   "armors": {
@@ -477,6 +508,12 @@
       "desc": "回避+10%、防御-50%。忍者装備時のみ会心+30%",
       "special": "fundoshiEffect",
       "unlockCost": 200
+    },
+    "holyshield": {
+      "id": "holyshield", "name": "聖なる盾", "icon": "🛡️",
+      "def": 0, "hp": 0, "mp": 0,
+      "desc": "DEF×1.2・回避-10%。聖騎士装備時、10ターンごとにDEF×5のダメージを敵に与える",
+      "special": "holyshieldEffect", "unlockCost": 600
     }
   },
   "accessories": {
@@ -598,6 +635,12 @@
       "icon": "⚡",
       "desc": "スキルのクールタイムを20%短縮する",
       "unlockCost": 30000
+    },
+    "mo_disk": {
+      "id": "mo_disk", "name": "MOディスク", "icon": "💿",
+      "desc": "全パラメータ×1.1。地獄の創造主の全回復＆必殺を封じる",
+      "kind": "statMult",
+      "effect": {"atkMult": 1.1, "defMult": 1.1, "hpMult": 1.1, "mpMult": 1.1}
     }
   },
   "activeSkills": {
@@ -999,6 +1042,16 @@
       "icon": "⚛️",
       "initial": false,
       "desc": "3回被弾するごとに、蓄積した被ダメージ（防御で相殺分も含む、回避は除く）を纏めて敵に返す"
+    },
+    "mage_trance": {
+      "id": "mage_trance", "charId": "mage", "name": "トランス", "icon": "🌀",
+      "initial": false,
+      "desc": "通常攻撃時5%の確率でトランス状態突入。5秒間CDゼロでスキル連発（最大5回）"
+    },
+    "angel_revelation": {
+      "id": "angel_revelation", "charId": "angel", "name": "天啓", "icon": "✨",
+      "initial": false,
+      "desc": "5ターンに1回、装備中のアクティブスキルをランダムでノーコスト発動（各スキル1回のみ）"
     },
     "ninja_poison": {
       "id": "ninja_poison",
@@ -1704,6 +1757,21 @@
       ],
       "bosses": [
         {
+          "id": "f6b_unknown_special",
+          "name": "捨てられた機械人形",
+          "icon": "🤖",
+          "hp": 280000,
+          "atk": 2200,
+          "def": 1150,
+          "crit": 10,
+          "dodge": 8,
+          "souls": 1200,
+          "exp": 2000,
+          "kind": "boss",
+          "specialForChar": "you",
+          "oneTimeAch": "ach_you_surface_special"
+        },
+        {
           "id": "f6b_ou",
           "name": "光の王",
           "icon": "👑",
@@ -2077,7 +2145,8 @@
           "dodge": 8,
           "souls": 3000,
           "exp": 5000,
-          "kind": "boss"
+          "kind": "boss",
+          "halfHpRevive": true
         }
       ]
     }
@@ -2295,7 +2364,7 @@
         "id": "companion",
         "label": "相棒",
         "cost": 50000,
-        "sub": "ATK+300 会心+10% スキルMP20%で半分",
+        "sub": "ATK×1.2 旅人:スキル強化",
         "achReq": "ach_traveler_3clear"
       },
       {
@@ -2309,7 +2378,13 @@
         "label": "褌",
         "cost": 200,
         "sub": "回避+10% 防御-50% 忍者:会心+30%"
-      }
+      },
+      {"id": "necronomicon", "label": "ネクロノミコン", "cost": 600, "sub": "ATK×1.1 回避+10% 死霊:MP/5加算"},
+      {"id": "breakstaff", "label": "破壊の杖", "cost": 600, "sub": "ATK×1.3 DEF×0.9 魔術師:10%で3倍+DEF0"},
+      {"id": "angeltrumpet", "label": "天使のラッパ", "cost": 600, "sub": "ATK×1.1 MP+10% 天使:天の光"},
+      {"id": "buki", "label": "ぶき", "cost": 300, "sub": "ATK×1.1 忍者:毒付与率2倍"},
+      {"id": "railgun", "label": "電磁砲", "cost": 800, "sub": "ATK×1.4 会心+10% 未知:12T大ダメ"},
+      {"id": "holyshield", "label": "聖なる盾", "cost": 600, "sub": "DEF×1.2 回避-10% 聖:10Tにdef×5"}
     ],
     "accessory": [
       {
@@ -2579,7 +2654,9 @@
         "cost": 500,
         "sub": "3被弾→蓄積ダメージを敵に返す",
         "kind": "uniqueSkill"
-      }
+      },
+      {"id": "mage_trance", "label": "トランス", "cost": 500, "sub": "5%でトランス状態・CDゼロ5回", "kind": "uniqueSkill"},
+      {"id": "angel_revelation", "label": "天啓", "cost": 500, "sub": "5Tに1回ランダムスキル無料発動", "kind": "uniqueSkill"}
     ]
   },
   "achievements": [
@@ -2974,6 +3051,15 @@
       },
       "icon": "✨",
       "desc": "天使で任意のステージを3回クリア — 天の恵みを習得"
+    },
+    {
+      "id": "ach_you_surface_special",
+      "icon": "🤖",
+      "title": "捨てられた記憶",
+      "desc": "アンノウンで地上界に現れた謎の機械人形を倒す",
+      "cond": {"kind": "specialBossKill", "id": "f6b_unknown_special", "val": 1},
+      "reward": {"type": "unlockAccessory", "id": "mo_disk", "secret": true},
+      "silent": true
     }
   ]
 }

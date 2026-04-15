@@ -315,7 +315,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604131415</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604151140</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -869,9 +869,9 @@ const SKILL_FNS={
   lifedrain:  bs=>{const dmg=Math.max(1,Math.floor(GS.run.atk*1.5)-bs.enemy.def);bs.heroHp=Math.min(bs.heroMaxHp,bs.heroHp+dmg);showDmg('hero-sprite',dmg,true,false,false);skillHitEnemy(bs,dmg,'生命吸収');},
   blaze:      bs=>{skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*4)-Math.floor(bs.enemy.def*0.5)),'地獄炎');},
   shadowstep: bs=>{bs.dodgeNext=true;skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*2)-bs.enemy.def),'影踏み');},
-  rallycry:   bs=>{bs.rageStacks=(bs.rageStacks||0)+3;addLog('鬨の声！ 3ターン攻撃+50%','log-skill');showSkillFlash('rgba(251,191,36,.22)');updateBattleUI();renderActiveBtns();},
+  rallycry:   bs=>{const _rStacks=GS.run.companionBuff?6:3;bs.rageStacks=(bs.rageStacks||0)+_rStacks;addLog(`鬨の声！ ${_rStacks}ターン攻撃+50%`,'log-skill');showSkillFlash('rgba(251,191,36,.22)');updateBattleUI();renderActiveBtns();},
   soulburst:  bs=>{const cost=Math.floor(bs.heroMaxHp*0.3);bs.heroHp=Math.max(1,bs.heroHp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*6)-bs.enemy.def),'魂の爆発');updateBattleUI();},
-  timestop:   bs=>{bs.stunTurns=(bs.stunTurns||0)+2;addLog('時間停止！ 敵の攻撃を2回無効化','log-skill');showSkillFlash('rgba(96,165,250,.25)');renderActiveBtns();},
+  timestop:   bs=>{const _tStuns=GS.run.companionBuff?4:2;bs.stunTurns=(bs.stunTurns||0)+_tStuns;addLog(`時間停止！ 敵の攻撃を${_tStuns}回無効化`,'log-skill');showSkillFlash('rgba(96,165,250,.25)');renderActiveBtns();},
   divinewrath:bs=>{skillHitEnemy(bs,Math.floor(GS.run.atk*5),'天罰');},
   apocalypse: bs=>{const cost=Math.floor(bs.heroMaxMp*0.5);bs.heroMp=Math.max(0,bs.heroMp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(bs.enemyHp*0.3)),'終焉');updateBattleUI();}
 };
@@ -928,6 +928,7 @@ function checkAchievements(){
       else prog=st.dodgeCount||0;
     }
     else if(a.cond.kind==='killCount')  prog=st.killCount||0;
+    else if(a.cond.kind==='specialBossKill') prog=(st.specialBossKills||{})[a.cond.id]||0;
     if(prog>=target){
       GS.achDone.push(a.id);
       const r=a.reward;
@@ -950,6 +951,8 @@ function checkAchievements(){
       } else if(r.type==='unlockSystem'){
         // システム開放もショップに登場させるだけ
       }
+      // サイレント達成: 通知しない
+      if(a.silent) return;
       newly.push(a);
     }
   });
@@ -989,6 +992,7 @@ function getAchProgress(a){
     return st.dodgeCount||0;
   }
   if(a.cond.kind==='killCount')  return st.killCount||0;
+  if(a.cond.kind==='specialBossKill') return (st.specialBossKills||{})[a.cond.id]||0;
   return 0;
 }
 
@@ -1064,7 +1068,7 @@ function renderAchievements(){
     else if(r.type==='unlockSystem'){const s=SYSTEM_UNLOCKS.find(x=>x.id===r.id);rewardText=`⚙️ システム解放: ${s?s.icon+' '+s.name:r.id}（アンロックショップへ）`;}
     else if(r.type==='souls') rewardText=`💠 魂の欠片 +${r.soulsAmt||'?'}`;
     // 達成報酬としてのみ解放される項目は隠す（ワクワク感）
-    const isSecretReward=(r.type==='unlockChar'||r.type==='unlockWeapon'||r.type==='unlockSystem')&&!done;
+    const isSecretReward=(r.type==='unlockChar'||r.type==='unlockWeapon'||r.type==='unlockSystem'||(r.type==='unlockAccessory'&&r.secret))&&!done;
     const rewardDisplay=isSecretReward?'<span style="color:#5f5e5a">???（条件達成で解放）</span>':rewardText;
     el.innerHTML+=`<div class="ach-card ${done?'done':''}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -2059,6 +2063,43 @@ function startRun(){
     GS.run.dodge += 10;
     if(cid==='ninja') GS.run.crit += 30;
   }
+  // ネクロノミコン: ATK×1.1、回避+10%
+  if(GS.run.weaponId==='necronomicon'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.1);
+    GS.run.dodge += 10;
+  }
+  // 破壊の杖: ATK×1.3、DEF×0.9
+  if(GS.run.weaponId==='breakstaff'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.3);
+    GS.run.def = Math.max(0, Math.floor(GS.run.def * 0.9));
+  }
+  // 天使のラッパ: ATK×1.1、maxMP×1.1
+  if(GS.run.weaponId==='angeltrumpet'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.1);
+    GS.run.maxMp = Math.floor(GS.run.maxMp * 1.1);
+    GS.run.mp = GS.run.maxMp;
+  }
+  // ぶき: ATK×1.1
+  if(GS.run.weaponId==='buki'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.1);
+  }
+  // 電磁砲: ATK×1.4、会心+10%
+  if(GS.run.weaponId==='railgun'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.4);
+    GS.run.crit += 10;
+  }
+  // 聖なる盾: DEF×1.2、回避-10%
+  if(GS.run.armorId==='holyshield'){
+    GS.run.def = Math.floor(GS.run.def * 1.2);
+    GS.run.dodge = Math.max(0, GS.run.dodge - 10);
+  }
+  // 相棒: 旅人装備時ATK×1.2 + companionBuff
+  if(GS.run.weaponId==='companion' && cid==='traveler'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.2);
+    GS.run.companionBuff = true;
+  } else {
+    GS.run.companionBuff = false;
+  }
   GS.run.undyingUsed = false;
   GS.run.icon=c.icon; GS.run.name=c.name;
   GS.run.room=0; GS.run.kills=0; GS.run.runSouls=0; GS.run.runExp=0;
@@ -2233,7 +2274,24 @@ function enterRoom(){
   const t=GS.run.roomTypes[GS.run.room];
   const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
   if(t==='battle'||t==='boss'){
-    const pool=t==='boss'?floor.bosses:floor.enemies;
+    let pool;
+    if(t==='boss'){
+      // 特殊ボスチェック（アンノウンで地上、一度のみ）
+      const specialBoss=floor.bosses.find(b=>b.specialForChar&&b.oneTimeAch);
+      if(specialBoss&&specialBoss.specialForChar===GS.run.charId&&!GS.achDone.includes(specialBoss.oneTimeAch)){
+        // 特殊ボスイベント表示
+        const _spEl=document.createElement('div');
+        _spEl.style.cssText='position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);background:#1a1228;border:2px solid #a78bfa;border-radius:16px;padding:20px 28px;font-size:14px;color:#ede9fe;z-index:9999;text-align:center;animation:achPop .4s ease-out;pointer-events:none';
+        _spEl.innerHTML=`🤖 捨てられた機械人形が現れた！<br><span style="font-size:12px;color:#888780">以前どこかで出会ったような...記憶がある</span>`;
+        document.body.appendChild(_spEl);
+        setTimeout(()=>{_spEl.style.opacity='0';_spEl.style.transition='opacity .6s';setTimeout(()=>_spEl.remove(),600);},3000);
+        startBattle(JSON.parse(JSON.stringify(specialBoss)),true);
+        return;
+      }
+      pool=floor.bosses.filter(b=>!b.specialForChar);
+    } else {
+      pool=floor.enemies;
+    }
     startBattle(JSON.parse(JSON.stringify(pool[Math.floor(Math.random()*pool.length)])),t==='boss');
   } else if(t==='treasure') showChoice('treasure');
   else if(t==='rest')       showChoice('rest');
@@ -2314,6 +2372,11 @@ function startBattle(enemy,isBoss){
     limiterActive:0,
     godProtectionEnd:0,
     reactorHits:0, reactorAccum:0,
+    tranceEnd:0, tranceUsed:0,
+    breakstaffDefZeroEnd:0,
+    angelLightRemaining:0, angelLightTurnCounter:0,
+    revelationUsed:{},
+    creatorRevived:false, creatorDeathblowPending:false,
     warriorBraveMult:(GS.run.uniqueSkills&&GS.run.uniqueSkills.includes('warrior_brave'))?Math.pow(1.03,GS.run.room):1,
     skillCooldownEnd: {}
   };
@@ -2476,8 +2539,9 @@ function renderActiveBtns(){
     const cdRemain=Math.max(0,cdEnd-now);
     const cdTotal=(s.cooldown||0)*1000;
     const cdPct=cdTotal>0?Math.min(100,((cdTotal-cdRemain)/cdTotal)*100):100;
-    const onCooldown=cdRemain>0;
-    const hasMp=!bState.over&&bState.heroMp>=cost;
+    const _inTranceR=(bState.tranceEnd||0)>now&&(bState.tranceUsed||0)<5;
+    const onCooldown=!_inTranceR&&cdRemain>0;
+    const hasMp=!bState.over&&(bState.heroMp>=cost||_inTranceR);
     const canUse=hasMp&&!onCooldown&&!bState.over;
     const btn=document.createElement('button');
     let cls='active-btn';
@@ -2501,19 +2565,25 @@ function useActiveSkill(id){
   const s=ACTIVE_SKILLS[id];
   // イヤリング: skillCost -20%
   const earringDiscount=(GS.run.accessories||[]).some(a=>{const ac=ACCESSORIES[a];return ac&&ac.kind==='skillCost'&&ac.effect.mpDiscount;})?0.20:0;
-  // 相棒: 20%確率でMP半分
-  const companionHalf=isUnlocked('companion')&&GS.run.weaponId==='companion'&&Math.random()<0.20?0.5:1.0;
   const baseCost=s.mpCost-(GS.run.nextSkillDiscount||0);
-  const cost=Math.max(0,Math.floor(baseCost*(1-earringDiscount)*companionHalf));
+  // トランス中はコスト0・CDゼロ
+  const _inTrance=(bState.tranceEnd||0)>Date.now()&&(bState.tranceUsed||0)<5;
+  const cost=_inTrance?0:Math.max(0,Math.floor(baseCost*(1-earringDiscount)));
   GS.run.nextSkillDiscount=0;
   if(bState.heroMp<cost){addLog('MPが足りない！','log-hero-dmg');return;}
   bState.heroMp-=cost;
   // クールタイム設定
-  if(s.cooldown>0){
+  if(s.cooldown>0&&!_inTrance){
     bState.skillCooldownEnd=bState.skillCooldownEnd||{};
     const _boosterMult=(GS.run.accessories||[]).includes('booster')?0.8:1.0;
     bState.skillCooldownEnd[id]=Date.now()+Math.floor((s.cooldown||0)*1000*_boosterMult);
     startCdTimer();
+  }
+  // トランスカウント
+  if(_inTrance){
+    bState.tranceUsed=(bState.tranceUsed||0)+1;
+    if(bState.tranceUsed>=5){bState.tranceEnd=0;addLog('🌀 トランス終了（5回使用）','log-skill');}
+    renderActiveBtns();
   }
   addLog(`【${s.name}】発動！`,'log-skill');
   // 魔力暴走: 10%でスキル効果3倍（bStateフラグで skillHitEnemy に伝達）
@@ -2546,6 +2616,17 @@ function useActiveSkill(id){
       s.fn(bState);
     }
   });
+  // 相棒（旅人）: companionBuff時スキル追加発動
+  if(!bState.over&&GS.run.companionBuff){
+    if(!bState.companionExtraUsed) bState.companionExtraUsed={};
+    if(!bState.companionExtraUsed[id]){
+      bState.companionExtraUsed[id]=true;
+      addLog(`🤝 相棒の絆！ ${s.name}追加発動！`,'log-skill');
+      showSkillFlash('rgba(167,139,250,.25)');
+      s.fn(bState);
+      if(bState.over) return;
+    }
+  }
   // 魔力過負荷: 10%でCDゼロ
   if((GS.run.uniqueSkills||[]).includes('mage_overload')&&Math.random()<0.1){
     bState.skillCooldownEnd[id]=0;
@@ -2567,7 +2648,8 @@ function skillHitEnemy(bs,baseDmg,skillName){
   if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
 
   const runawayMult=bs.mageRunaway?3:1;
-  const dmg=randVar(Math.floor(rawDmg*(GS.run.dmgBonus||1)*runawayMult));
+  const companionMult=GS.run.companionBuff?1.2:1.0;
+  const dmg=randVar(Math.floor(rawDmg*(GS.run.dmgBonus||1)*runawayMult*companionMult));
 
   const el=document.getElementById('enemy-sprite');
   el.classList.add('skill-attack');
@@ -2690,6 +2772,14 @@ function renderBuffIcons(){
   if(GS.run&&GS.run.shadowbladeReady) b('◆','影刃','gold');
   // リアクター（蓄積中の場合アイコン表示）
   if((bState.reactorHits||0)>0) b('⚛️','蓄積'+(bState.reactorHits)+'/'+'3','gold');
+  // トランス（魔術師）
+  if((bState.tranceEnd||0)>now) b('🌀','トランス '+Math.ceil(((bState.tranceEnd||0)-now)/1000)+'s','gold');
+  // 天の光（天使のラッパ）
+  if((bState.angelLightRemaining||0)>0) b('☀️','天の光×'+bState.angelLightRemaining,'gold');
+  // 破壊の杖: 敵DEFゼロ中
+  if((bState.breakstaffDefZeroEnd||0)>now) b('🪄','敵DEF0 '+Math.ceil(((bState.breakstaffDefZeroEnd||0)-now)/1000)+'s','red');
+  // 地獄の創造主 必殺予告
+  if(bState.creatorDeathblowPending) b('🌑','必殺予告！','red');
   // リアクターゲージ更新
   updateReactorGauge();
 }
@@ -2756,6 +2846,18 @@ function autoBattleTick(){
   const hasRage=passives.includes('rage');
   const hasMpRecover=passives.includes('mprecover');
 
+  // 天の光（天使のラッパ）: 2ターンに1回ATK×3ダメージ
+  if((bState.angelLightRemaining||0)>0){
+    bState.angelLightTurnCounter=(bState.angelLightTurnCounter||0)+1;
+    if(bState.angelLightTurnCounter%2===0){
+      const _lightDmg=GS.run.atk*3;
+      bState.enemyHp-=_lightDmg;
+      bState.angelLightRemaining--;
+      showDmg('enemy-sprite',_lightDmg,false,true,false);
+      addLog(`☀️ 天の光 ${5-bState.angelLightRemaining}/5: ${_lightDmg}ダメージ`,'log-skill');
+      if(bState.enemyHp<=0){endBattle(true);return;}
+    }
+  }
   // 呪いの刻印（ターン毎に敵HP削る）0.5%
   if(passives.includes('cursedmark')){
     const curseDmg=Math.max(1,Math.floor(bState.enemyMaxHp*0.005));
@@ -2789,11 +2891,50 @@ function autoBattleTick(){
   // 魂の収穫（敵撃破時MP+10）はendBattleで処理
 
   let heroAtk=Math.floor(GS.run.atk*(bState.warriorBraveMult||1));
+  // ネクロノミコン: 死霊術師装備時 現在MPの1/5を攻撃力に加算
+  if(GS.run.weaponId==='necronomicon'&&GS.run.charId==='necromancer'){
+    heroAtk+=Math.floor(bState.heroMp/5);
+  }
   if(hasRage&&bState.heroHp<bState.heroMaxHp*0.5){heroAtk=Math.floor(heroAtk*1.3);triggerPassiveBadge('rage');}
   if(bState.rageStacks>0){heroAtk=Math.floor(heroAtk*1.5);bState.rageStacks--;}
   // 血戦の心得: HP30%以下で攻撃+50%・被ダメ-20%
   if((GS.run.uniqueSkills||[]).includes('warrior_berserk')&&bState.heroHp<bState.heroMaxHp*0.3)
     heroAtk=Math.floor(heroAtk*1.5);
+  // 電磁砲: アンノウン装備時12ターンごとにATK×10（防御無視）
+  if(GS.run.weaponId==='railgun'&&GS.run.charId==='you'&&bState.turn>0&&bState.turn%12===0){
+    const _railDmg=GS.run.atk*10;
+    bState.enemyHp-=_railDmg;
+    showDmg('enemy-sprite',_railDmg,false,true,false);
+    addLog(`⚡ 電磁砲チャージ！ ${_railDmg}の大ダメージ（防御無視）`,'log-crit');
+    showSkillFlash('rgba(251,191,36,.3)');
+    if(bState.enemyHp<=0){endBattle(true);return;}
+  }
+  // 天啓: 5ターンに1回ランダムスキル発動
+  if((GS.run.uniqueSkills||[]).includes('angel_revelation')&&bState.turn>0&&bState.turn%5===0){
+    const _revSkills=(GS.run.activeSkills||[]).filter(sid=>!bState.revelationUsed[sid]);
+    if(_revSkills.length>0){
+      const _revId=_revSkills[Math.floor(Math.random()*_revSkills.length)];
+      const _revS=ACTIVE_SKILLS[_revId];
+      if(_revS&&_revS.fn&&!bState.over){
+        bState.revelationUsed[_revId]=true;
+        addLog(`✨ 天啓発動！ ${_revS.icon}${_revS.name}をノーコストで発動！`,'log-skill');
+        showSkillFlash('rgba(250,204,21,.25)');
+        bState.mageRunaway=false;
+        _revS.fn(bState);
+        updateBattleUI();renderActiveBtns();
+        if(bState.enemyHp<=0){endBattle(true);return;}
+      }
+    }
+  }
+  // 聖なる盾: 聖騎士装備時10ターンごとにDEF×5ダメージ
+  if(GS.run.armorId==='holyshield'&&GS.run.charId==='paladin'&&bState.turn>0&&bState.turn%10===0){
+    const _shieldDmg=GS.run.def*5;
+    bState.enemyHp-=_shieldDmg;
+    showDmg('enemy-sprite',_shieldDmg,false,true,false);
+    addLog(`🛡️ 聖なる盾発動！ ${_shieldDmg}ダメージ（DEF×5）`,'log-skill');
+    showSkillFlash('rgba(167,139,250,.25)');
+    if(bState.enemyHp<=0){endBattle(true);return;}
+  }
   // 使役: 5ターンに1回、MP3%消費→その10倍のDEF無視攻撃
   if((GS.run.uniqueSkills||[]).includes('necro_servant')&&bState.turn>0&&bState.turn%5===0){
     const _servCost=Math.max(1,Math.floor(bState.heroMaxMp*0.03));
@@ -2843,7 +2984,8 @@ function autoBattleTick(){
   let _punishMult=1;
   if((GS.run.uniqueSkills||[]).includes('god_punishment')&&bState.stunTurns>0) _punishMult=2;
 
-  let heroDmg=randVar(Math.max(1,rawDmg-bState.enemy.def));
+  const _effectiveDef=(bState.breakstaffDefZeroEnd||0)>Date.now()?0:bState.enemy.def;
+  let heroDmg=randVar(Math.max(1,rawDmg-_effectiveDef));
   heroDmg=Math.floor(heroDmg*_punishMult);
 
   const wAnim = WEAPONS[GS.run.weaponId]?.anim || 'slash';
@@ -2878,13 +3020,39 @@ function autoBattleTick(){
     if(isCrit)showCritFlash();
     addLog((isCrit?'💥会心！':'')+`${heroDmg}ダメージ`,isCrit?'log-crit':'log-enemy-dmg');
     applyVampiric(heroDmg,bState);
+    // トランス: 5%でトランス状態（5秒間CDゼロ×5回）
+    if((GS.run.uniqueSkills||[]).includes('mage_trance')&&!bState.over&&!bState.tranceEnd&&Math.random()<0.05){
+      bState.tranceEnd=Date.now()+5000;
+      bState.tranceUsed=0;
+      addLog('🌀 トランス突入！ 5秒間CDゼロで連発可能（最大5回）','log-skill');
+      showSkillFlash('rgba(96,165,250,.3)');
+      renderActiveBtns();
+    }
+    // 破壊の杖: 魔術師装備時10%でダメージ3倍＋敵DEFゼロ6秒
+    if(bState.enemyHp>0&&GS.run.weaponId==='breakstaff'&&GS.run.charId==='mage'&&Math.random()<0.1){
+      const _bsDmg=Math.floor(heroDmg*2); // 既に1倍分加算済みなので+2倍
+      bState.enemyHp-=_bsDmg;
+      bState.breakstaffDefZeroEnd=Date.now()+6000;
+      showDmg('enemy-sprite',_bsDmg,false,true,false);
+      addLog(`🪄 破壊の杖炸裂！ 追加${_bsDmg}ダメ＋敵DEF6秒ゼロ！`,'log-crit');
+      showSkillFlash('rgba(239,68,68,.25)');
+      if(bState.enemyHp<=0){endBattle(true);return;}
+    }
+    // 天使のラッパ: 天使装備時10%で天の光発動
+    if(bState.enemyHp>0&&GS.run.weaponId==='angeltrumpet'&&GS.run.charId==='angel'&&bState.angelLightRemaining===0&&Math.random()<0.1){
+      bState.angelLightRemaining=5;
+      bState.angelLightTurnCounter=0;
+      addLog('🎺 天の光発動！ 2ターンごとにATK×3を5回！','log-skill');
+      showSkillFlash('rgba(250,204,21,.3)');
+    }
     // 威厳: 8%でスタン3ターン
     if(bState.enemyHp>0&&(GS.run.uniqueSkills||[]).includes('god_dignity')&&Math.random()<0.08){
       bState.stunTurns=(bState.stunTurns||0)+3;
       addLog('👁️ 威厳発動！ 敵の行動が3ターン停止！','log-skill');showSkillFlash();
     }
-    // 毒薬: 2%で毒付与
-    if(!bState.poisonTurns&&(GS.run.uniqueSkills||[]).includes('ninja_poison')&&Math.random()<0.02){
+    // 毒薬: 2%で毒付与（ぶき装備忍者は4%）
+    const _poisonChance=(GS.run.weaponId==='buki'&&GS.run.charId==='ninja')?0.04:0.02;
+    if(!bState.poisonTurns&&(GS.run.uniqueSkills||[]).includes('ninja_poison')&&Math.random()<_poisonChance){
       bState.poisonTurns=3;
       bState.poisonDmgPer=Math.floor(bState.enemyMaxHp*0.03);
       addLog('☠️ 毒付与！ 3ターンで最大HPの3%ダメージ','log-skill');
@@ -2972,10 +3140,56 @@ function autoBattleTick(){
 
     updateBattleUI();renderActiveBtns();
     if(bState.enemyHp<=0){endBattle(true);return;}
+    // 地獄の創造主: 初めてHP50%以下になったら全回復＋次ターン即死予告
+    if(!bState.creatorRevived&&bState.isBoss&&bState.enemy.halfHpRevive&&bState.enemyHp<=bState.enemyMaxHp*0.5){
+      bState.creatorRevived=true;
+      bState.enemyHp=bState.enemyMaxHp;
+      bState.creatorDeathblowPending=true;
+      const hasMoDisk=(GS.run.accessories||[]).includes('mo_disk');
+      const _revEl=document.createElement('div');
+      _revEl.style.cssText='position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ef4444;border-radius:16px;padding:20px 28px;font-size:14px;color:#fca5a5;z-index:9999;text-align:center;animation:achPop .4s ease-out;pointer-events:none';
+      _revEl.innerHTML=hasMoDisk
+        ?`💿 地獄の創造主の全回復を封じた！<br><span style="font-size:12px;color:#6ee7b7">MOディスクの力が必殺を阻む...</span>`
+        :`🌑 地獄の創造主がHP全回復！<br><span style="font-size:12px;color:#888780">次のターン、回避不可能な必殺が来る...</span>`;
+      document.body.appendChild(_revEl);
+      setTimeout(()=>{_revEl.style.opacity='0';_revEl.style.transition='opacity .6s';setTimeout(()=>_revEl.remove(),600);},3000);
+      if(hasMoDisk){
+        bState.creatorDeathblowPending=false;
+        addLog('💿 MOディスクが地獄の創造主の全回復を封印！','log-skill');
+        showSkillFlash('rgba(74,158,255,.3)');
+      } else {
+        addLog('🌑 地獄の創造主がHP全回復！ 次のターン必殺が来る！','log-hero-dmg');
+        showSkillFlash('rgba(239,68,68,.3)');
+      }
+      updateBattleUI();renderActiveBtns();
+    }
 
     setTimeout(()=>{
       if(bState.over)return;
 
+      // 地獄の創造主: 半血後の即死攻撃
+      if(bState.creatorDeathblowPending&&bState.isBoss&&!bState.over){
+        bState.creatorDeathblowPending=false;
+        const hasMoDisk=(GS.run.accessories||[]).includes('mo_disk');
+        if(hasMoDisk){
+          addLog('💿 MOディスクが創造主の必殺を封じた！','log-skill');
+          showSkillFlash('rgba(74,158,255,.3)');
+          updateBattleUI();renderActiveBtns();
+          setTimeout(()=>autoBattleTick(),1300);
+        } else {
+          // 回避不可の即死
+          const _deathEl=document.createElement('div');
+          _deathEl.style.cssText='position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ef4444;border-radius:16px;padding:20px 28px;font-size:14px;color:#fca5a5;z-index:9999;text-align:center;animation:achPop .4s ease-out';
+          _deathEl.innerHTML=`🌑 創造主の必殺が炸裂！<br><span style="font-size:12px;color:#888780">MOディスクなしでは防ぐ術がない...</span>`;
+          document.body.appendChild(_deathEl);
+          setTimeout(()=>{_deathEl.style.opacity='0';_deathEl.style.transition='opacity .6s';setTimeout(()=>_deathEl.remove(),600);},3000);
+          bState.heroHp=0;
+          addLog('🌑 地獄の創造主の必殺！ 即死...','log-hero-dmg');
+          updateBattleUI();
+          endBattle(false);
+        }
+        return;
+      }
       // スタン中は敵攻撃スキップ
       if(bState.stunTurns>0){
         bState.stunTurns--;
@@ -3246,6 +3460,11 @@ function endBattle(won){
 
     // 達成報酬用カウント
     GS.achStats.killCount=(GS.achStats.killCount||0)+1;
+    // 特殊ボス撃破記録
+    if(bState.enemy.oneTimeAch){
+      GS.achStats.specialBossKills=GS.achStats.specialBossKills||{};
+      GS.achStats.specialBossKills[bState.enemy.id]=(GS.achStats.specialBossKills[bState.enemy.id]||0)+1;
+    }
 
     GS.run.room++;
     if(bState.isBoss){
