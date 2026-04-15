@@ -291,6 +291,13 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 /* pause-btn「次の部屋へ」グロー */
 @keyframes pauseGlow{0%,100%{box-shadow:0 0 6px rgba(74,222,128,.3)}50%{box-shadow:0 0 14px rgba(74,222,128,.7)}}
 
+/* ─── 地獄の創造主 特殊演出 ─────────────────────────── */
+@keyframes creatorReviveIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}60%{transform:translate(-50%,-50%) scale(1.06)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes creatorBossShake{0%,100%{transform:translateX(0) translateY(0)}15%{transform:translateX(-10px) translateY(-2px)}30%{transform:translateX(10px) translateY(2px)}45%{transform:translateX(-7px) translateY(-1px)}60%{transform:translateX(7px) translateY(1px)}75%{transform:translateX(-4px)}90%{transform:translateX(4px)}}
+@keyframes tapBlink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes creatorPulse{0%,100%{text-shadow:0 0 20px #ef4444}50%{text-shadow:0 0 50px #ef4444,0 0 80px #b91c1c}}
+@keyframes screenShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-14px)}40%{transform:translateX(14px)}60%{transform:translateX(-9px)}80%{transform:translateX(9px)}}
+
 /* ─── 選択モーダル ─────────────────────────── */
 #choice-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;padding:16px}
 #choice-modal.open{display:flex}
@@ -315,7 +322,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604151140</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604151244</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2672,6 +2679,66 @@ function applyVampiric(dmg,bs){
     triggerPassiveBadge('vampiric');
   }
 }
+/* ─── 地獄の創造主 演出ヘルパー ─── */
+function showCreatorReviveEvent(hasMoDisk,onComplete){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(10,0,0,.88);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;pointer-events:all;padding:24px;text-align:center';
+  if(hasMoDisk){
+    ov.innerHTML=`<div style="font-size:52px;margin-bottom:18px">💿</div>
+<div style="font-size:20px;font-weight:700;color:#6ee7b7;margin-bottom:10px">MOディスクが守った！</div>
+<div style="font-size:13px;color:#a1fae0;margin-bottom:8px;line-height:1.7">地獄の創造主の全回復が封じられ<br>必殺の刻印が消え去った。</div>
+<div style="font-size:12px;color:#4ade80;margin-top:28px;animation:tapBlink 1s infinite">タップして続ける</div>`;
+  } else {
+    ov.innerHTML=`<div style="font-size:60px;margin-bottom:18px;animation:creatorBossShake .6s ease-out infinite">🌑</div>
+<div style="font-size:22px;font-weight:700;color:#ef4444;margin-bottom:10px;animation:creatorPulse 1.2s ease-in-out infinite">地獄の創造主、覚醒！</div>
+<div style="font-size:13px;color:#fca5a5;margin-bottom:6px;line-height:1.8">HPが限界を超えた時、真の力が目覚めた。<br>全てのダメージを無効化し、完全回復——</div>
+<div style="font-size:13px;color:#fbbf24;font-weight:700;margin-bottom:28px">次のターン、回避不能の必殺が来る</div>
+<div style="font-size:11px;color:#f87171;animation:tapBlink .9s infinite">タップして覚悟を決める</div>`;
+  }
+  document.body.appendChild(ov);
+  ov.addEventListener('click',()=>{
+    ov.style.opacity='0';ov.style.transition='opacity .4s';
+    setTimeout(()=>{ov.remove();onComplete();},400);
+  },{once:true});
+}
+function showCreatorDeathblowEvent(onComplete){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(20,0,0,.93);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;pointer-events:all;padding:24px;text-align:center';
+  ov.innerHTML=`<div style="font-size:60px;margin-bottom:18px;animation:creatorBossShake .4s ease-out infinite">☠️</div>
+<div style="font-size:26px;font-weight:900;color:#ef4444;margin-bottom:10px;letter-spacing:4px;animation:creatorPulse .8s ease-in-out infinite">必　殺</div>
+<div style="font-size:13px;color:#fca5a5;margin-bottom:8px;line-height:1.8">地獄の創造主の究極の力が解放される。<br>この一撃は全てを滅ぼす——</div>
+<div style="font-size:12px;color:#f87171;margin-top:24px;animation:tapBlink .7s infinite">タップして受け入れる</div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click',()=>{
+    ov.style.opacity='0';ov.style.transition='opacity .3s';
+    setTimeout(()=>{ov.remove();onComplete();},300);
+  },{once:true});
+}
+function showCreatorDeathEffect(onComplete){
+  const flash=document.createElement('div');
+  flash.style.cssText='position:fixed;inset:0;background:rgba(239,68,68,0);z-index:9998;pointer-events:none;transition:background .1s';
+  document.body.appendChild(flash);
+  const gameWrap=document.getElementById('game')||document.body;
+  let step=0;const total=10;
+  const iv=setInterval(()=>{
+    step++;
+    const isOn=step%2===1;
+    flash.style.background=isOn?`rgba(239,68,68,${Math.min(.85,step/6*0.9)})`:'rgba(0,0,0,0)';
+    if(isOn) gameWrap.style.animation='screenShake .15s ease-out';
+    else gameWrap.style.animation='none';
+    if(step>=total){
+      clearInterval(iv);
+      flash.style.background='rgba(239,68,68,0)';
+      gameWrap.style.animation='none';
+      const txt=document.createElement('div');
+      txt.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px;font-weight:900;color:#ef4444;text-shadow:0 0 50px #ef4444,0 0 100px #b91c1c;z-index:9999;letter-spacing:6px;pointer-events:none;animation:achPop .3s ease-out';
+      txt.textContent='即　死';
+      document.body.appendChild(txt);
+      setTimeout(()=>{txt.remove();flash.remove();onComplete();},900);
+    }
+  },140);
+}
+/* ─────────────────────────────────────────── */
 function showSkillFlash(color){
   const area=document.getElementById('battle-area');
   const fl=document.createElement('div');
@@ -3144,24 +3211,20 @@ function autoBattleTick(){
     if(!bState.creatorRevived&&bState.isBoss&&bState.enemy.halfHpRevive&&bState.enemyHp<=bState.enemyMaxHp*0.5){
       bState.creatorRevived=true;
       bState.enemyHp=bState.enemyMaxHp;
-      bState.creatorDeathblowPending=true;
       const hasMoDisk=(GS.run.accessories||[]).includes('mo_disk');
-      const _revEl=document.createElement('div');
-      _revEl.style.cssText='position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ef4444;border-radius:16px;padding:20px 28px;font-size:14px;color:#fca5a5;z-index:9999;text-align:center;animation:achPop .4s ease-out;pointer-events:none';
-      _revEl.innerHTML=hasMoDisk
-        ?`💿 地獄の創造主の全回復を封じた！<br><span style="font-size:12px;color:#6ee7b7">MOディスクの力が必殺を阻む...</span>`
-        :`🌑 地獄の創造主がHP全回復！<br><span style="font-size:12px;color:#888780">次のターン、回避不可能な必殺が来る...</span>`;
-      document.body.appendChild(_revEl);
-      setTimeout(()=>{_revEl.style.opacity='0';_revEl.style.transition='opacity .6s';setTimeout(()=>_revEl.remove(),600);},3000);
-      if(hasMoDisk){
-        bState.creatorDeathblowPending=false;
-        addLog('💿 MOディスクが地獄の創造主の全回復を封印！','log-skill');
-        showSkillFlash('rgba(74,158,255,.3)');
-      } else {
-        addLog('🌑 地獄の創造主がHP全回復！ 次のターン必殺が来る！','log-hero-dmg');
-        showSkillFlash('rgba(239,68,68,.3)');
-      }
+      if(!hasMoDisk) bState.creatorDeathblowPending=true;
+      showSkillFlash(hasMoDisk?'rgba(74,158,255,.3)':'rgba(239,68,68,.5)');
       updateBattleUI();renderActiveBtns();
+      // タップするまで表示し続けるオーバーレイ → タップ後に次ターンへ
+      showCreatorReviveEvent(hasMoDisk,()=>{
+        if(hasMoDisk){
+          addLog('💿 MOディスクが地獄の創造主の全回復を封印！','log-skill');
+        } else {
+          addLog('🌑 地獄の創造主がHP全回復！ 次のターン必殺が来る！','log-hero-dmg');
+        }
+        setTimeout(()=>autoBattleTick(),800);
+      });
+      return; // 840ms enemy setTimeout をスキップ
     }
 
     setTimeout(()=>{
@@ -3177,16 +3240,15 @@ function autoBattleTick(){
           updateBattleUI();renderActiveBtns();
           setTimeout(()=>autoBattleTick(),1300);
         } else {
-          // 回避不可の即死
-          const _deathEl=document.createElement('div');
-          _deathEl.style.cssText='position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ef4444;border-radius:16px;padding:20px 28px;font-size:14px;color:#fca5a5;z-index:9999;text-align:center;animation:achPop .4s ease-out';
-          _deathEl.innerHTML=`🌑 創造主の必殺が炸裂！<br><span style="font-size:12px;color:#888780">MOディスクなしでは防ぐ術がない...</span>`;
-          document.body.appendChild(_deathEl);
-          setTimeout(()=>{_deathEl.style.opacity='0';_deathEl.style.transition='opacity .6s';setTimeout(()=>_deathEl.remove(),600);},3000);
-          bState.heroHp=0;
-          addLog('🌑 地獄の創造主の必殺！ 即死...','log-hero-dmg');
-          updateBattleUI();
-          endBattle(false);
+          // タップ式オーバーレイ → 派手なエフェクト → 即死
+          showCreatorDeathblowEvent(()=>{
+            showCreatorDeathEffect(()=>{
+              bState.heroHp=0;
+              addLog('🌑 地獄の創造主の必殺！ 即死...','log-hero-dmg');
+              updateBattleUI();
+              endBattle(false);
+            });
+          });
         }
         return;
       }
