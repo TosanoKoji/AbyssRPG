@@ -330,7 +330,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604161215</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604161225</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -869,8 +869,8 @@ function deepFloorScaleBonus(base, extra){
   if(!GS.run||!GS.run.floorId) return base;
   const floor=FLOORS.find(f=>f.id===GS.run.floorId);
   if(!floor||!floor.deepMode) return base;
-  const deepFloor=(GS.run.deepBaseLevel||6)+GS.run.room-1;
-  const above=Math.max(0,deepFloor-5);// floor 6=above 1, floor 7=above 2...
+  const deepFloor=GS.run.deepTargetFloor||6;
+  const above=Math.max(0,deepFloor-6); // floor 6=0 extra, floor 7=+1×extra, ...
   return base+above*extra;
 }
 // 旅取得後の旅人はHP/ATK/DEF/MPがA昇格
@@ -966,7 +966,7 @@ function checkAchievements(){
     }
     else if(a.cond.kind==='killCount')  prog=st.killCount||0;
     else if(a.cond.kind==='specialBossKill') prog=(st.specialBossKills||{})[a.cond.id]||0;
-    else if(a.cond.kind==='deepFloor') prog=st.deepMaxFloor||0;
+    else if(a.cond.kind==='deepFloor'||a.cond.kind==='deepFloorClear') prog=st.deepMaxFloor||0;
     else if(a.cond.kind==='deepComplete') prog=st.deepComplete?1:0;
     if(prog>=target){
       GS.achDone.push(a.id);
@@ -1032,7 +1032,7 @@ function getAchProgress(a){
   }
   if(a.cond.kind==='killCount')  return st.killCount||0;
   if(a.cond.kind==='specialBossKill') return (st.specialBossKills||{})[a.cond.id]||0;
-  if(a.cond.kind==='deepFloor') return st.deepMaxFloor||0;
+  if(a.cond.kind==='deepFloor'||a.cond.kind==='deepFloorClear') return st.deepMaxFloor||0;
   if(a.cond.kind==='deepComplete') return st.deepComplete?1:0;
   return 0;
 }
@@ -1155,8 +1155,29 @@ function renderFloors(){
     const cleared=GS.clearedFloors.includes(f.id);
     const locked=!isFloorUnlocked(f);
     const isCurrent=currentFloorId===f.id;
-    const unitWord=f.areaMode?'エリア':'部屋';
     const div=document.createElement('div');
+    if(f.deepMode){
+      // ─── ディープダンジョンカード ───
+      const maxUnlocked=GS.deepLevel||6;
+      const deepCleared=GS.achStats.deepCleared||[];
+      div.className=`floor-card ${locked?'locked-floor':''} ${isCurrent&&!locked?'active-floor':''}`;
+      div.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="floor-name"><span style="font-size:20px;margin-right:6px">${f.icon}</span><span style="color:${f.color}">${f.name}</span></div>
+            <div class="floor-desc">${f.sub}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-amber">魂×${f.soulsMult}</span>
+              <span class="badge badge-purple">EXP×${f.expMult}</span>
+              <span class="badge badge-gray">到達: 地下${maxUnlocked<=30?maxUnlocked-1:30}階${deepCleared.length>0?' / '+deepCleared.length+'階クリア済':''}</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:#7c3aed;font-weight:bold;padding:3px 8px;border:0.5px solid #7c3aed;border-radius:6px">選択して階を選ぶ▶</div>
+        </div>`;
+      if(!locked) div.addEventListener('click',()=>showDeepFloorPicker(f));
+      el.appendChild(div);
+      return;
+    }
     div.className=`floor-card ${locked?'locked-floor':''} ${isCurrent&&!locked?'active-floor':''}`;
     div.innerHTML=`
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -1174,17 +1195,63 @@ function renderFloors(){
     if(!locked) div.addEventListener('click',()=>selectFloor(f.id));
     el.appendChild(div);
   });
-  const floorLabel=FLOORS.find(f=>f.id===currentFloorId)?.areaMode?'エリア':'階層';
-  const wrap=document.createElement('div');
-  wrap.style.marginTop='4px';
-  const proceedBtn=document.createElement('button');
-  proceedBtn.className='btn btn-primary';
-  proceedBtn.textContent=`この${floorLabel}で探索する`;
-  proceedBtn.addEventListener('click', proceedToChar);
-  wrap.appendChild(proceedBtn);
-  el.appendChild(wrap);
+  const currentF=FLOORS.find(f=>f.id===currentFloorId);
+  if(currentF&&!currentF.deepMode){
+    const floorLabel=currentF.areaMode?'エリア':'階層';
+    const wrap=document.createElement('div');
+    wrap.style.marginTop='4px';
+    const proceedBtn=document.createElement('button');
+    proceedBtn.className='btn btn-primary';
+    proceedBtn.textContent=`この${floorLabel}で探索する`;
+    proceedBtn.addEventListener('click', proceedToChar);
+    wrap.appendChild(proceedBtn);
+    el.appendChild(wrap);
+  }
 }
 function selectFloor(id){currentFloorId=id;renderFloors();}
+
+// ─── ディープダンジョン 階選択モーダル ────────────────────────
+function showDeepFloorPicker(floor){
+  const modal=document.getElementById('choice-modal');
+  const list=document.getElementById('cm-list');
+  while(list.firstChild)list.removeChild(list.firstChild);
+  document.getElementById('cm-title').textContent='🕳️ ディープダンジョン';
+  document.getElementById('cm-sub').textContent='挑戦する階を選べ（各階独立・何度でも挑戦可）';
+  const maxUnlocked=GS.deepLevel||6;
+  const deepCleared=GS.achStats.deepCleared||[];
+  for(let fn=6;fn<=Math.min(maxUnlocked,30);fn++){
+    const levelData=floor.levels&&floor.levels[fn-6];
+    const bossData=levelData&&levelData.boss;
+    const cleared=deepCleared.includes(fn);
+    const isLatest=fn===maxUnlocked&&fn<=30;
+    const div=document.createElement('div');
+    div.className='card';
+    div.style.cssText='margin-bottom:6px;cursor:pointer';
+    div.innerHTML=`
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div>
+          <div class="card-title">${bossData?bossData.icon:'💀'} 地下${fn}階 ${cleared?'<span class="badge badge-green" style="font-size:10px">✓ 踏破</span>':isLatest?'<span class="badge badge-purple" style="font-size:10px">最前線</span>':''}</div>
+          <div class="card-sub" style="font-size:11px">${bossData?bossData.name:'???'}</div>
+        </div>
+        <span style="font-size:18px">▶</span>
+      </div>`;
+    div.addEventListener('click',()=>{
+      modal.classList.remove('open');
+      currentFloorId='deep';
+      GS.run.deepTargetFloor=fn;
+      proceedToChar();
+    });
+    list.appendChild(div);
+  }
+  const cancelDiv=document.createElement('div');
+  cancelDiv.style.marginTop='8px';
+  const cancelBtn=document.createElement('button');
+  cancelBtn.className='btn';cancelBtn.textContent='戻る';
+  cancelBtn.addEventListener('click',()=>modal.classList.remove('open'));
+  cancelDiv.appendChild(cancelBtn);
+  list.appendChild(cancelDiv);
+  modal.classList.add('open');
+}
 
 // ─── ラン状態リセット（s-charへ遷移するたびに必ず呼ぶ） ──────
 function resetRunState(){
@@ -1202,8 +1269,11 @@ function resetRunState(){
 }
 
 function proceedToChar(){
+  const prevDeepTarget=GS.run.deepTargetFloor||0;
   GS.run.floorId = currentFloorId;
   resetRunState();
+  // ディープダンジョンの場合、選択した階を保持
+  if(currentFloorId==='deep'&&prevDeepTarget) GS.run.deepTargetFloor=prevDeepTarget;
   goTo('s-char');
 }
 
@@ -2253,7 +2323,8 @@ function startRun(){
   GS.run.icon=c.icon; GS.run.name=c.name;
   GS.run.room=0; GS.run.kills=0; GS.run.runSouls=0; GS.run.runExp=0;
   const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
-  GS.run.deepBaseLevel=(floor&&floor.deepMode)?(GS.deepLevel||6):0;
+  // deepTargetFloorはshowDeepFloorPickerで設定済み（deepModeでない場合は0）
+  if(!floor||!floor.deepMode) GS.run.deepTargetFloor=0;
   GS.run.skillUsed=0; GS.run.dodgeCount=0;
   GS.run.accessories=accs;
   
@@ -2289,8 +2360,8 @@ function startRun(){
 
   // 部屋構成のランダム生成
   if(floor&&floor.deepMode){
-    // ディープダンジョン: 25部屋すべてボス専用
-    GS.run.roomTypes = Array.from({length:25},()=>'boss');
+    // ディープダンジョン: 1部屋ボス専用（各階独立挑戦）
+    GS.run.roomTypes = ['boss'];
   } else {
     // 1〜3部屋目: battle / 10部屋目: boss
     // 4〜9部屋目 (計6部屋): battle×4, treasure×1, rest×1 をシャッフル
@@ -2311,7 +2382,7 @@ function renderDungeon(){
   const rg=document.getElementById('room-grid');rg.innerHTML='';
   const clairvoyance=GS.systemUnlocked&&GS.systemUnlocked.includes('clairvoyance');
   const isDeep=floor&&floor.deepMode;
-  const roomCount=isDeep?25:10;
+  const roomCount=isDeep?1:10;
   for(let i=0;i<roomCount;i++){
     const t=GS.run.roomTypes[i];
     const cleared=i<GS.run.room;
@@ -2321,7 +2392,7 @@ function renderDungeon(){
     let label;
     if(cleared) label='✓';
     else if(current){
-      if(isDeep) label=String((GS.run.deepBaseLevel||6)+i);
+      if(isDeep) label=String(GS.run.deepTargetFloor||6);
       else label='●';
     }
     else if(isBoss) label='💀';
@@ -2330,13 +2401,13 @@ function renderDungeon(){
     } else label='?';
     let cls='room '+(cleared?'cleared':current?'current':locked?'locked':'');
     if(isBoss&&!cleared) cls+=' boss';
-    rg.innerHTML+=`<div class="${cls}" title="${clairvoyance&&!cleared?({'battle':'戦闘','treasure':'宝の間','rest':'休息の間','boss':'ボス戦'}[t]||t):''}">${label}</div>`;
+    rg.innerHTML+=`<div class="${cls}" title="${isDeep?'深層ボス戦':clairvoyance&&!cleared?({'battle':'戦闘','treasure':'宝の間','rest':'休息の間','boss':'ボス戦'}[t]||t):''}">${label}</div>`;
   }
   setTC('room-num',GS.run.room+1);
   // エリアモード/ディープ対応ラベル
   const roomLabelEl=document.getElementById('dng-room-label');
   if(roomLabelEl){
-    if(isDeep) roomLabelEl.textContent=`深層 ${(GS.run.deepBaseLevel||6)+GS.run.room}階`;
+    if(isDeep) roomLabelEl.textContent=`深層 地下${GS.run.deepTargetFloor||6}階`;
     else roomLabelEl.textContent=(floor&&floor.areaMode?'エリア ':'部屋 ')+(GS.run.room+1)+'/10';
   }
   setTC('run-souls',GS.run.runSouls);
@@ -2438,11 +2509,12 @@ function enterRoom(){
   const t=GS.run.roomTypes[GS.run.room];
   const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
   if(floor&&floor.deepMode&&t==='boss'){
-    // ディープダンジョン: levels配列からボスを取得
-    const deepFloorIdx=(GS.run.deepBaseLevel||6)-6+GS.run.room;
+    // ディープダンジョン: levels配列からボスを取得（各階独立）
+    const deepTargetFloor=GS.run.deepTargetFloor||6;
+    const deepFloorIdx=deepTargetFloor-6;
     const levelData=floor.levels&&floor.levels[deepFloorIdx];
-    if(!levelData){addLog('深層データが見つかりません','log-skill');return;}
-    const boss=JSON.parse(JSON.stringify(levelData));
+    if(!levelData||!levelData.boss){addLog('深層データが見つかりません（地下'+deepTargetFloor+'階）','log-skill');return;}
+    const boss=JSON.parse(JSON.stringify(levelData.boss));
     startBattle(boss,true);
     return;
   }
@@ -2576,7 +2648,10 @@ function startBattle(enemy,isBoss){
   // 階層名と部屋番号表示
   const _battleFloor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
   const _locEl=document.getElementById('battle-location');
-  if(_locEl&&_battleFloor) _locEl.textContent=`${_battleFloor.name}「${_battleFloor.sub}」— ${GS.run.room+1}${_battleFloor.areaMode?'エリア目':'部屋目'}`;
+  if(_locEl&&_battleFloor){
+    if(_battleFloor.deepMode) _locEl.textContent=`ディープダンジョン — 地下${GS.run.deepTargetFloor||6}階`;
+    else _locEl.textContent=`${_battleFloor.name}「${_battleFloor.sub}」— ${GS.run.room+1}${_battleFloor.areaMode?'エリア目':'部屋目'}`;
+  }
   setTC('b-hero-name',GS.run.name);
   setTC('b-souls',GS.run.runSouls);
   // バトル背景画像設定
@@ -3765,26 +3840,19 @@ function endBattle(won){
     if(bState.isBoss){
       const fid=GS.run.floorId||1;
       if(!GS.clearedFloors.includes(fid)) GS.clearedFloors.push(fid);
-      // ディープダンジョン: 最高到達階を更新
+      // ディープダンジョン: クリア記録と次階解放
       if(floor&&floor.deepMode){
-        const clearedDeepFloor=(GS.run.deepBaseLevel||6)+GS.run.room-1;
-        GS.deepLevel=Math.max(GS.deepLevel||6,clearedDeepFloor+1);
-        // 達成報酬用: deepFloor到達記録
+        const clearedDeepFloor=GS.run.deepTargetFloor||6;
+        // クリア済みリストに追加
+        GS.achStats.deepCleared=GS.achStats.deepCleared||[];
+        if(!GS.achStats.deepCleared.includes(clearedDeepFloor)) GS.achStats.deepCleared.push(clearedDeepFloor);
+        // 次の階を解放（最大30階）
+        if(clearedDeepFloor<30) GS.deepLevel=Math.max(GS.deepLevel||6,clearedDeepFloor+1);
+        // 達成報酬用: 最深クリア記録
         GS.achStats.deepMaxFloor=Math.max(GS.achStats.deepMaxFloor||0,clearedDeepFloor);
-        // ディープ達成チェック
-        if(clearedDeepFloor>=10&&!(GS.achStats.deepMilestones||[]).includes(10)){
-          GS.achStats.deepMilestones=(GS.achStats.deepMilestones||[]);GS.achStats.deepMilestones.push(10);
-        }
-        if(clearedDeepFloor>=15&&!(GS.achStats.deepMilestones||[]).includes(15)){
-          GS.achStats.deepMilestones=(GS.achStats.deepMilestones||[]);GS.achStats.deepMilestones.push(15);
-        }
-        if(clearedDeepFloor>=20&&!(GS.achStats.deepMilestones||[]).includes(20)){
-          GS.achStats.deepMilestones=(GS.achStats.deepMilestones||[]);GS.achStats.deepMilestones.push(20);
-        }
-        if(clearedDeepFloor>=25&&!(GS.achStats.deepMilestones||[]).includes(25)){
-          GS.achStats.deepMilestones=(GS.achStats.deepMilestones||[]);GS.achStats.deepMilestones.push(25);
-        }
-        if(clearedDeepFloor>=30){GS.achStats.deepComplete=true;}
+        if(clearedDeepFloor>=30) GS.achStats.deepComplete=true;
+        // 初クリア時ログ
+        addLog(`🕳️ 地下${clearedDeepFloor}階クリア！${clearedDeepFloor<30?' → 地下'+(clearedDeepFloor+1)+'階が解放されました':' ★すべての深層を踏破！'}`, 'log-heal');
       }
       // 天使：地下5階クリアで突然解放（達成報酬ではない）
       if(fid===5&&!GS.unlocked.includes('angel')){
@@ -3945,9 +4013,10 @@ function endRun(won){
 
   const newly=checkAchievements();save();
 
-  document.getElementById('result-icon').textContent=won?'✦':'💀';
-  document.getElementById('result-title').textContent=won?`${floor?.name||''}踏破！`:'戦闘不能';
-  document.getElementById('result-sub').textContent=won?'奈落の深部で光を見た':'暗闇の中に沈んでいく...';
+  const _isDeepResult=floor&&floor.deepMode;
+  document.getElementById('result-icon').textContent=won?(_isDeepResult?'🕳️':'✦'):'💀';
+  document.getElementById('result-title').textContent=won?(_isDeepResult?`地下${GS.run.deepTargetFloor||6}階 踏破！`:`${floor?.name||''}踏破！`):'戦闘不能';
+  document.getElementById('result-sub').textContent=won?(_isDeepResult?'深淵の力を乗り越えた':'奈落の深部で光を見た'):'暗闇の中に沈んでいく...';
   document.getElementById('r-kills').textContent=GS.run.kills;
   document.getElementById('r-souls').textContent=GS.run.runSouls;
   document.getElementById('r-exp').textContent=GS.run.runExp||0;
