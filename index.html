@@ -39,10 +39,10 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .stat-val{font-size:18px;font-weight:500}
 
 /* HP/MPバー */
-.hp-bar-wrap{background:#3a3a38;border-radius:4px;height:8px;margin:4px 0;overflow:hidden}
+.hp-bar-wrap{background:#3a3a38;border-radius:4px;height:8px;margin:4px 0;overflow:hidden;filter:drop-shadow(0 1px 4px rgba(0,0,0,.6))}
 .hp-bar{height:100%;border-radius:4px;transition:width .4s}
 .hp-hero{background:#A32D2D}.hp-enemy{background:#185FA5}
-.mp-bar-wrap{background:#3a3a38;border-radius:4px;height:5px;margin:2px 0;overflow:hidden}
+.mp-bar-wrap{background:#3a3a38;border-radius:4px;height:5px;margin:2px 0;overflow:hidden;filter:drop-shadow(0 1px 4px rgba(0,0,0,.6))}
 .mp-bar{height:100%;border-radius:4px;background:#534AB7;transition:width .4s}
 
 /* バトルエリア */
@@ -55,7 +55,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .battle-area.floor-bg-hell{background:linear-gradient(160deg,#1f0505 0%,#3a0808 40%,#1f0303 70%,#2e0606 100%)}
 /* PNG背景レイヤー: 縦横比を保ったままエリア全体に収める（z-index:0 で最背面） */
 .battle-bg-img{position:absolute;inset:0;z-index:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.battle-bg-img img{width:100%;height:100%;object-fit:cover;object-position:center;opacity:.7;display:block}
+.battle-bg-img img{width:100%;height:100%;object-fit:cover;object-position:center;opacity:.5;display:block}
 /* メインコンテンツ（キャラ・VS表示）は背景より前面 */
 .battle-main-content{position:relative;z-index:1}
 /* ダメージ数字・フラッシュ・バッジ類も背景より前面（position:absoluteは各要素のCSSで定義済み） */
@@ -117,7 +117,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 
 /* パッシブ */
 .passive-tooltip{position:fixed;background:#1a1a1f;border:0.5px solid #534AB7;border-radius:8px;padding:7px 11px;font-size:11px;color:#c4c2bc;pointer-events:none;z-index:999;max-width:180px;line-height:1.5;display:none}
-.passive-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:8px;margin-right:4px;margin-bottom:3px;cursor:default;transition:box-shadow .3s,border-color .3s;position:relative}
+.passive-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:8px;margin-right:4px;margin-bottom:3px;cursor:default;transition:box-shadow .3s,border-color .3s;position:relative;filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))}
 .passive-badge.always{background:#0a2e1a;color:#6ee7b7;border:0.5px solid #1a5c38;animation:passiveGlow 2.5s ease-in-out infinite}
 .passive-badge.conditional{background:#1a1a2e;color:#AFA9EC;border:0.5px solid #3a3a38}
 .passive-badge.triggered{background:#26215C;color:#c084fc;border:0.5px solid #7c3aed;animation:passivePop .5s ease-out,passiveGlowStrong 1.5s ease-in-out}
@@ -330,7 +330,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS RITE</div>
     <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604152054</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604161215</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -457,6 +457,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
       <button id="lv-mult-1"   class="btn lv-mult-btn active-mult" style="padding:5px 10px;font-size:12px">×1</button>
       <button id="lv-mult-10"  class="btn lv-mult-btn"             style="padding:5px 10px;font-size:12px">×10</button>
       <button id="lv-mult-100" class="btn lv-mult-btn"             style="padding:5px 10px;font-size:12px">×100</button>
+      <button id="lv-mult-1000" class="btn lv-mult-btn"            style="padding:5px 10px;font-size:12px;display:none">×1000</button>
     </div>
   </div>
 </div>
@@ -773,6 +774,8 @@ const GS={
   lostSouls: JSON.parse(localStorage.getItem('abyss_lost_souls')||'null'),
   // キャラクターごとの前回装備・スキル記憶
   charMemory: JSON.parse(localStorage.getItem('abyss_charmem')||'{}'),
+  // ディープダンジョン: 到達済み最高階
+  deepLevel: parseInt(localStorage.getItem('abyss_deeplevel')||'6'),
   // {souls, floorId, roomIdx, isBoss, bossId, bossHpRatio}
   run:{}
 };
@@ -792,6 +795,7 @@ function save(){
   localStorage.setItem('abyss_last_run',JSON.stringify(GS.lastRun));
   localStorage.setItem('abyss_lost_souls',JSON.stringify(GS.lostSouls));
   localStorage.setItem('abyss_charmem',  JSON.stringify(GS.charMemory));
+  localStorage.setItem('abyss_deeplevel',GS.deepLevel||6);
 }
 function isUnlocked(id){return GS.unlocked.includes(id);}
 
@@ -860,11 +864,27 @@ const LV_STATS=[
 const MAX_LV=9999;
 // 成長倍率テーブル: S=2.0, A=1.5, B=1.0(基準), C=0.75, D=0.45
 const GROWTH_RATES={S:2.0,A:1.5,B:1.0,C:0.75,D:0.45};
+// ディープダンジョン: 深層スキルスケール計算
+function deepFloorScaleBonus(base, extra){
+  if(!GS.run||!GS.run.floorId) return base;
+  const floor=FLOORS.find(f=>f.id===GS.run.floorId);
+  if(!floor||!floor.deepMode) return base;
+  const deepFloor=(GS.run.deepBaseLevel||6)+GS.run.room-1;
+  const above=Math.max(0,deepFloor-5);// floor 6=above 1, floor 7=above 2...
+  return base+above*extra;
+}
 // 旅取得後の旅人はHP/ATK/DEF/MPがA昇格
 function effectiveLvGrowth(charId){
   const base=CHARS?.[charId]?.lvGrowth||{};
-  if(charId==='traveler'&&GS.unlockedUniqueSkills.includes('traveler_journey')){
-    return {...base,hp:'A',atk:'A',def:'A',mp:'A'};
+  if(charId==='traveler'){
+    let result={...base};
+    if(GS.unlockedUniqueSkills.includes('traveler_journey')){
+      result={...result,hp:'A',atk:'A',def:'A',mp:'A'};
+    }
+    if(GS.unlockedUniqueSkills.includes('traveler_enlighten')){
+      result={...result,crit:'A',dodge:'A'};
+    }
+    return result;
   }
   return base;
 }
@@ -946,6 +966,8 @@ function checkAchievements(){
     }
     else if(a.cond.kind==='killCount')  prog=st.killCount||0;
     else if(a.cond.kind==='specialBossKill') prog=(st.specialBossKills||{})[a.cond.id]||0;
+    else if(a.cond.kind==='deepFloor') prog=st.deepMaxFloor||0;
+    else if(a.cond.kind==='deepComplete') prog=st.deepComplete?1:0;
     if(prog>=target){
       GS.achDone.push(a.id);
       const r=a.reward;
@@ -1010,6 +1032,8 @@ function getAchProgress(a){
   }
   if(a.cond.kind==='killCount')  return st.killCount||0;
   if(a.cond.kind==='specialBossKill') return (st.specialBossKills||{})[a.cond.id]||0;
+  if(a.cond.kind==='deepFloor') return st.deepMaxFloor||0;
+  if(a.cond.kind==='deepComplete') return st.deepComplete?1:0;
   return 0;
 }
 
@@ -1261,6 +1285,9 @@ function renderLevel(){
     requestAnimationFrame(()=>{ scroll.scrollLeft=prevScroll; });
   }
 
+  // ×1000ボタン: ディープダンジョン解放後に表示
+  const btn1000=document.getElementById('lv-mult-1000');
+  if(btn1000) btn1000.style.display=GS.clearedFloors.includes(9)?'':'none';
   const list=document.getElementById('lv-stat-list');list.innerHTML='';
   LV_STATS.forEach(s=>{
     const cur=GS.lvBonus[s.key]||0;
@@ -1299,7 +1326,7 @@ function renderLevel(){
 let lvMult=1; // 強化倍率（×1/×10/×100）
 function setLvMult(n){
   lvMult=n;
-  [1,10,100].forEach(v=>{
+  [1,10,100,1000].forEach(v=>{
     const btn=document.getElementById('lv-mult-'+v);
     if(btn) btn.classList.toggle('active-mult',v===n);
   });
@@ -1387,6 +1414,11 @@ function renderUnlock(){
   }
   UNLOCK_GROUPS[unlockTab].forEach(u=>{
     const done=isUnlocked(u.id)||(u.kind==='uniqueSkill'&&(GS.unlockedUniqueSkills||[]).includes(u.id));
+    // ユニークスキル: 対応キャラが未取得なら非表示
+    if(!done&&u.kind==='uniqueSkill'){
+      const usCharId=UNIQUE_SKILLS[u.id]?.charId;
+      if(usCharId&&!isUnlocked(usCharId)) return;
+    }
     // キャラタブ: achReqが未達成かつ未解放のキャラはネタバレ防止のため非表示
     if(unlockTab==='char'&&u.achReq&&!GS.achDone.includes(u.achReq)&&!done) return;
     const lvOk=!u.lvReq||GS.totalLv>=u.lvReq;
@@ -1720,7 +1752,7 @@ function renderChars(){
     const effCrit=c.crit+Math.round((lb.crit||0)*charGm(c.id,'crit'));
     const effDodge=c.dodge+Math.round((lb.dodge||0)*charGm(c.id,'dodge'));
     const effMp=c.maxMp+Math.round((lb.mp||0)*8*charGm(c.id,'mp'));
-    const g=c.lvGrowth||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
+    const g=effectiveLvGrowth(c.id)||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
     // このキャラの所持ユニークスキル
     const myUniques=Object.values(UNIQUE_SKILLS).filter(u=>
       u.charId===c.id&&(u.initial||GS.unlockedUniqueSkills.includes(u.id))
@@ -2139,9 +2171,89 @@ function startRun(){
     GS.run.atk = Math.floor(GS.run.atk * 1.2);
     GS.run.def = Math.max(0, Math.floor(GS.run.def * 0.9));
   }
+  // 龍槍ナンタラ: ATK×1.5・DEF×1.2・聖騎士装備時 全集中の発動率+10%
+  if(GS.run.weaponId==='dragon_spear'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.5);
+    GS.run.def = Math.floor(GS.run.def * 1.2);
+  }
+  // GENJIの小手: ATK×1.3・MP×1.3・侍装備時 見切り発動率+10%
+  if(GS.run.armorId==='genji_gauntlet'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.3);
+    GS.run.maxMp = Math.floor(GS.run.maxMp * 1.3);
+    GS.run.mp = GS.run.maxMp;
+    if(cid==='samurai') GS.run.samuraiMikiriChanceBonus=(GS.run.samuraiMikiriChanceBonus||0)+0.10;
+  }
+  // 羽衣: DEF×1.1・MP×1.3・大神装備時 被弾時10%でCD即ゼロ
+  if(GS.run.armorId==='hagoromo'){
+    GS.run.def = Math.floor(GS.run.def * 1.1);
+    GS.run.maxMp = Math.floor(GS.run.maxMp * 1.3);
+    GS.run.mp = GS.run.maxMp;
+  }
+  // 天使の輪: ATK×1.3・MP×1.2・天使装備時 奇跡の発動率80%に上昇
+  if(GS.run.armorId==='angel_ring'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.3);
+    GS.run.maxMp = Math.floor(GS.run.maxMp * 1.2);
+    GS.run.mp = GS.run.maxMp;
+  }
+  // 髑髏の兜: DEF×1.4・MP×1.2・死霊術師装備時 最大MPの30%をATKに加算
+  if(GS.run.armorId==='skull_helm'){
+    GS.run.def = Math.floor(GS.run.def * 1.4);
+    GS.run.maxMp = Math.floor(GS.run.maxMp * 1.2);
+    GS.run.mp = GS.run.maxMp;
+    if(cid==='necromancer') GS.run.atk += Math.floor(GS.run.maxMp * 0.3);
+  }
+  // 1t装甲: DEF+20%・回避-20%・アンノウン装備時 5%でダメージゼロ
+  if(GS.run.armorId==='ton_armor'){
+    GS.run.def = Math.floor(GS.run.def * 1.2);
+    GS.run.dodge = Math.max(0, GS.run.dodge - 20);
+  }
+  // 汚れたマント: DEF×0.9・ATK×1.2・盗賊装備時 幻影値2倍
+  if(GS.run.armorId==='dirty_mantle'){
+    GS.run.def = Math.max(0, Math.floor(GS.run.def * 0.9));
+    GS.run.atk = Math.floor(GS.run.atk * 1.2);
+  }
+  // アクセサリ incomingDmgMult フラグ（ステキなネクタイ）
+  GS.run.incomingDmgMult=1.0;
+  (GS.run.accessories||[]).forEach(id=>{
+    const acc=ACCESSORIES[id];if(!acc)return;
+    if(acc.effect?.incomingDmgMult) GS.run.incomingDmgMult*=acc.effect.incomingDmgMult;
+  });
+  // アクセサリ cdMult フラグ（なんかすごいやつ）
+  GS.run.cdMult=1.0;
+  (GS.run.accessories||[]).forEach(id=>{
+    const acc=ACCESSORIES[id];if(!acc)return;
+    if(acc.kind==='cdReduce'&&acc.effect?.cdMult) GS.run.cdMult*=acc.effect.cdMult;
+  });
+  // アクセサリ cdZero フラグ（アカシックレコード）
+  GS.run.cdZeroAcc=false;
+  GS.run.mpCostAccMult=1.0;
+  (GS.run.accessories||[]).forEach(id=>{
+    const acc=ACCESSORIES[id];if(!acc)return;
+    if(acc.kind==='cdZero'){GS.run.cdZeroAcc=true;if(acc.effect?.mpCostMult)GS.run.mpCostAccMult*=acc.effect.mpCostMult;}
+  });
+  // アクセサリ bossDmgMult フラグ（金の指輪）
+  GS.run.bossDmgMult=1.0;
+  (GS.run.accessories||[]).forEach(id=>{
+    const acc=ACCESSORIES[id];if(!acc)return;
+    if(acc.kind==='bossBonus'&&acc.effect?.bossDmgMult) GS.run.bossDmgMult*=acc.effect.bossDmgMult;
+  });
+  // アクセサリ vampiric2（吸血鬼のスカーフ: 攻撃のたびにダメージの10%HP回復）
+  GS.run.attackVampire=0;
+  (GS.run.accessories||[]).forEach(id=>{
+    const acc=ACCESSORIES[id];if(!acc)return;
+    if(acc.kind==='vampiric2'&&acc.effect?.attackVampire) GS.run.attackVampire+=acc.effect.attackVampire;
+  });
+  // doubleAction（へそピ: 30%でアクション2回）
+  GS.run.doubleActionChance=0;
+  (GS.run.accessories||[]).forEach(id=>{
+    const acc=ACCESSORIES[id];if(!acc)return;
+    if(acc.kind==='onAction'&&acc.effect?.doubleAction) GS.run.doubleActionChance+=acc.effect.doubleAction;
+  });
   GS.run.undyingUsed = false;
   GS.run.icon=c.icon; GS.run.name=c.name;
   GS.run.room=0; GS.run.kills=0; GS.run.runSouls=0; GS.run.runExp=0;
+  const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
+  GS.run.deepBaseLevel=(floor&&floor.deepMode)?(GS.deepLevel||6):0;
   GS.run.skillUsed=0; GS.run.dodgeCount=0;
   GS.run.accessories=accs;
   
@@ -2176,14 +2288,19 @@ function startRun(){
   GS.run.warriorBraveBonus=0;
 
   // 部屋構成のランダム生成
-  // 1〜3部屋目: battle / 10部屋目: boss
-  // 4〜9部屋目 (計6部屋): battle×4, treasure×1, rest×1 をシャッフル
-  const midRooms = ['battle', 'battle', 'battle', 'battle', 'treasure', 'rest'];
-  for (let i = midRooms.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [midRooms[i], midRooms[j]] = [midRooms[j], midRooms[i]];
+  if(floor&&floor.deepMode){
+    // ディープダンジョン: 25部屋すべてボス専用
+    GS.run.roomTypes = Array.from({length:25},()=>'boss');
+  } else {
+    // 1〜3部屋目: battle / 10部屋目: boss
+    // 4〜9部屋目 (計6部屋): battle×4, treasure×1, rest×1 をシャッフル
+    const midRooms = ['battle', 'battle', 'battle', 'battle', 'treasure', 'rest'];
+    for (let i = midRooms.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [midRooms[i], midRooms[j]] = [midRooms[j], midRooms[i]];
+    }
+    GS.run.roomTypes = ['battle', 'battle', 'battle', ...midRooms, 'boss'];
   }
-  GS.run.roomTypes = ['battle', 'battle', 'battle', ...midRooms, 'boss'];
 
   renderDungeon(); goTo('s-dungeon');
 }
@@ -2193,7 +2310,9 @@ function renderDungeon(){
   const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
   const rg=document.getElementById('room-grid');rg.innerHTML='';
   const clairvoyance=GS.systemUnlocked&&GS.systemUnlocked.includes('clairvoyance');
-  for(let i=0;i<10;i++){
+  const isDeep=floor&&floor.deepMode;
+  const roomCount=isDeep?25:10;
+  for(let i=0;i<roomCount;i++){
     const t=GS.run.roomTypes[i];
     const cleared=i<GS.run.room;
     const current=i===GS.run.room;
@@ -2201,7 +2320,10 @@ function renderDungeon(){
     const isBoss=t==='boss';
     let label;
     if(cleared) label='✓';
-    else if(current) label='●';
+    else if(current){
+      if(isDeep) label=String((GS.run.deepBaseLevel||6)+i);
+      else label='●';
+    }
     else if(isBoss) label='💀';
     else if(clairvoyance){
       label=t==='treasure'?'💎':t==='rest'?'🔥':'⚔';
@@ -2211,9 +2333,12 @@ function renderDungeon(){
     rg.innerHTML+=`<div class="${cls}" title="${clairvoyance&&!cleared?({'battle':'戦闘','treasure':'宝の間','rest':'休息の間','boss':'ボス戦'}[t]||t):''}">${label}</div>`;
   }
   setTC('room-num',GS.run.room+1);
-  // エリアモード対応ラベル
+  // エリアモード/ディープ対応ラベル
   const roomLabelEl=document.getElementById('dng-room-label');
-  if(roomLabelEl) roomLabelEl.textContent=(floor&&floor.areaMode?'エリア ':'部屋 ')+(GS.run.room+1)+'/10';
+  if(roomLabelEl){
+    if(isDeep) roomLabelEl.textContent=`深層 ${(GS.run.deepBaseLevel||6)+GS.run.room}階`;
+    else roomLabelEl.textContent=(floor&&floor.areaMode?'エリア ':'部屋 ')+(GS.run.room+1)+'/10';
+  }
   setTC('run-souls',GS.run.runSouls);
   // EXP表示
   const expDisp=document.getElementById('run-exp-disp');
@@ -2312,6 +2437,15 @@ function renderDungeon(){
 function enterRoom(){
   const t=GS.run.roomTypes[GS.run.room];
   const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
+  if(floor&&floor.deepMode&&t==='boss'){
+    // ディープダンジョン: levels配列からボスを取得
+    const deepFloorIdx=(GS.run.deepBaseLevel||6)-6+GS.run.room;
+    const levelData=floor.levels&&floor.levels[deepFloorIdx];
+    if(!levelData){addLog('深層データが見つかりません','log-skill');return;}
+    const boss=JSON.parse(JSON.stringify(levelData));
+    startBattle(boss,true);
+    return;
+  }
   if(t==='battle'||t==='boss'){
     let pool;
     if(t==='boss'){
@@ -2451,7 +2585,7 @@ function startBattle(enemy,isBoss){
     const _floorId=GS.run.floorId||1;
     // フロア別CSSクラス（CSS gradient背景）
     ['underground','surface','sky','space','hell'].forEach(c=>_battleAreaEl.classList.remove('floor-bg-'+c));
-    const _floorBgMap={1:'underground',2:'underground',3:'underground',4:'underground',5:'underground',6:'surface',7:'sky',8:'space',9:'hell'};
+    const _floorBgMap={1:'underground',2:'underground',3:'underground',4:'underground',5:'underground',6:'surface',7:'sky',8:'space',9:'hell','deep':'hell'};
     const _floorBgClass=_floorBgMap[_floorId]||'underground';
     _battleAreaEl.classList.add('floor-bg-'+_floorBgClass);
     // PNG背景レイヤー切り替え（object-fit:cover で全体を埋める・opacity 70%）
@@ -2632,15 +2766,15 @@ function useActiveSkill(id){
   const baseCost=s.mpCost-(GS.run.nextSkillDiscount||0);
   // トランス中はコスト0・CDゼロ
   const _inTrance=(bState.tranceEnd||0)>Date.now()&&(bState.tranceUsed||0)<5;
-  const cost=_inTrance?0:Math.max(0,Math.floor(baseCost*(1-earringDiscount)));
+  const cost=_inTrance?0:Math.max(0,Math.floor(baseCost*(1-earringDiscount)*(GS.run.mpCostAccMult||1)));
   GS.run.nextSkillDiscount=0;
   if(bState.heroMp<cost){addLog('MPが足りない！','log-hero-dmg');return;}
-  bState.heroMp-=cost;
+  bState.heroMp=Math.max(0,bState.heroMp-cost);
   // クールタイム設定
   if(s.cooldown>0&&!_inTrance){
     bState.skillCooldownEnd=bState.skillCooldownEnd||{};
     const _boosterMult=(GS.run.accessories||[]).includes('booster')?0.8:1.0;
-    bState.skillCooldownEnd[id]=Date.now()+Math.floor((s.cooldown||0)*1000*_boosterMult);
+    bState.skillCooldownEnd[id]=GS.run.cdZeroAcc?Date.now()+1:(Date.now()+Math.floor((s.cooldown||0)*1000*_boosterMult*(GS.run.cdMult||1)));
     startCdTimer();
   }
   // トランスカウント
@@ -3140,11 +3274,15 @@ function autoBattleTick(){
       return;
     }
 
+    // ボス戦で金の指輪効果
+    if(bState.isBoss&&(GS.run.bossDmgMult||1)>1){heroDmg=Math.floor(heroDmg*(GS.run.bossDmgMult||1));}
     bState.enemyHp-=heroDmg;
     showDmg('enemy-sprite',heroDmg,false,false,isCrit);
     if(isCrit)showCritFlash();
     addLog((isCrit?'💥会心！':'')+`${heroDmg}ダメージ`,isCrit?'log-crit':'log-enemy-dmg');
     applyVampiric(heroDmg,bState);
+    // 吸血鬼のスカーフ: 攻撃ダメージの一定割合HP回復
+    if((GS.run.attackVampire||0)>0){const _vAmt=Math.floor(heroDmg*(GS.run.attackVampire));bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+_vAmt);}
     // エクスカリバー: 戦士装備時、攻撃のたびに最大HPの1%を失う
     if(GS.run.weaponId==='excalibur'&&GS.run.charId==='warrior'){
       const _exCost=Math.max(1,Math.floor(bState.heroMaxHp*0.01));
@@ -3363,6 +3501,7 @@ function autoBattleTick(){
       let dmgToHero=Math.max(1,rawEnemyAtk-GS.run.def);
       if(passives.includes('ironwall')){dmgToHero=Math.floor(dmgToHero*(GS.run.defBonus||1)*0.9);triggerPassiveBadge('ironwall');}
       else if(GS.run.defBonus<1) dmgToHero=Math.floor(dmgToHero*GS.run.defBonus);
+      if((GS.run.incomingDmgMult||1)!==1) dmgToHero=Math.floor(dmgToHero*(GS.run.incomingDmgMult||1));
       // 血戦の心得: HP30%以下で被ダメ-20%
       if((GS.run.uniqueSkills||[]).includes('warrior_berserk')&&bState.heroHp<bState.heroMaxHp*0.3)
         dmgToHero=Math.floor(dmgToHero*0.8);
@@ -3578,19 +3717,34 @@ function endBattle(won){
     GS.run.runExp=(GS.run.runExp||0)+exp;
     GS.run.hp=Math.max(1,bState.heroHp);GS.run.mp=bState.heroMp;
     if(passives.includes('souleat')){GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+10);addLog('魂喰い: HP+10','log-heal');triggerPassiveBadge('souleat');}
-    // 魂の収穫: 敵撃破後 最大MP+8%（ステージ内）
+    // 魂の収穫: 敵撃破後 最大MP+8%（ステージ内、ディープは+3%/階）
     if((GS.run.uniqueSkills||[]).includes('necro_soulharvest')){
-      const _shBonus=Math.floor(GS.run.maxMp*0.08);
+      const _shRate=deepFloorScaleBonus(0.08,0.03);
+      const _shBonus=Math.floor(GS.run.maxMp*_shRate);
       GS.run.maxMp+=_shBonus;
       addLog(`💀 魂の収穫: 最大MP+${_shBonus}`,'log-heal');
     }
     // 魔力過負荷: 戦闘内でスキル使用後に判定（useSkill内）
-    // ナノマシン: 敵撃破時 最大HP+10%（ステージ内累積）
+    // ナノマシン: 敵撃破時 最大HP+10%（ステージ内累積、ディープは+3%/階）
     if((GS.run.uniqueSkills||[]).includes('you_nanomachine')){
-      const _nanoBn=Math.floor(GS.run.maxHp*0.1);
+      const _nanoRate=deepFloorScaleBonus(0.1,0.03);
+      const _nanoBn=Math.floor(GS.run.maxHp*_nanoRate);
       GS.run.maxHp+=_nanoBn;
       GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp);
       addLog(`🔬 ナノマシン発動！ 最大HP+${_nanoBn}`,'log-skill');
+    }
+    // 旅人の勇気: 敵撃破ごと全パラメータ+3%（ステージ内、ディープは+2%/階）
+    if((GS.run.uniqueSkills||[]).includes('traveler_courage')){
+      const _courageRate=deepFloorScaleBonus(0.03,0.02);
+      GS.run.atk=Math.floor(GS.run.atk*(1+_courageRate));
+      GS.run.def=Math.floor(GS.run.def*(1+_courageRate));
+      GS.run.maxHp=Math.floor(GS.run.maxHp*(1+_courageRate));
+      GS.run.hp=Math.min(GS.run.maxHp,Math.floor(GS.run.hp*(1+_courageRate)));
+      GS.run.maxMp=Math.floor(GS.run.maxMp*(1+_courageRate));
+      GS.run.mp=Math.min(GS.run.maxMp,Math.floor(GS.run.mp*(1+_courageRate)));
+      GS.run.crit=Math.min(50,GS.run.crit+1);
+      const _pctLabel=Math.round(_courageRate*100);
+      addLog(`🌟 勇気発動！ 全パラメータ+${_pctLabel}%`,'log-skill');
     }
     setTC('b-souls',GS.run.runSouls);
     addLog(`${bState.enemy.name}を撃破！ 魂+${souls} EXP+${exp}`,'log-heal');
@@ -3611,6 +3765,27 @@ function endBattle(won){
     if(bState.isBoss){
       const fid=GS.run.floorId||1;
       if(!GS.clearedFloors.includes(fid)) GS.clearedFloors.push(fid);
+      // ディープダンジョン: 最高到達階を更新
+      if(floor&&floor.deepMode){
+        const clearedDeepFloor=(GS.run.deepBaseLevel||6)+GS.run.room-1;
+        GS.deepLevel=Math.max(GS.deepLevel||6,clearedDeepFloor+1);
+        // 達成報酬用: deepFloor到達記録
+        GS.achStats.deepMaxFloor=Math.max(GS.achStats.deepMaxFloor||0,clearedDeepFloor);
+        // ディープ達成チェック
+        if(clearedDeepFloor>=10&&!(GS.achStats.deepMilestones||[]).includes(10)){
+          GS.achStats.deepMilestones=(GS.achStats.deepMilestones||[]);GS.achStats.deepMilestones.push(10);
+        }
+        if(clearedDeepFloor>=15&&!(GS.achStats.deepMilestones||[]).includes(15)){
+          GS.achStats.deepMilestones=(GS.achStats.deepMilestones||[]);GS.achStats.deepMilestones.push(15);
+        }
+        if(clearedDeepFloor>=20&&!(GS.achStats.deepMilestones||[]).includes(20)){
+          GS.achStats.deepMilestones=(GS.achStats.deepMilestones||[]);GS.achStats.deepMilestones.push(20);
+        }
+        if(clearedDeepFloor>=25&&!(GS.achStats.deepMilestones||[]).includes(25)){
+          GS.achStats.deepMilestones=(GS.achStats.deepMilestones||[]);GS.achStats.deepMilestones.push(25);
+        }
+        if(clearedDeepFloor>=30){GS.achStats.deepComplete=true;}
+      }
       // 天使：地下5階クリアで突然解放（達成報酬ではない）
       if(fid===5&&!GS.unlocked.includes('angel')){
         GS.unlocked.push('angel');
@@ -3985,6 +4160,8 @@ function initButtons(){
   if(btnMult10) btnMult10.addEventListener('click',()=>setLvMult(10));
   const btnMult100=document.getElementById('lv-mult-100');
   if(btnMult100) btnMult100.addEventListener('click',()=>setLvMult(100));
+  const btnMult1000=document.getElementById('lv-mult-1000');
+  if(btnMult1000) btnMult1000.addEventListener('click',()=>setLvMult(1000));
 
   // 達成報酬画面
   const btnAchieveBack=document.getElementById('btn-achieve-back');

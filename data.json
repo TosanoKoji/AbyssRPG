@@ -251,9 +251,9 @@
         "hp": "A",
         "atk": "B",
         "def": "A",
-        "mp": "B",
+        "mp": "A",
         "crit": "C",
-        "dodge": "D"
+        "dodge": "A"
       }
     },
     "you": {
@@ -435,7 +435,7 @@
       "anim": "slash", "special": "railgunEffect", "unlockCost": 800
     },
     "excalibur": {
-      "id": "excalibur", "name": "エクスカリバー", "icon": "🗡️",
+      "id": "excalibur", "name": "エクスカリハー", "icon": "🗡️",
       "atk": 15, "mp": 0, "crit": 0,
       "desc": "ATK×1.3・DEF×0.9。戦士装備時、攻撃するたびに最大HPの1%を失う代わりに会心率+20%",
       "anim": "slash", "special": "excaliburEffect", "unlockCost": 500
@@ -451,6 +451,12 @@
       "atk": 13, "mp": 0, "crit": 0,
       "desc": "ATK×1.2・DEF×0.9。盗賊装備時、会心攻撃のダメージが+10%",
       "anim": "pierce", "special": "deathDaggerEffect", "unlockCost": 400
+    },
+    "dragon_spear": {
+      "id": "dragon_spear", "name": "龍槍ナンタラ", "icon": "🔱",
+      "atk": 18, "mp": 0, "crit": 0,
+      "desc": "ATK×1.5・DEF×1.2。聖騎士装備時、全集中の発動率が10%に増加",
+      "anim": "pierce", "special": "dragonSpearEffect", "unlockCost": 800
     }
   },
   "armors": {
@@ -532,6 +538,42 @@
       "def": 0, "hp": 0, "mp": 0,
       "desc": "DEF×1.2・回避-10%。聖騎士装備時、10ターンごとにDEF×5のダメージを敵に与える",
       "special": "holyshieldEffect", "unlockCost": 600
+    },
+    "genji_gauntlet": {
+      "id": "genji_gauntlet", "name": "GENJIの小手", "icon": "🥋",
+      "def": 0, "hp": 0, "mp": 0,
+      "desc": "ATK×1.3・MP×1.3。侍装備時、見切り連撃の発動率+10%",
+      "special": "genjiGauntletEffect", "unlockCost": 700
+    },
+    "hagoromo": {
+      "id": "hagoromo", "name": "羽衣", "icon": "👘",
+      "def": 0, "hp": 0, "mp": 0,
+      "desc": "DEF×1.1・MP×1.3。大神装備時、被弾時10%でCD即ゼロ",
+      "special": "hagoromoEffect", "unlockCost": 700
+    },
+    "angel_ring": {
+      "id": "angel_ring", "name": "天使の輪", "icon": "✨",
+      "def": 0, "hp": 0, "mp": 0,
+      "desc": "ATK×1.3・MP×1.2。天使装備時、奇跡の発動率が80%に",
+      "special": "angelRingEffect", "unlockCost": 700
+    },
+    "skull_helm": {
+      "id": "skull_helm", "name": "髑髏の兜", "icon": "💀",
+      "def": 0, "hp": 0, "mp": 0,
+      "desc": "DEF×1.4・MP×1.2。死霊術師装備時、最大MPの30%を攻撃力に加算",
+      "special": "skullHelmEffect", "unlockCost": 700
+    },
+    "ton_armor": {
+      "id": "ton_armor", "name": "1t装甲", "icon": "🪨",
+      "def": 0, "hp": 0, "mp": 0,
+      "desc": "回避-20%・DEF+20%（数値加算）。アンノウン装備時、5%で被ダメゼロ（リアクター無影響）",
+      "special": "tonArmorEffect", "unlockCost": 700
+    },
+    "dirty_mantle": {
+      "id": "dirty_mantle", "name": "汚れたマント", "icon": "🧥",
+      "def": 0, "hp": 0, "mp": 0,
+      "desc": "DEF×0.9・ATK×1.2。盗賊装備時、幻影の攻撃力上昇値が2倍",
+      "special": "dirtyMantleEffect", "unlockCost": 500
     }
   },
   "accessories": {
@@ -653,6 +695,64 @@
       "icon": "⚡",
       "desc": "スキルのクールタイムを20%短縮する",
       "unlockCost": 30000
+    },
+    "hesobi": {
+      "id": "hesobi", "name": "へそピ", "icon": "✨",
+      "desc": "30%の確率で行動を2回実行（スキルのMP消費あり）",
+      "kind": "onAction", "effect": {"doubleAction": 0.3},
+      "unlockCost": 0, "deepUnlock": 25
+    },
+    "cool_necktie": {
+      "id": "cool_necktie", "name": "ステキなネクタイ", "icon": "👔",
+      "desc": "全パラメータ×1.3・被ダメ×1.5",
+      "kind": "statMult",
+      "effect": {"atkMult": 1.3, "defMult": 1.3, "hpMult": 1.3, "mpMult": 1.3, "incomingDmgMult": 1.5},
+      "unlockCost": 0, "deepUnlock": 10
+    },
+    "super_thing": {
+      "id": "super_thing", "name": "なんかすごいやつ", "icon": "❓",
+      "desc": "スキルのクールタイムを1/3に短縮（加護と重複可）",
+      "kind": "cdReduce", "effect": {"cdMult": 0.333},
+      "unlockCost": 0, "deepUnlock": 15
+    },
+    "lead_dogi": {
+      "id": "lead_dogi", "name": "鉛入りの道着", "icon": "🏋️",
+      "desc": "全パラメータ×0.5・獲得EXP×3",
+      "kind": "statMult",
+      "effect": {"atkMult": 0.5, "defMult": 0.5, "hpMult": 0.5, "mpMult": 0.5, "expMult": 3.0},
+      "unlockCost": 0, "deepUnlock": 20
+    },
+    "akashic_record": {
+      "id": "akashic_record", "name": "アカシックレコード", "icon": "📜",
+      "desc": "スキルのクールタイムを完全ゼロに・消費MPが10倍",
+      "kind": "cdZero", "effect": {"cdZero": true, "mpCostMult": 10},
+      "unlockCost": 0, "deepUnlock": 30
+    },
+    "cursed_pendant": {
+      "id": "cursed_pendant", "name": "呪いのペンダント", "icon": "🔮",
+      "desc": "全パラメータ-20%・獲得EXP×2",
+      "kind": "statMult",
+      "effect": {"atkMult": 0.8, "defMult": 0.8, "hpMult": 0.8, "mpMult": 0.8, "expMult": 2.0},
+      "unlockCost": 2000
+    },
+    "gold_ring": {
+      "id": "gold_ring", "name": "金の指輪", "icon": "💍",
+      "desc": "ボスへの与ダメージ×1.3",
+      "kind": "bossBonus", "effect": {"bossDmgMult": 1.3},
+      "unlockCost": 5000
+    },
+    "wristband": {
+      "id": "wristband", "name": "リストバンド", "icon": "💪",
+      "desc": "ATK×1.4・DEF×0.6",
+      "kind": "statMult",
+      "effect": {"atkMult": 1.4, "defMult": 0.6},
+      "unlockCost": 3000
+    },
+    "vampire_scarf": {
+      "id": "vampire_scarf", "name": "吸血鬼のスカーフ", "icon": "🧣",
+      "desc": "最大HP-30%・通常攻撃のたびにダメージの10%をHPに吸収",
+      "kind": "vampiric2", "effect": {"hpMult": 0.7, "attackVampire": 0.1},
+      "unlockCost": 4000
     },
     "mo_disk": {
       "id": "mo_disk", "name": "MOディスク", "icon": "💿",
@@ -1079,6 +1179,22 @@
       "icon": "☠️",
       "initial": false,
       "desc": "通常攻撃ヒット時に2%の確率で敵を毒状態にする。毒を食らった敵は3ターンかけて最大HPの3%を失う"
+    },
+    "traveler_courage": {
+      "id": "traveler_courage",
+      "charId": "traveler",
+      "name": "勇気",
+      "icon": "🌟",
+      "initial": false,
+      "desc": "敵を倒すたびに全パラメータ+3%（そのダンジョンのみ）"
+    },
+    "traveler_enlighten": {
+      "id": "traveler_enlighten",
+      "charId": "traveler",
+      "name": "達観",
+      "icon": "🔮",
+      "initial": false,
+      "desc": "会心と回避の成長才能がAに向上する"
     }
   },
   "floors": [
@@ -2169,6 +2285,47 @@
           "halfHpRevive": true
         }
       ]
+    },
+    {
+      "id": "deep",
+      "name": "ディープダンジョン",
+      "sub": "深淵の彼方",
+      "icon": "🕳️",
+      "color": "#7c3aed",
+      "deepMode": true,
+      "soulsMult": 8.0,
+      "expMult": 9.0,
+      "areaMode": false,
+      "unlockReq": {"clearedFloor": 9},
+      "enemies": [],
+      "bosses": [],
+      "levels": [
+        {"floorNum": 6, "boss": {"id":"db_f06","name":"深淵の衛士","icon":"💀","hp":2000000,"atk":9000,"def":5000,"crit":10,"dodge":8,"souls":5000,"exp":8000,"kind":"boss"}},
+        {"floorNum": 7, "boss": {"id":"db_f07","name":"奈落の亡者","icon":"👾","hp":3200000,"atk":11500,"def":6400,"crit":10,"dodge":8,"souls":6500,"exp":10500,"kind":"boss"}},
+        {"floorNum": 8, "boss": {"id":"db_f08","name":"深淵の番将","icon":"⚔","hp":5000000,"atk":14500,"def":8000,"crit":10,"dodge":8,"souls":8500,"exp":13500,"kind":"boss"}},
+        {"floorNum": 9, "boss": {"id":"db_f09","name":"虚無の覇者","icon":"🌑","hp":8000000,"atk":18000,"def":10000,"crit":10,"dodge":8,"souls":11000,"exp":18000,"kind":"boss"}},
+        {"floorNum": 10, "boss": {"id":"db_f10","name":"深淵の守護神","icon":"⛩️","hp":13000000,"atk":23000,"def":13000,"crit":12,"dodge":10,"souls":15000,"exp":25000,"kind":"boss"}},
+        {"floorNum": 11, "boss": {"id":"db_f11","name":"混沌の守護者","icon":"🌀","hp":20000000,"atk":30000,"def":17000,"crit":10,"dodge":8,"souls":20000,"exp":33000,"kind":"boss"}},
+        {"floorNum": 12, "boss": {"id":"db_f12","name":"奈落の魔神","icon":"😈","hp":32000000,"atk":39000,"def":22000,"crit":10,"dodge":8,"souls":27000,"exp":44000,"kind":"boss"}},
+        {"floorNum": 13, "boss": {"id":"db_f13","name":"深淵の征服者","icon":"👑","hp":50000000,"atk":50000,"def":28000,"crit":10,"dodge":8,"souls":36000,"exp":58000,"kind":"boss"}},
+        {"floorNum": 14, "boss": {"id":"db_f14","name":"奈落の王","icon":"🌑","hp":80000000,"atk":65000,"def":36000,"crit":10,"dodge":8,"souls":48000,"exp":78000,"kind":"boss"}},
+        {"floorNum": 15, "boss": {"id":"db_f15","name":"虚無の神","icon":"🌌","hp":130000000,"atk":85000,"def":47000,"crit":12,"dodge":10,"souls":65000,"exp":105000,"kind":"boss"}},
+        {"floorNum": 16, "boss": {"id":"db_f16","name":"混沌の神王","icon":"👾","hp":200000000,"atk":110000,"def":60000,"crit":10,"dodge":8,"souls":85000,"exp":140000,"kind":"boss"}},
+        {"floorNum": 17, "boss": {"id":"db_f17","name":"深淵の支配者","icon":"💀","hp":310000000,"atk":140000,"def":77000,"crit":10,"dodge":8,"souls":110000,"exp":180000,"kind":"boss"}},
+        {"floorNum": 18, "boss": {"id":"db_f18","name":"奈落の覇神","icon":"🔥","hp":480000000,"atk":180000,"def":99000,"crit":10,"dodge":8,"souls":145000,"exp":235000,"kind":"boss"}},
+        {"floorNum": 19, "boss": {"id":"db_f19","name":"虚無の絶対者","icon":"⚫","hp":750000000,"atk":230000,"def":127000,"crit":10,"dodge":8,"souls":190000,"exp":310000,"kind":"boss"}},
+        {"floorNum": 20, "boss": {"id":"db_f20","name":"深淵の創造神","icon":"🌀","hp":1200000000,"atk":300000,"def":165000,"crit":12,"dodge":10,"souls":250000,"exp":400000,"kind":"boss"}},
+        {"floorNum": 21, "boss": {"id":"db_f21","name":"混沌の絶対支配者","icon":"👿","hp":1900000000,"atk":390000,"def":215000,"crit":10,"dodge":8,"souls":330000,"exp":530000,"kind":"boss"}},
+        {"floorNum": 22, "boss": {"id":"db_f22","name":"奈落の終末者","icon":"☠️","hp":3000000000,"atk":505000,"def":278000,"crit":10,"dodge":8,"souls":435000,"exp":700000,"kind":"boss"}},
+        {"floorNum": 23, "boss": {"id":"db_f23","name":"深淵の破滅神","icon":"💥","hp":4800000000,"atk":655000,"def":360000,"crit":10,"dodge":8,"souls":575000,"exp":925000,"kind":"boss"}},
+        {"floorNum": 24, "boss": {"id":"db_f24","name":"虚無の終焉神","icon":"🌑","hp":7500000000,"atk":850000,"def":468000,"crit":10,"dodge":8,"souls":760000,"exp":1220000,"kind":"boss"}},
+        {"floorNum": 25, "boss": {"id":"db_f25","name":"奈落の源流","icon":"⚫","hp":12000000000,"atk":1100000,"def":605000,"crit":12,"dodge":10,"souls":1000000,"exp":1600000,"kind":"boss"}},
+        {"floorNum": 26, "boss": {"id":"db_f26","name":"深淵の始原者","icon":"🕳️","hp":19000000000,"atk":1430000,"def":787000,"crit":10,"dodge":8,"souls":1320000,"exp":2120000,"kind":"boss"}},
+        {"floorNum": 27, "boss": {"id":"db_f27","name":"混沌の始源神","icon":"🌀","hp":30000000000,"atk":1860000,"def":1023000,"crit":10,"dodge":8,"souls":1740000,"exp":2800000,"kind":"boss"}},
+        {"floorNum": 28, "boss": {"id":"db_f28","name":"奈落の絶対神","icon":"💀","hp":48000000000,"atk":2420000,"def":1331000,"crit":10,"dodge":8,"souls":2300000,"exp":3700000,"kind":"boss"}},
+        {"floorNum": 29, "boss": {"id":"db_f29","name":"虚無の至高存在","icon":"🌑","hp":76000000000,"atk":3150000,"def":1733000,"crit":10,"dodge":8,"souls":3040000,"exp":4900000,"kind":"boss"}},
+        {"floorNum": 30, "boss": {"id":"db_f30","name":"原初の深淵","icon":"⬛","hp":120000000000,"atk":4100000,"def":2255000,"crit":12,"dodge":10,"souls":4000000,"exp":6400000,"kind":"boss"}}
+      ]
     }
   ],
   "systemUnlocks": [
@@ -2234,6 +2391,36 @@
       "lvReq": 0,
       "desc": "装飾品の装備枠がさらに1増加する",
       "achReq": "ach_floor5_acc"
+    },
+    {
+      "id": "deep_acc_slot_up",
+      "name": "深淵の装飾",
+      "icon": "💍",
+      "cost": 0,
+      "lvReq": 0,
+      "desc": "装飾品の装備枠が1増加する（地獄クリアで解放）",
+      "achReq": "ach_hell_clear",
+      "autoGrant": true
+    },
+    {
+      "id": "deep_active_slot_up",
+      "name": "深淵の技",
+      "icon": "⚡",
+      "cost": 0,
+      "lvReq": 0,
+      "desc": "アクティブスキルの装備枠が+1増加する（地獄クリアで解放）",
+      "achReq": "ach_hell_clear",
+      "autoGrant": true
+    },
+    {
+      "id": "deep_passive_slot_up",
+      "name": "深淵の力",
+      "icon": "🛡",
+      "cost": 0,
+      "lvReq": 0,
+      "desc": "パッシブスキルの装備枠が+1増加する（地獄クリアで解放）",
+      "achReq": "ach_hell_clear",
+      "autoGrant": true
     }
   ],
   "unlockGroups": {
@@ -2405,9 +2592,16 @@
       {"id": "buki", "label": "ぶき", "cost": 300, "sub": "ATK×1.1 忍者:毒付与率2倍"},
       {"id": "railgun", "label": "電磁砲", "cost": 800, "sub": "ATK×1.4 会心+10% 未知:12T大ダメ"},
       {"id": "holyshield", "label": "聖なる盾", "cost": 600, "sub": "DEF×1.2 回避-10% 聖:10Tにdef×5"},
-      {"id": "excalibur", "label": "エクスカリバー", "cost": 500, "sub": "ATK×1.3 DEF×0.9 戦士:会心+20%/攻撃のたびHP-1%"},
+      {"id": "excalibur", "label": "エクスカリハー", "cost": 500, "sub": "ATK×1.3 DEF×0.9 戦士:会心+20%/攻撃のたびHP-1%"},
       {"id": "kunai", "label": "クナイ", "cost": 300, "sub": "ATK×1.1 DEF×0.8 忍者:10%で3回攻撃"},
-      {"id": "death_dagger", "label": "死神のダガー", "cost": 400, "sub": "ATK×1.2 DEF×0.9 盗賊:会心ダメ+10%"}
+      {"id": "death_dagger", "label": "死神のダガー", "cost": 400, "sub": "ATK×1.2 DEF×0.9 盗賊:会心ダメ+10%"},
+      {"id": "dragon_spear", "label": "龍槍ナンタラ", "cost": 800, "sub": "ATK×1.5 DEF×1.2 聖騎士:全集中10%"},
+      {"id": "genji_gauntlet", "label": "GENJIの小手", "cost": 700, "sub": "ATK×1.3 MP×1.3 侍:見切り+10%"},
+      {"id": "hagoromo", "label": "羽衣", "cost": 700, "sub": "DEF×1.1 MP×1.3 大神:被弾時10%でCDゼロ"},
+      {"id": "angel_ring", "label": "天使の輪", "cost": 700, "sub": "ATK×1.3 MP×1.2 天使:奇跡80%"},
+      {"id": "skull_helm", "label": "髑髏の兜", "cost": 700, "sub": "DEF×1.4 MP×1.2 死霊:MP30%を攻撃力加算"},
+      {"id": "ton_armor", "label": "1t装甲", "cost": 700, "sub": "回避-20% DEF+20% 未知:5%被ダメゼロ"},
+      {"id": "dirty_mantle", "label": "汚れたマント", "cost": 500, "sub": "DEF×0.9 ATK×1.2 盗賊:幻影値2倍"}
     ],
     "accessory": [
       {
@@ -2476,7 +2670,11 @@
         "label": "加速装置",
         "cost": 30000,
         "sub": "スキルCD -20%"
-      }
+      },
+      {"id": "cursed_pendant", "label": "呪いのペンダント", "cost": 2000, "sub": "全パラメータ-20% EXP×2"},
+      {"id": "gold_ring", "label": "金の指輪", "cost": 5000, "sub": "ボスへの与ダメ×1.3"},
+      {"id": "wristband", "label": "リストバンド", "cost": 3000, "sub": "ATK×1.4 DEF×0.6"},
+      {"id": "vampire_scarf", "label": "吸血鬼のスカーフ", "cost": 4000, "sub": "最大HP-30% 攻撃時10%吸収"}
     ],
     "skill": [
       {
@@ -2653,7 +2851,7 @@
       {
         "id": "god_protection",
         "label": "加護",
-        "cost": 500,
+        "cost": 5000,
         "sub": "被攻撃時全CD-30%",
         "kind": "uniqueSkill"
       },
@@ -2679,7 +2877,9 @@
         "kind": "uniqueSkill"
       },
       {"id": "mage_trance", "label": "トランス", "cost": 500, "sub": "5%でトランス状態・CDゼロ5回", "kind": "uniqueSkill"},
-      {"id": "angel_revelation", "label": "天啓", "cost": 500, "sub": "5Tに1回ランダムスキル無料発動", "kind": "uniqueSkill"}
+      {"id": "angel_revelation", "label": "天啓", "cost": 500, "sub": "5Tに1回ランダムスキル無料発動", "kind": "uniqueSkill"},
+      {"id": "traveler_courage", "label": "勇気", "cost": 3000, "sub": "撃破ごと全パラメータ+3%", "kind": "uniqueSkill"},
+      {"id": "traveler_enlighten", "label": "達観", "cost": 0, "sub": "会心・回避才能A向上", "kind": "uniqueSkill", "achReq": "ach_deep_complete"}
     ]
   },
   "achievements": [
@@ -3093,6 +3293,62 @@
       "reward": {"type": "none"},
       "hintOnly": true,
       "silent": true
+    },
+    {
+      "id": "ach_hell_clear",
+      "title": "地獄踏破",
+      "cond": {"kind": "floorClearId", "val": 9},
+      "reward": {"type": "none"},
+      "icon": "🔥",
+      "desc": "地獄「最終審判の地」をクリアする"
+    },
+    {
+      "id": "ach_deep_floor10",
+      "title": "深淵の入口",
+      "cond": {"kind": "deepFloorClear", "val": 10},
+      "reward": {"type": "unlockAccessory", "id": "cool_necktie"},
+      "icon": "🕳️",
+      "desc": "ディープダンジョン地下10階クリア"
+    },
+    {
+      "id": "ach_deep_floor15",
+      "title": "深淵の中腹",
+      "cond": {"kind": "deepFloorClear", "val": 15},
+      "reward": {"type": "unlockAccessory", "id": "super_thing"},
+      "icon": "🕳️",
+      "desc": "ディープダンジョン地下15階クリア"
+    },
+    {
+      "id": "ach_deep_floor20",
+      "title": "深淵の深部",
+      "cond": {"kind": "deepFloorClear", "val": 20},
+      "reward": {"type": "unlockAccessory", "id": "lead_dogi"},
+      "icon": "🕳️",
+      "desc": "ディープダンジョン地下20階クリア"
+    },
+    {
+      "id": "ach_deep_floor25",
+      "title": "深淵の奥地",
+      "cond": {"kind": "deepFloorClear", "val": 25},
+      "reward": {"type": "unlockAccessory", "id": "hesobi"},
+      "icon": "🕳️",
+      "desc": "ディープダンジョン地下25階クリア"
+    },
+    {
+      "id": "ach_deep_floor30",
+      "title": "深淵の最深部",
+      "cond": {"kind": "deepFloorClear", "val": 30},
+      "reward": {"type": "unlockAccessory", "id": "akashic_record"},
+      "icon": "🕳️",
+      "desc": "ディープダンジョン地下30階クリア"
+    },
+    {
+      "id": "ach_deep_complete",
+      "title": "深淵の征服者",
+      "cond": {"kind": "deepFloorClear", "val": 30},
+      "reward": {"type": "uniqueSkill", "id": "traveler_enlighten"},
+      "icon": "🌟",
+      "desc": "ディープダンジョン地下30階クリア — 旅人のユニークスキル「達観」が解放"
     }
   ]
 }
