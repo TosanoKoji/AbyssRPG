@@ -333,7 +333,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181116</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181119</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -3650,15 +3650,24 @@ function autoBattleTick(){
     // 地獄の創造主: 初めてHP50%以下になったら全回復＋次ターン即死予告
     if(!bState.creatorRevived&&bState.isBoss&&bState.enemy.halfHpRevive&&bState.enemyHp<=bState.enemyMaxHp*0.5){
       bState.creatorRevived=true;
-      bState.enemyHp=bState.enemyMaxHp;
       const hasMoDisk=(GS.run.accessories||[]).includes('mo_disk');
-      if(!hasMoDisk) bState.creatorDeathblowPending=true;
+      if(hasMoDisk){
+        // MOディスク: 全回復も即死も封印 → HP60万固定で第2ラウンド
+        bState.enemyHp=Math.floor(bState.enemyMaxHp*0.5);
+        bState.creatorRound2=true;
+      } else {
+        bState.enemyHp=bState.enemyMaxHp;
+        bState.creatorDeathblowPending=true;
+      }
       showSkillFlash(hasMoDisk?'rgba(74,158,255,.3)':'rgba(239,68,68,.5)');
       updateBattleUI();renderActiveBtns();
-      // タップするまで表示し続けるオーバーレイ → タップ後に次ターンへ
       showCreatorReviveEvent(hasMoDisk,()=>{
         if(hasMoDisk){
-          addLog('💿 MOディスクが地獄の創造主の全回復を封印！','log-skill');
+          addLog('💿 MOディスクが地獄の創造主の全回復と即死を封印！','log-skill');
+          const _bgImgEl=document.getElementById('battle-bg-img-el');
+          if(_bgImgEl){const _s2='assets/back/floor9boss2.png';const _p2=new Image();_p2.onload=()=>{_bgImgEl.src=_s2;};_p2.onerror=()=>{};_p2.src=_s2;}
+          addLog('🌑 地獄の創造主が再起動... 第2ラウンド開始！','log-hero-dmg');
+          updateBattleUI();renderActiveBtns();
         } else {
           addLog('🌑 地獄の創造主がHP全回復！ 次のターン必殺が来る！','log-hero-dmg');
         }
@@ -3677,12 +3686,6 @@ function autoBattleTick(){
         if(hasMoDisk){
           showCreatorReviveEvent(true,()=>{
             addLog('💿 MOディスクが創造主の必殺を封じた！','log-skill');
-            // 第2ラウンド: HP50%（60万）に戻して背景変更
-            bState.enemyHp=Math.floor(bState.enemyMaxHp*0.5);
-            bState.creatorRound2=true;
-            const _bgImgEl=document.getElementById('battle-bg-img-el');
-            if(_bgImgEl){const _s2='assets/back/floor9boss2.png';const _p2=new Image();_p2.onload=()=>{_bgImgEl.src=_s2;};_p2.onerror=()=>{};_p2.src=_s2;}
-            addLog('🌑 地獄の創造主が再起動... 第2ラウンド開始！','log-hero-dmg');
             updateBattleUI();renderActiveBtns();
             setTimeout(()=>autoBattleTick(),800);
           });
