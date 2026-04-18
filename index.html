@@ -333,7 +333,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181036</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181046</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -974,6 +974,7 @@ function checkAchievements(){
     else if(a.cond.kind==='specialBossKill') prog=(st.specialBossKills||{})[a.cond.id]||0;
     else if(a.cond.kind==='deepFloor'||a.cond.kind==='deepFloorClear') prog=st.deepMaxFloor||0;
     else if(a.cond.kind==='deepComplete') prog=st.deepComplete?1:0;
+    else if(a.cond.kind==='lostToCreator') prog=st.lostToCreator?1:0;
     if(prog>=target){
       GS.achDone.push(a.id);
       const r=a.reward;
@@ -2581,7 +2582,7 @@ function _doEnterRoom(t,floor){
     if(t==='boss'){
       // 特殊ボスチェック（アンノウンで地上、一度のみ）
       const specialBoss=floor.bosses.find(b=>b.specialForChar&&b.oneTimeAch);
-      if(specialBoss&&specialBoss.specialForChar===GS.run.charId&&!GS.achDone.includes(specialBoss.oneTimeAch)){
+      if(specialBoss&&specialBoss.specialForChar===GS.run.charId&&!GS.achDone.includes(specialBoss.oneTimeAch)&&GS.achStats.lostToCreator){
         // 特殊ボスイベント表示
         const _spEl=document.createElement('div');
         _spEl.style.cssText='position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);background:#1a1228;border:2px solid #a78bfa;border-radius:16px;padding:20px 28px;font-size:14px;color:#ede9fe;z-index:9999;text-align:center;animation:achPop .4s ease-out;pointer-events:none';
@@ -4007,16 +4008,22 @@ function endBattle(won){
       };
     }
     GS.souls+=partial;GS.exp+=partialExp;
-    // 地獄の創造主に敗北時: こっそりヒントを解放
-    if(bState.isBoss&&bState.enemy.halfHpRevive&&!GS.achStats.lostToCreator){
+    // 地獄の創造主にイベントで敗北時: ポップアップ（毎回表示）
+    if(bState.isBoss&&bState.enemy.halfHpRevive){
       GS.achStats.lostToCreator=true;
       setTimeout(()=>{
-        const _hint=document.createElement('div');
-        _hint.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(10,5,5,.92);border:0.5px solid #3a2020;border-radius:10px;padding:10px 18px;font-size:12px;color:#888780;z-index:9999;text-align:center;pointer-events:none;max-width:280px';
-        _hint.textContent='地上で何かがあった様だ…。';
-        document.body.appendChild(_hint);
-        setTimeout(()=>{_hint.style.opacity='0';_hint.style.transition='opacity 1s';setTimeout(()=>_hint.remove(),1000);},4000);
-      },1500);
+        const _ov=document.createElement('div');
+        _ov.style.cssText='position:fixed;inset:0;background:rgba(5,0,0,.90);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;pointer-events:none';
+        _ov.innerHTML=`<div style="font-size:40px;margin-bottom:18px">🌑</div><div style="font-size:18px;color:#c8a880;letter-spacing:.12em;line-height:2;margin-bottom:28px">地上で何かが<br>起こったようだ</div><div id="_cl-tap" style="font-size:11px;color:transparent">タップで閉じる</div>`;
+        document.body.appendChild(_ov);
+        setTimeout(()=>{
+          _ov.style.pointerEvents='all';
+          _ov.style.cursor='pointer';
+          const hint=_ov.querySelector('#_cl-tap');
+          if(hint){hint.style.color='#6b5030';hint.style.transition='color .5s';}
+          _ov.addEventListener('click',()=>{_ov.style.opacity='0';_ov.style.transition='opacity .4s';setTimeout(()=>_ov.remove(),400);},{once:true});
+        },3000);
+      },1000);
     }
     checkAchievements();save();
     addLog(`戦闘不能... 魂の欠片${partial}個・EXP${partialExp}を回収`,'log-hero-dmg');

@@ -3964,18 +3964,16 @@
     {
       "id": "ach_creator_hint",
       "icon": "🌑",
-      "title": "地上で何かがあった様だ…",
-      "desc": "『アンノウン』で地上界をクリアすれば何かが起こる",
+      "title": "命なき者で地上エリアに挑むと何かが起こる",
+      "desc": "地獄の創造主の試練を受けた者だけが得られる啓示",
       "cond": {
-        "kind": "specialBossKill",
-        "id": "f6b_unknown_special",
+        "kind": "lostToCreator",
         "val": 1
       },
       "reward": {
         "type": "none"
       },
-      "hintOnly": true,
-      "silent": true
+      "hintOnly": true
     },
     {
       "id": "ach_hell_clear",
