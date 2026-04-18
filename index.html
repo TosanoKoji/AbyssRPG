@@ -333,7 +333,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181046</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181056</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2744,8 +2744,8 @@ function startBattle(enemy,isBoss){
   }
   const _hs=document.getElementById('hero-sprite');if(_hs)_hs.innerHTML=renderIcon('chars',charImgIdBattle(GS.run.charId),GS.run.icon,90);
   const _ess=document.getElementById('enemy-sprite');
-  if(isBoss&&SETTINGS.iconMode==='png'){
-    _ess.innerHTML=renderIcon('enemies',enemy.imgId||enemy.id,enemy.icon,160);
+  if(SETTINGS.iconMode==='png'){
+    _ess.innerHTML=renderIcon('enemies',enemy.imgId||enemy.id,enemy.icon,isBoss?160:100);
   } else {
     _ess.innerHTML=`<span style="font-size:44px">${enemy.icon}</span>`;
   }
