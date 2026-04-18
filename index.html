@@ -333,7 +333,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181119</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181125</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -3646,8 +3646,7 @@ function autoBattleTick(){
     }
 
     updateBattleUI();renderActiveBtns();
-    if(bState.enemyHp<=0){defeatEnemy();return;}
-    // 地獄の創造主: 初めてHP50%以下になったら全回復＋次ターン即死予告
+    // 地獄の創造主: 全回復チェックをHP0判定より先に行う（一撃0でも必ずイベント発動）
     if(!bState.creatorRevived&&bState.isBoss&&bState.enemy.halfHpRevive&&bState.enemyHp<=bState.enemyMaxHp*0.5){
       bState.creatorRevived=true;
       const hasMoDisk=(GS.run.accessories||[]).includes('mo_disk');
@@ -3675,6 +3674,7 @@ function autoBattleTick(){
       });
       return; // 840ms enemy setTimeout をスキップ
     }
+    if(bState.enemyHp<=0){defeatEnemy();return;}
 
     setTimeout(()=>{
       if(bState.over)return;
