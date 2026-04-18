@@ -333,7 +333,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604180933</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181036</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2667,6 +2667,9 @@ function resetBattleScreen(){
     const sb=document.getElementById('enemy-stun-badge');  if(sb) sb.remove();
     const pb=document.getElementById('enemy-poison-badge');if(pb) pb.remove();
   }
+  // 敵消滅アニメーションをリセット（次の部屋で敵が非表示になるバグ防止）
+  const _es=document.getElementById('enemy-sprite');
+  if(_es){_es.classList.remove('enemy-dying');_es.style.opacity='';_es.style.transform='';}
   // バフアイコンエリアをクリア
   const hbi=document.getElementById('hero-buff-icons');if(hbi) hbi.innerHTML='';
 }
@@ -2698,6 +2701,7 @@ function startBattle(enemy,isBoss){
     angelLightRemaining:0, angelLightTurnCounter:0,
     revelationUsed:{},
     creatorRevived:false, creatorDeathblowPending:false,
+    dyingTriggered:false,
     warriorBraveMult:(GS.run.uniqueSkills&&GS.run.uniqueSkills.includes('warrior_brave'))?Math.pow(1.03,GS.run.room):1,
     skillCooldownEnd: {}
   };
