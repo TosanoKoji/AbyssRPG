@@ -333,7 +333,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181056</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181116</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2701,7 +2701,7 @@ function startBattle(enemy,isBoss){
     breakstaffDefZeroEnd:0,
     angelLightRemaining:0, angelLightTurnCounter:0,
     revelationUsed:{},
-    creatorRevived:false, creatorDeathblowPending:false,
+    creatorRevived:false, creatorDeathblowPending:false, creatorRound2:false,
     dyingTriggered:false,
     warriorBraveMult:(GS.run.uniqueSkills&&GS.run.uniqueSkills.includes('warrior_brave'))?Math.pow(1.03,GS.run.room):1,
     skillCooldownEnd: {}
@@ -3014,7 +3014,17 @@ function defeatEnemy(){
   bState.dyingTriggered=true;
   const el=document.getElementById('enemy-sprite');
   if(el) el.classList.add('enemy-dying');
-  setTimeout(()=>endBattle(true),450);
+  // 地獄の創造主を初めて撃破
+  if(bState.isBoss&&bState.enemy.halfHpRevive&&!GS.achStats.creatorDefeated){
+    GS.achStats.creatorDefeated=true;
+    setTimeout(()=>{
+      showCreatorCollapseEffect(()=>{
+        showCreatorDefeatedEnding(()=>endBattle(true));
+      });
+    },450);
+  } else {
+    setTimeout(()=>endBattle(true),450);
+  }
 }
 
 /* ─── 地獄の創造主 演出ヘルパー ─── */
@@ -3087,6 +3097,64 @@ function showCreatorDeathEffect(onComplete){
       setTimeout(()=>{txt.remove();flash.remove();onComplete();},900);
     }
   },140);
+}
+function showCreatorCollapseEffect(onComplete){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0);z-index:10000;pointer-events:none';
+  document.body.appendChild(ov);
+  const gw=document.getElementById('game')||document.body;
+  const seq=[
+    [0,  'rgba(255,100,0,.75)'],
+    [180,'rgba(0,0,0,.92)'],
+    [360,'rgba(255,50,0,.6)'],
+    [540,'rgba(0,0,0,.95)'],
+    [720,'rgba(255,200,0,.45)'],
+    [900,'rgba(0,0,0,1)'],
+  ];
+  seq.forEach(([d,bg])=>setTimeout(()=>{
+    ov.style.background=bg;
+    gw.style.animation=bg==='rgba(0,0,0,1)'?'none':'screenShake .15s ease-out';
+  },d));
+  setTimeout(()=>{
+    const txt=document.createElement('div');
+    txt.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;font-weight:900;color:#ff6600;text-shadow:0 0 30px #ff4400,0 0 60px #cc2200;z-index:10001;text-align:center;line-height:1.8;pointer-events:none;animation:achPop .4s ease-out';
+    txt.textContent='地獄の創造主が崩れ去った...';
+    document.body.appendChild(txt);
+    setTimeout(()=>txt.remove(),1500);
+  },800);
+  setTimeout(()=>{
+    ov.style.transition='background 1s';ov.style.background='rgba(0,0,0,0)';gw.style.animation='none';
+    setTimeout(()=>{ov.remove();onComplete();},1000);
+  },2000);
+}
+function showCreatorDefeatedEnding(onComplete){
+  function _pop(html,bgColor,tapDelay,next){
+    const d=document.createElement('div');
+    d.style.cssText=`position:fixed;inset:0;background:${bgColor};z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;pointer-events:none`;
+    d.innerHTML=html;
+    document.body.appendChild(d);
+    setTimeout(()=>{
+      d.style.pointerEvents='all';d.style.cursor='pointer';
+      const h=d.querySelector('#_tap-hint');
+      if(h){h.style.transition='color .5s';h.style.color='#705028';}
+      d.addEventListener('click',()=>{
+        d.style.opacity='0';d.style.transition='opacity .4s';
+        setTimeout(()=>{d.remove();next();},400);
+      },{once:true});
+    },tapDelay);
+  }
+  _pop(
+    `<div style="font-size:50px;margin-bottom:16px">🌑</div><div style="font-size:20px;font-weight:700;color:#fbbf24;letter-spacing:.1em">地獄の創造主を倒した</div><div id="_tap-hint" style="font-size:11px;color:transparent;margin-top:28px">タップで次へ</div>`,
+    'rgba(5,0,0,.92)',2000,()=>
+  _pop(
+    `<div style="font-size:36px;margin-bottom:16px">🏆</div><div style="font-size:18px;font-weight:700;color:#facc15;line-height:1.9">Congratulations!<br>あなたは地獄を制覇した</div><div id="_tap-hint" style="font-size:11px;color:transparent;margin-top:28px">タップで次へ</div>`,
+    'rgba(0,5,20,.93)',3000,()=>
+  _pop(
+    `<div style="font-size:30px;margin-bottom:16px">🎮</div><div style="font-size:15px;color:#a0c0e0;line-height:2">プレイしていただき<br>ありがとうございました</div><div style="font-size:12px;color:#6080a0;margin-top:6px">by Tosanokoji</div><div id="_tap-hint" style="font-size:11px;color:transparent;margin-top:28px">タップで次へ</div>`,
+    'rgba(0,0,10,.93)',3000,()=>
+  _pop(
+    `<div style="font-size:32px;margin-bottom:16px">⚡</div><div style="font-size:16px;color:#c084fc;line-height:2;letter-spacing:.05em">以降はエクストラステージ<br>となります</div><div id="_tap-hint" style="font-size:11px;color:transparent;margin-top:28px">タップして続ける</div>`,
+    'rgba(5,0,15,.92)',3000,onComplete))));
 }
 /* ─────────────────────────────────────────── */
 function showSkillFlash(color){
@@ -3609,6 +3677,12 @@ function autoBattleTick(){
         if(hasMoDisk){
           showCreatorReviveEvent(true,()=>{
             addLog('💿 MOディスクが創造主の必殺を封じた！','log-skill');
+            // 第2ラウンド: HP50%（60万）に戻して背景変更
+            bState.enemyHp=Math.floor(bState.enemyMaxHp*0.5);
+            bState.creatorRound2=true;
+            const _bgImgEl=document.getElementById('battle-bg-img-el');
+            if(_bgImgEl){const _s2='assets/back/floor9boss2.png';const _p2=new Image();_p2.onload=()=>{_bgImgEl.src=_s2;};_p2.onerror=()=>{};_p2.src=_s2;}
+            addLog('🌑 地獄の創造主が再起動... 第2ラウンド開始！','log-hero-dmg');
             updateBattleUI();renderActiveBtns();
             setTimeout(()=>autoBattleTick(),800);
           });
