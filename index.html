@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ABYSS RITE — 奈落の儀式</title>
+<title>ABYSS</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0ddd8;min-height:100vh}
@@ -275,7 +275,10 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .unique-badge:hover{box-shadow:0 0 8px rgba(252,211,77,.3)}
 
 /* バトルスキルツールチップ（ボタンに常時表示） */
-.active-btn .sk-desc{display:none}
+.active-btn .sk-desc{font-size:8px;color:#7c6fe0;line-height:1.2;text-align:center;max-width:88px;word-break:break-all;white-space:normal;display:block;opacity:.85}
+/* 敵消滅アニメーション */
+@keyframes enemyDie{0%{opacity:1;transform:scale(1)}40%{opacity:.5;transform:scale(1.08) translateY(-6px)}100%{opacity:0;transform:scale(0.5) translateY(24px)}}
+.enemy-dying{animation:enemyDie .45s ease-out forwards!important;pointer-events:none!important}
 
 /* 装飾品ホバーツールチップ */
 .acc-tooltip{position:fixed;background:#1a1a1f;border:0.5px solid #fb923c;border-radius:8px;padding:7px 11px;font-size:11px;color:#c4c2bc;pointer-events:none;z-index:999;max-width:180px;line-height:1.5;display:none}
@@ -328,9 +331,9 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 <div id="s-title" class="screen active">
   <div class="title-hero">
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
-    <div class="title-logo">ABYSS RITE</div>
-    <div class="title-sub-text">奈落の儀式 — ダークファンタジー ローグライト</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604161225</div>
+    <div class="title-logo">ABYSS</div>
+    <div class="title-sub-text">ダークファンタジーRPG</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604180933</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -365,7 +368,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
       <button class="title-btn-sub" id="btn-title-library">📖 ライブラリ</button>
     </div>
   </div>
-  <div style="font-size:11px;color:#3a3a38;text-align:center;padding-bottom:8px">ランを重ねるごとに新たな力が解放される</div>
+  <div style="font-size:11px;color:#3a3a38;text-align:center;padding-bottom:8px">全ての画像はGemini によって生成されています</div>
   <div style="text-align:center; margin-top:24px;">
     <span id="btn-hard-reset" style="font-size:10px; color:#4a4a4a; cursor:pointer; text-decoration:underline;">全ての状態をリセット</span>
   </div>
@@ -705,7 +708,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 <script>
 
 // ═══ 設定データ ═══════════════════════════════════════════
-const SETTINGS = JSON.parse(localStorage.getItem('abyss_settings') || '{"iconMode":"emoji"}');
+const SETTINGS = JSON.parse(localStorage.getItem('abyss_settings') || '{"iconMode":"png"}');
 function saveSettings(){ localStorage.setItem('abyss_settings', JSON.stringify(SETTINGS)); }
 
 // アイコン表示ヘルパー
@@ -776,6 +779,8 @@ const GS={
   charMemory: JSON.parse(localStorage.getItem('abyss_charmem')||'{}'),
   // ディープダンジョン: 到達済み最高階
   deepLevel: parseInt(localStorage.getItem('abyss_deeplevel')||'6'),
+  // フレーバーテキスト表示済みフロアID
+  seenFlavorFloors: JSON.parse(localStorage.getItem('abyss_flavor')||'[]'),
   // {souls, floorId, roomIdx, isBoss, bossId, bossHpRatio}
   run:{}
 };
@@ -796,6 +801,7 @@ function save(){
   localStorage.setItem('abyss_lost_souls',JSON.stringify(GS.lostSouls));
   localStorage.setItem('abyss_charmem',  JSON.stringify(GS.charMemory));
   localStorage.setItem('abyss_deeplevel',GS.deepLevel||6);
+  localStorage.setItem('abyss_flavor',JSON.stringify(GS.seenFlavorFloors||[]));
 }
 function isUnlocked(id){return GS.unlocked.includes(id);}
 
@@ -1161,6 +1167,8 @@ function renderFloors(){
       const maxUnlocked=GS.deepLevel||6;
       const deepCleared=GS.achStats.deepCleared||[];
       div.className=`floor-card ${locked?'locked-floor':''} ${isCurrent&&!locked?'active-floor':''}`;
+      div.style.backgroundImage="linear-gradient(rgba(14,10,8,.72),rgba(14,10,8,.72)),url('assets/back/floor9.png')";
+      div.style.backgroundSize='cover';div.style.backgroundPosition='center';
       div.innerHTML=`
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
@@ -1179,6 +1187,7 @@ function renderFloors(){
       return;
     }
     div.className=`floor-card ${locked?'locked-floor':''} ${isCurrent&&!locked?'active-floor':''}`;
+    {const _bgN=parseInt(f.id)||1;div.style.backgroundImage=`linear-gradient(rgba(14,10,8,.72),rgba(14,10,8,.72)),url('assets/back/floor${_bgN}.png')`;div.style.backgroundSize='cover';div.style.backgroundPosition='center';}
     div.innerHTML=`
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div>
@@ -1961,7 +1970,7 @@ function renderEquip(){
   const hasJourney=previewUniques.includes('traveler_journey');
   const accSlotBonus=(GS.systemUnlocked||[]).includes('acc_slot_up')?1:0;
   const accSlotBonus2=(GS.systemUnlocked||[]).includes('acc_slot_up2')?1:0;
-  const slots=hasJourney?8:(c?c.accSlots:1)+accSlotBonus+accSlotBonus2;
+  const slots=hasJourney?6:(c?c.accSlots:1)+accSlotBonus+accSlotBonus2;
   document.getElementById('acc-slots-label').textContent=slots;
   const _accSelCount=document.getElementById('acc-selected-count');
   if(_accSelCount) _accSelCount.textContent=(GS.run.accessories||[]).length?`(選択中 ${(GS.run.accessories||[]).length}/${slots})`:'';
@@ -2505,9 +2514,58 @@ function renderDungeon(){
     });
   }
 }
+// ─── フレーバーテキスト ────────────────────────────────
+const FLOOR_FLAVOR={
+  1:'旅人はついに伝説のダンジョンへ一歩足を踏み入れた。',
+  2:'石造りの地下階を抜けた先には、緑や苔が生い茂る朽ちたエリアが続いていた',
+  3:'緑を抜けた先には、燃えるような赤い世界が広がっていた',
+  4:'落ちる汗を拭い、マグマを抜けた先には、寒気がするほどの暗い冷たさがあった',
+  5:'暗き世界へ抜けた際には、さらなる闇が広がり、ほのかな炎だけが道しるべとなっていた',
+  6:'久方ぶりに浴びた太陽は眩しく、見慣れた景色もそこにあった',
+  7:'羽の生えし者の導きによりたどり着いた天空の都市。そこにも荒廃は広がっていた',
+  8:'空の都の朽ちた城には、どこかへと続く謎の小さな部屋があった。そこから先に見えた景色は…',
+  9:'多くの場所を旅し、たどり着いた先には果たして何が見えるのだろう？',
+  'deep_6':'まだ旅は終わらないようだ',
+};
+function showFlavorText(flavorKey,onDone){
+  const txt=FLOOR_FLAVOR[flavorKey];
+  if(!txt){if(onDone)onDone();return;}
+  GS.seenFlavorFloors=GS.seenFlavorFloors||[];
+  if(GS.seenFlavorFloors.includes(String(flavorKey))){if(onDone)onDone();return;}
+  GS.seenFlavorFloors.push(String(flavorKey));
+  save();
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.80);z-index:9990;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:28px;text-align:center';
+  ov.innerHTML=`<div style="max-width:340px"><div style="font-size:16px;color:#e0ddd8;line-height:1.9;letter-spacing:.5px;font-style:italic;text-shadow:0 0 20px rgba(200,180,140,.4)">${txt}</div></div>`;
+  document.body.appendChild(ov);
+  setTimeout(()=>{
+    ov.style.pointerEvents='all';ov.style.cursor='pointer';
+    ov.addEventListener('click',()=>{
+      ov.style.opacity='0';ov.style.transition='opacity .5s';
+      setTimeout(()=>{ov.remove();if(onDone)onDone();},500);
+    },{once:true});
+  },3000);
+  // 自動フェードアウト（手動タップがなければ15秒後に消える）
+  setTimeout(()=>{
+    if(ov.parentNode){ov.style.opacity='0';ov.style.transition='opacity .5s';setTimeout(()=>{if(ov.parentNode)ov.remove();if(onDone)onDone();},500);}
+  },15000);
+}
 function enterRoom(){
   const t=GS.run.roomTypes[GS.run.room];
   const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
+  // 最初の部屋に入った時だけフレーバーテキスト表示
+  if(GS.run.room===0){
+    const _fid=GS.run.floorId||1;
+    const _fkey=floor&&floor.deepMode?('deep_'+(GS.run.deepTargetFloor||6)):_fid;
+    const _seen=(GS.seenFlavorFloors||[]).includes(String(_fkey));
+    if(!_seen&&FLOOR_FLAVOR[_fkey]){
+      showFlavorText(_fkey,()=>_doEnterRoom(t,floor));
+      return;
+    }
+  }
+  _doEnterRoom(t,floor);
+}
+function _doEnterRoom(t,floor){
   if(floor&&floor.deepMode&&t==='boss'){
     // ディープダンジョン: levels配列からボスを取得（各階独立）
     const deepTargetFloor=GS.run.deepTargetFloor||6;
@@ -2935,7 +2993,7 @@ function skillHitEnemy(bs,baseDmg,skillName){
   addLog(`${isCrit?'💥会心！':''}${skillName}で${dmg}ダメージ！`,isCrit?'log-crit':'log-skill');
   applyVampiric(dmg,bs);
   updateBattleUI();renderActiveBtns();
-  if(bs.enemyHp<=0)setTimeout(()=>endBattle(true),200);
+  if(bs.enemyHp<=0)defeatEnemy();
 }
 function applyVampiric(dmg,bs){
   if((GS.run.passiveSkills||[]).includes('vampiric')){
@@ -2945,27 +3003,48 @@ function applyVampiric(dmg,bs){
     triggerPassiveBadge('vampiric');
   }
 }
+/* ─── 敵消滅（死亡アニメーション→endBattle） ─── */
+function defeatEnemy(){
+  if(bState.dyingTriggered||bState.over) return;
+  bState.dyingTriggered=true;
+  const el=document.getElementById('enemy-sprite');
+  if(el) el.classList.add('enemy-dying');
+  setTimeout(()=>endBattle(true),450);
+}
+
 /* ─── 地獄の創造主 演出ヘルパー ─── */
 function showCreatorReviveEvent(hasMoDisk,onComplete){
   const ov=document.createElement('div');
-  ov.style.cssText='position:fixed;inset:0;background:rgba(10,0,0,.88);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;pointer-events:all;padding:24px;text-align:center';
   if(hasMoDisk){
-    ov.innerHTML=`<div style="font-size:52px;margin-bottom:18px">💿</div>
-<div style="font-size:20px;font-weight:700;color:#6ee7b7;margin-bottom:10px">MOディスクが守った！</div>
-<div style="font-size:13px;color:#a1fae0;margin-bottom:8px;line-height:1.7">地獄の創造主の全回復が封じられ<br>必殺の刻印が消え去った。</div>
-<div style="font-size:12px;color:#4ade80;margin-top:28px;animation:tapBlink 1s infinite">タップして続ける</div>`;
+    // MOディスク干渉演出（3秒後にタップ可能）
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,18,36,.90);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;padding:24px;text-align:center';
+    ov.innerHTML=`<div style="font-size:56px;margin-bottom:20px;animation:tapBlink 1.4s ease-in-out infinite">💿</div>
+<div style="font-size:20px;font-weight:700;color:#6ee7b7;margin-bottom:14px;letter-spacing:1px">突然、MOディスクが光った</div>
+<div style="font-size:15px;color:#a1fae0;font-weight:500;line-height:1.7;margin-bottom:8px">地獄の創造主の脅威を封じた</div>
+<div id="_cr-tap" style="font-size:12px;color:transparent;margin-top:32px">タップして続ける</div>`;
+    document.body.appendChild(ov);
+    setTimeout(()=>{
+      ov.style.pointerEvents='all';
+      const hint=ov.querySelector('#_cr-tap');
+      if(hint){hint.style.color='#4ade80';hint.style.animation='tapBlink 1s infinite';}
+      ov.addEventListener('click',()=>{
+        ov.style.opacity='0';ov.style.transition='opacity .4s';
+        setTimeout(()=>{ov.remove();onComplete();},400);
+      },{once:true});
+    },3000);
   } else {
+    ov.style.cssText='position:fixed;inset:0;background:rgba(10,0,0,.88);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;pointer-events:all;padding:24px;text-align:center';
     ov.innerHTML=`<div style="font-size:60px;margin-bottom:18px;animation:creatorBossShake .6s ease-out infinite">🌑</div>
 <div style="font-size:22px;font-weight:700;color:#ef4444;margin-bottom:10px;animation:creatorPulse 1.2s ease-in-out infinite">地獄の創造主、覚醒！</div>
 <div style="font-size:13px;color:#fca5a5;margin-bottom:6px;line-height:1.8">HPが限界を超えた時、真の力が目覚めた。<br>全てのダメージを無効化し、完全回復——</div>
 <div style="font-size:13px;color:#fbbf24;font-weight:700;margin-bottom:28px">次のターン、回避不能の必殺が来る</div>
 <div style="font-size:11px;color:#f87171;animation:tapBlink .9s infinite">タップして覚悟を決める</div>`;
+    document.body.appendChild(ov);
+    ov.addEventListener('click',()=>{
+      ov.style.opacity='0';ov.style.transition='opacity .4s';
+      setTimeout(()=>{ov.remove();onComplete();},400);
+    },{once:true});
   }
-  document.body.appendChild(ov);
-  ov.addEventListener('click',()=>{
-    ov.style.opacity='0';ov.style.transition='opacity .4s';
-    setTimeout(()=>{ov.remove();onComplete();},400);
-  },{once:true});
 }
 function showCreatorDeathblowEvent(onComplete){
   const ov=document.createElement('div');
@@ -3188,7 +3267,7 @@ function autoBattleTick(){
       bState.angelLightRemaining--;
       showDmg('enemy-sprite',_lightDmg,false,true,false);
       addLog(`☀️ 天の光 ${5-bState.angelLightRemaining}/5: ${_lightDmg}ダメージ`,'log-skill');
-      if(bState.enemyHp<=0){endBattle(true);return;}
+      if(bState.enemyHp<=0){defeatEnemy();return;}
     }
   }
   // 呪いの刻印（ターン毎に敵HP削る）0.5%
@@ -3196,7 +3275,7 @@ function autoBattleTick(){
     const curseDmg=Math.max(1,Math.floor(bState.enemyMaxHp*0.005));
     bState.enemyHp-=curseDmg;
     addLog(`呪いの刻印: ${curseDmg}ダメージ`,'log-skill');
-    if(bState.enemyHp<=0){endBattle(true);return;}
+    if(bState.enemyHp<=0){defeatEnemy();return;}
   }
   // 毒: 3ターンかけて最大HPの3%ダメージ
   if((bState.poisonTurns||0)>0){
@@ -3204,7 +3283,7 @@ function autoBattleTick(){
     bState.poisonTurns--;
     showDmg('enemy-sprite',bState.poisonDmgPer,false,false,false);
     addLog(`☠ 毒ダメージ: ${bState.poisonDmgPer}（残${bState.poisonTurns}T）`,'log-skill');
-    if(bState.enemyHp<=0){endBattle(true);return;}
+    if(bState.enemyHp<=0){defeatEnemy();return;}
   }
   // 聖なる加護（毎ターンHP回復）最大HPの1%
   if((GS.run.uniqueSkills||[]).includes('paladin_aura')){
@@ -3240,7 +3319,7 @@ function autoBattleTick(){
     showDmg('enemy-sprite',_railDmg,false,true,false);
     addLog(`⚡ 電磁砲チャージ！ ${_railDmg}の大ダメージ（防御無視）`,'log-crit');
     showSkillFlash('rgba(251,191,36,.3)');
-    if(bState.enemyHp<=0){endBattle(true);return;}
+    if(bState.enemyHp<=0){defeatEnemy();return;}
   }
   // 天啓: 5ターンに1回ランダムスキル発動
   if((GS.run.uniqueSkills||[]).includes('angel_revelation')&&bState.turn>0&&bState.turn%5===0){
@@ -3255,7 +3334,7 @@ function autoBattleTick(){
         bState.mageRunaway=false;
         _revS.fn(bState);
         updateBattleUI();renderActiveBtns();
-        if(bState.enemyHp<=0){endBattle(true);return;}
+        if(bState.enemyHp<=0){defeatEnemy();return;}
       }
     }
   }
@@ -3266,7 +3345,7 @@ function autoBattleTick(){
     showDmg('enemy-sprite',_shieldDmg,false,true,false);
     addLog(`🛡️ 聖なる盾発動！ ${_shieldDmg}ダメージ（DEF×5）`,'log-skill');
     showSkillFlash('rgba(167,139,250,.25)');
-    if(bState.enemyHp<=0){endBattle(true);return;}
+    if(bState.enemyHp<=0){defeatEnemy();return;}
   }
   // 使役: 5ターンに1回、MP3%消費→その10倍のDEF無視攻撃
   if((GS.run.uniqueSkills||[]).includes('necro_servant')&&bState.turn>0&&bState.turn%5===0){
@@ -3278,7 +3357,7 @@ function autoBattleTick(){
       showDmg('enemy-sprite',_servDmg,false,false,false);
       addLog(`🦴 使役: MP${_servCost}消費 → ${_servDmg}ダメージ（防御無視）`,'log-skill');
       showSkillFlash('rgba(139,92,246,.3)');
-      if(bState.enemyHp<=0){endBattle(true);return;}
+      if(bState.enemyHp<=0){defeatEnemy();return;}
     }
   }
   // リミッター解除: 5ターンに1回発動（現在HPが最大HPの半分以下なら不発）
@@ -3380,7 +3459,7 @@ function autoBattleTick(){
       showDmg('enemy-sprite',_bsDmg,false,true,false);
       addLog(`🪄 破壊の杖炸裂！ 追加${_bsDmg}ダメ＋敵DEF6秒ゼロ！`,'log-crit');
       showSkillFlash('rgba(239,68,68,.25)');
-      if(bState.enemyHp<=0){endBattle(true);return;}
+      if(bState.enemyHp<=0){defeatEnemy();return;}
     }
     // 天使のラッパ: 天使装備時10%で天の光発動
     if(bState.enemyHp>0&&GS.run.weaponId==='angeltrumpet'&&GS.run.charId==='angel'&&bState.angelLightRemaining===0&&Math.random()<0.1){
@@ -3494,7 +3573,7 @@ function autoBattleTick(){
     }
 
     updateBattleUI();renderActiveBtns();
-    if(bState.enemyHp<=0){endBattle(true);return;}
+    if(bState.enemyHp<=0){defeatEnemy();return;}
     // 地獄の創造主: 初めてHP50%以下になったら全回復＋次ターン即死予告
     if(!bState.creatorRevived&&bState.isBoss&&bState.enemy.halfHpRevive&&bState.enemyHp<=bState.enemyMaxHp*0.5){
       bState.creatorRevived=true;
@@ -3523,10 +3602,11 @@ function autoBattleTick(){
         bState.creatorDeathblowPending=false;
         const hasMoDisk=(GS.run.accessories||[]).includes('mo_disk');
         if(hasMoDisk){
-          addLog('💿 MOディスクが創造主の必殺を封じた！','log-skill');
-          showSkillFlash('rgba(74,158,255,.3)');
-          updateBattleUI();renderActiveBtns();
-          setTimeout(()=>autoBattleTick(),1300);
+          showCreatorReviveEvent(true,()=>{
+            addLog('💿 MOディスクが創造主の必殺を封じた！','log-skill');
+            updateBattleUI();renderActiveBtns();
+            setTimeout(()=>autoBattleTick(),800);
+          });
         } else {
           // タップ式オーバーレイ → 派手なエフェクト → 即死
           showCreatorDeathblowEvent(()=>{
@@ -3638,7 +3718,7 @@ function autoBattleTick(){
               addLog(`⚛️ リアクター発動！ 蓄積${_reactDmg}ダメージを解放！`,'log-crit');
               showSkillFlash('rgba(74,158,255,.3)');
               updateReactorGauge();
-              if(bState.enemyHp<=0){endBattle(true);return;}
+              if(bState.enemyHp<=0){defeatEnemy();return;}
             }
           }
         } else {
@@ -3694,7 +3774,7 @@ function autoBattleTick(){
                 addLog(`⚛️ リアクター発動！ 蓄積${_reactDmg}ダメージを解放！`,'log-crit');
                 showSkillFlash('rgba(74,158,255,.3)');
                 updateReactorGauge();
-                if(bState.enemyHp<=0){endBattle(true);return;}
+                if(bState.enemyHp<=0){defeatEnemy();return;}
               }
             }
           }
@@ -3706,7 +3786,7 @@ function autoBattleTick(){
         }
         updateBattleUI();renderActiveBtns();
         if(bState.heroHp<=0){endBattle(false);return;}
-        if(bState.enemyHp<=0){endBattle(true);return;}
+        if(bState.enemyHp<=0){defeatEnemy();return;}
         setTimeout(()=>autoBattleTick(),1300);
       });
     },840);
