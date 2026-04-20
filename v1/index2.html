@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABYSS RITE — 奈落の儀式</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0ddd8;min-height:100vh}
+#game{max-width:520px;margin:0 auto;padding:16px}
+.screen{display:none}.screen.active{display:block}
+.title{font-size:22px;font-weight:500;margin-bottom:4px}
+.sub{font-size:13px;color:#888780;margin-bottom:20px}
+.btn{background:transparent;border:0.5px solid #5f5e5a;border-radius:8px;padding:8px 18px;font-size:14px;color:#e0ddd8;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn:hover{background:#2c2c2a}
+.btn-primary{background:#2c2c2a;border-color:#888780}
+.card{background:#1f1f24;border:0.5px solid #3a3a38;border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.card:hover,.card.selected{border-color:#888780}
+.card.selected{background:#2c2c2a}
+.card-title{font-size:15px;font-weight:500;margin-bottom:3px}
+.card-sub{font-size:12px;color:#888780}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row2{display:flex;gap:10px}
+.stat-box{background:#2c2c2a;border-radius:8px;padding:8px 12px;text-align:center;flex:1}
+.stat-label{font-size:11px;color:#5f5e5a;margin-bottom:2px}
+.stat-val{font-size:18px;font-weight:500}
+.hp-bar-wrap{background:#3a3a38;border-radius:4px;height:8px;margin:4px 0;overflow:hidden}
+.hp-bar{height:100%;border-radius:4px;transition:width .4s}
+.hp-hero{background:#A32D2D}
+.hp-enemy{background:#185FA5}
+.battle-area{background:#2c2c2a;border-radius:12px;padding:16px;margin:12px 0;min-height:180px;position:relative;overflow:hidden}
+.fighter{display:inline-block;transition:transform .15s}
+.fighter.attack{animation:atk .3s}
+.fighter.shake{animation:shk .3s}
+@keyframes atk{0%{transform:translateX(0)}40%{transform:translateX(18px)}100%{transform:translateX(0)}}
+@keyframes shk{0%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}100%{transform:translateX(0)}}
+.dmg-pop{position:absolute;font-size:16px;font-weight:500;color:#E24B4A;pointer-events:none;animation:pop .8s forwards}
+@keyframes pop{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-36px)}}
+.dmg-pop.heal{color:#1D9E75}
+.log{background:#2c2c2a;border:0.5px solid #3a3a38;border-radius:8px;padding:10px 12px;font-size:12px;color:#888780;max-height:80px;overflow-y:auto;margin:8px 0}
+.log p{margin:1px 0}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:8px;margin-right:4px}
+.badge-red{background:#501313;color:#F09595}
+.badge-blue{background:#042C53;color:#85B7EB}
+.badge-purple{background:#26215C;color:#AFA9EC}
+.badge-amber{background:#412402;color:#EF9F27}
+.badge-gray{background:#2C2C2A;color:#B4B2A9}
+.skill-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.skill-card{background:#2c2c2a;border:0.5px solid #3a3a38;border-radius:8px;padding:10px;cursor:pointer;transition:border-color .15s}
+.skill-card:hover,.skill-card.selected{border-color:#888780}
+.skill-card.selected{background:#1f1f24}
+.skill-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.skill-desc{font-size:11px;color:#888780}
+.room-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
+.room{background:#2c2c2a;border:0.5px solid #3a3a38;border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:#5f5e5a}
+.room.cleared{color:#888780}
+.room.current{border:1.5px solid #534AB7;color:#AFA9EC}
+.room.locked{opacity:.35}
+.room.boss{border-color:#A32D2D;color:#F09595}
+.divider{border:none;border-top:0.5px solid #3a3a38;margin:14px 0}
+.souls{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#888780}
+.soul-icon{width:10px;height:10px;border-radius:50%;background:#534AB7;display:inline-block}
+.choice-list{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+</style>
+</head>
+<body>
+<div id="game">
+
+<div id="s-title" class="screen active">
+  <div style="text-align:center;padding:30px 0 20px">
+    <div style="font-size:28px;font-weight:500;letter-spacing:2px;margin-bottom:6px">ABYSS RITE</div>
+    <div style="font-size:13px;color:#888780;margin-bottom:28px">奈落の儀式 — ダークファンタジー ローグライト</div>
+    <div id="soul-display" class="souls" style="justify-content:center;margin-bottom:20px">
+      <span class="soul-icon"></span>魂の欠片: <strong id="soul-count">100</strong>
+    </div>
+    <button class="btn btn-primary" onclick="goTo('s-char')" style="margin-right:8px">探索を始める</button>
+    <button class="btn" onclick="goTo('s-unlock')" id="btn-unlock">アンロック</button>
+  </div>
+  <div style="font-size:12px;color:#5f5e5a;text-align:center;padding-bottom:8px">ランを重ねるごとに新たな力が解放される</div>
+</div>
+
+<div id="s-unlock" class="screen">
+  <div class="title">アンロックショップ</div>
+  <div class="sub">魂の欠片を消費して力を解放する</div>
+  <div id="unlock-list"></div>
+  <hr class="divider">
+  <button class="btn" onclick="goTo('s-title')">戻る</button>
+</div>
+
+<div id="s-char" class="screen">
+  <div class="title">キャラクター選択</div>
+  <div class="sub">誰を奈落へ送り込む？</div>
+  <div id="char-list"></div>
+  <hr class="divider">
+  <button class="btn btn-primary" id="btn-to-equip" onclick="goTo('s-equip')" disabled>装備を選ぶ</button>
+  <button class="btn" onclick="goTo('s-title')" style="margin-left:8px">戻る</button>
+</div>
+
+<div id="s-equip" class="screen">
+  <div class="title">装備選択</div>
+  <div class="sub">武器と防具を選択（各1つ）</div>
+  <div style="font-size:13px;font-weight:500;margin:10px 0 6px">武器</div>
+  <div id="weapon-list"></div>
+  <div style="font-size:13px;font-weight:500;margin:10px 0 6px">防具</div>
+  <div id="armor-list"></div>
+  <hr class="divider">
+  <button class="btn btn-primary" id="btn-to-skill" onclick="goTo('s-skill')" disabled>スキルを設定する</button>
+  <button class="btn" onclick="goTo('s-char')" style="margin-left:8px">戻る</button>
+</div>
+
+<div id="s-skill" class="screen">
+  <div class="title">スキル設定</div>
+  <div class="sub">スキルを0つ選択（アクティブに設定）</div>
+  <div class="skill-grid" id="skill-list"></div>
+  <div style="font-size:12px;color:#888780;margin-top:4px">選択中: <span id="skill-count">0</span>/0</div>
+  <hr class="divider">
+  <button class="btn btn-primary" id="btn-to-dungeon" onclick="startRun()" disabled>ダンジョンへ</button>
+  <button class="btn" onclick="goTo('s-equip')" style="margin-left:8px">戻る</button>
+</div>
+
+<div id="s-dungeon" class="screen">
+  <div class="row" style="margin-bottom:12px;justify-content:space-between">
+    <div>
+      <span id="dungeon-name" style="font-size:15px;font-weight:500"></span>
+      <span style="font-size:12px;color:#888780;margin-left:8px">部屋 <span id="room-num">1</span>/10</span>
+    </div>
+    <div class="souls"><span class="soul-icon"></span><span id="run-souls">0</span></div>
+  </div>
+  <div class="room-grid" id="room-grid"></div>
+  <div class="row2">
+    <div class="stat-box"><div class="stat-label">HP</div><div class="stat-val" id="d-hp">--</div></div>
+    <div class="stat-box"><div class="stat-label">攻撃</div><div class="stat-val" id="d-atk">--</div></div>
+    <div class="stat-box"><div class="stat-label">防御</div><div class="stat-val" id="d-def">--</div></div>
+  </div>
+  <hr class="divider">
+  <button class="btn btn-primary" onclick="enterRoom()">部屋に入る</button>
+</div>
+
+<div id="s-battle" class="screen">
+  <div class="row" style="justify-content:space-between;margin-bottom:10px">
+    <div style="font-size:14px;font-weight:500" id="battle-title">戦闘</div>
+    <div class="souls"><span class="soul-icon"></span><span id="b-souls">0</span></div>
+  </div>
+  <div class="battle-area" id="battle-area">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;height:100%">
+      <div style="text-align:center;width:120px">
+        <div id="hero-sprite" style="font-size:40px;margin-bottom:6px;display:inline-block" class="fighter">⚔</div>
+        <div style="font-size:12px;font-weight:500" id="b-hero-name"></div>
+        <div class="hp-bar-wrap"><div class="hp-bar hp-hero" id="b-hero-hp" style="width:100%"></div></div>
+        <div style="font-size:11px;color:#888780" id="b-hero-hp-text"></div>
+      </div>
+      <div style="font-size:18px;color:#5f5e5a">VS</div>
+      <div style="text-align:center;width:120px">
+        <div id="enemy-sprite" style="font-size:40px;margin-bottom:6px;display:inline-block" class="fighter">👁</div>
+        <div style="font-size:12px;font-weight:500" id="b-enemy-name"></div>
+        <div class="hp-bar-wrap"><div class="hp-bar hp-enemy" id="b-enemy-hp" style="width:100%"></div></div>
+        <div style="font-size:11px;color:#888780" id="b-enemy-hp-text"></div>
+      </div>
+    </div>
+  </div>
+  <div class="log" id="battle-log"></div>
+  <div class="row" id="skill-btns" style="margin-top:8px;flex-wrap:wrap;gap:6px"></div>
+  <div id="battle-result" style="display:none;margin-top:12px"></div>
+</div>
+
+<div id="s-choice" class="screen">
+  <div class="title">選択</div>
+  <div class="sub" id="choice-desc">何かを選んでください</div>
+  <div class="choice-list" id="choice-list"></div>
+</div>
+
+<div id="s-result" class="screen">
+  <div style="text-align:center;padding:24px 0 16px">
+    <div style="font-size:32px;margin-bottom:10px" id="result-icon"></div>
+    <div class="title" id="result-title" style="text-align:center"></div>
+    <div class="sub" id="result-sub" style="text-align:center"></div>
+    <div class="row2" style="justify-content:center;gap:16px;margin:16px 0">
+      <div class="stat-box" style="min-width:90px"><div class="stat-label">撃破数</div><div class="stat-val" id="r-kills">0</div></div>
+      <div class="stat-box" style="min-width:90px"><div class="stat-label">魂の欠片</div><div class="stat-val" id="r-souls">0</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="goTo('s-title')" style="margin-right:8px">タイトルへ</button>
+    <button class="btn" onclick="goTo('s-char')">もう一度</button>
+  </div>
+</div>
+
+</div>
+<script>
+const GS={
+  souls:parseInt(localStorage.getItem('abyss_souls')||'0'),
+  unlocked:JSON.parse(localStorage.getItem('abyss_unlocked')||'["warrior","sword","leather"]'),
+  run:{}
+};
+const CHARS={
+  warrior:{id:'warrior',name:'戦士',icon:'⚔',hp:120,atk:18,def:8,desc:'高HPと防御力。前線の守り手',unlockCost:0},
+  mage:{id:'mage',name:'魔術師',icon:'✦',hp:70,atk:28,def:3,desc:'高火力の魔法使い。HPが低い',unlockCost:15},
+  rogue:{id:'rogue',name:'盗賊',icon:'◆',hp:90,atk:22,def:5,desc:'クリティカル率高め。素早い',unlockCost:20}
+};
+const WEAPONS={
+  sword:{id:'sword',name:'錆びた剣',atk:5,desc:'古びた剣。基本の一撃',unlockCost:0},
+  axe:{id:'axe',name:'呪われた斧',atk:10,desc:'重い一撃。クリット時+15',unlockCost:12},
+  staff:{id:'staff',name:'骨の杖',atk:8,desc:'魔力を宿した杖。魔術師向き',unlockCost:10},
+  dagger:{id:'dagger',name:'影の短剣',atk:7,desc:'連撃しやすい。盗賊向き',unlockCost:8}
+};
+const ARMORS={
+  leather:{id:'leather',name:'粗末な革鎧',def:3,hp:0,desc:'最低限の防護',unlockCost:0},
+  chainmail:{id:'chainmail',name:'腐食した鎖帷子',def:7,hp:10,desc:'まだ使える防具',unlockCost:10},
+  robe:{id:'robe',name:'呪術師の外套',def:2,hp:5,desc:'魔防が高い。魔術師向き',unlockCost:8},
+  shadow:{id:'shadow',name:'影織りの外套',def:4,hp:8,desc:'回避しやすい。盗賊向き',unlockCost:12}
+};
+const SKILLS={
+  regen:{id:'regen',name:'暗黒回生',desc:'毎ターン最大HPの5%回復',unlockCost:0},
+  crit:{id:'crit',name:'急所穿ち',desc:'クリティカル率+20%',unlockCost:0},
+  shield:{id:'shield',name:'骨の盾',desc:'被ダメ-4(毎ターン)',unlockCost:0},
+  rage:{id:'rage',name:'血の怒り',desc:'HP50%以下で攻撃+30%',unlockCost:15},
+  curse:{id:'curse',name:'呪いの刃',desc:'攻撃時に敵に毎ターン3ダメ',unlockCost:18},
+  soul:{id:'soul',name:'魂喰い',desc:'敵撃破時にHP10回復',unlockCost:20}
+};
+const UNLOCKABLES=[
+  {type:'char',id:'mage',label:'魔術師を解放',cost:15},
+  {type:'char',id:'rogue',label:'盗賊を解放',cost:20},
+  {type:'weapon',id:'axe',label:'呪われた斧を解放',cost:12},
+  {type:'weapon',id:'staff',label:'骨の杖を解放',cost:10},
+  {type:'weapon',id:'dagger',label:'影の短剣を解放',cost:8},
+  {type:'armor',id:'chainmail',label:'腐食した鎖帷子を解放',cost:10},
+  {type:'armor',id:'robe',label:'呪術師の外套を解放',cost:8},
+  {type:'armor',id:'shadow',label:'影織りの外套を解放',cost:12},
+  {type:'skill',id:'rage',label:'スキル「血の怒り」を解放',cost:15},
+  {type:'skill',id:'curse',label:'スキル「呪いの刃」を解放',cost:18},
+  {type:'skill',id:'soul',label:'スキル「魂喰い」を解放',cost:20}
+];
+const ENEMIES=[
+  {name:'腐乱した屍',icon:'💀',hp:40,atk:8,def:1,souls:2},
+  {name:'影の番人',icon:'👁',hp:55,atk:12,def:2,souls:3},
+  {name:'骨の騎士',icon:'⚰',hp:70,atk:14,def:5,souls:4},
+  {name:'呪われた狼',icon:'🐺',hp:45,atk:16,def:1,souls:3},
+  {name:'石の守護者',icon:'🗿',hp:90,atk:10,def:8,souls:5},
+  {name:'魂の亡者',icon:'👻',hp:60,atk:18,def:3,souls:5}
+];
+const BOSSES=[
+  {name:'奈落の番人',icon:'👁',hp:150,atk:20,def:8,souls:15},
+  {name:'深淵の覇者',icon:'🦂',hp:220,atk:28,def:12,souls:25}
+];
+const ROOM_TYPES=['battle','battle','battle','battle','battle','treasure','rest','battle','battle','boss'];
+let bState={};
+function save(){localStorage.setItem('abyss_souls',GS.souls);localStorage.setItem('abyss_unlocked',JSON.stringify(GS.unlocked));}
+function isUnlocked(id){return GS.unlocked.includes(id)}
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='s-title'){document.getElementById('soul-count').textContent=GS.souls}
+  if(id==='s-unlock'){renderUnlock()}
+  if(id==='s-char'){renderChars()}
+  if(id==='s-equip'){renderEquip()}
+  if(id==='s-skill'){renderSkills()}
+}
+function renderUnlock(){
+  const el=document.getElementById('unlock-list');
+  el.innerHTML='<div style="font-size:13px;color:#888780;margin-bottom:8px">所持: '+GS.souls+' 魂の欠片</div>';
+  UNLOCKABLES.forEach(u=>{
+    const done=isUnlocked(u.id);
+    el.innerHTML+=`<div class="card" style="${done?'opacity:.5':''}" onclick="${done?'':('unlockItem(\''+u.id+'\','+u.cost+')')}">
+      <div class="row" style="justify-content:space-between">
+        <div class="card-title">${u.label}</div>
+        ${done?'<span class="badge badge-gray">解放済</span>':'<span class="badge badge-purple">'+u.cost+' 欠片</span>'}
+      </div></div>`;
+  });
+}
+function unlockItem(id,cost){
+  if(GS.souls<cost){alert('魂の欠片が足りない');return}
+  GS.souls-=cost;GS.unlocked.push(id);save();renderUnlock();
+}
+function renderChars(){
+  const el=document.getElementById('char-list');el.innerHTML='';
+  Object.values(CHARS).forEach(c=>{
+    const ok=isUnlocked(c.id);
+    el.innerHTML+=`<div class="card ${GS.run.charId===c.id?'selected':''}" onclick="${ok?('selectChar(\''+c.id+'\')'):('alert(\'アンロックが必要です\')')}">
+      <div class="row" style="gap:12px">
+        <div style="font-size:28px">${c.icon}</div>
+        <div style="flex:1">
+          <div class="card-title">${c.name}</div>
+          <div class="card-sub">${c.desc}</div>
+          <div class="row" style="margin-top:4px;gap:4px">
+            <span class="badge badge-red">HP ${c.hp}</span>
+            <span class="badge badge-amber">攻撃 ${c.atk}</span>
+            <span class="badge badge-blue">防御 ${c.def}</span>
+          </div>
+        </div>
+        ${ok?'':'<span class="badge badge-gray">未解放</span>'}
+      </div></div>`;
+  });
+}
+function selectChar(id){GS.run.charId=id;renderChars();document.getElementById('btn-to-equip').disabled=false;}
+function renderEquip(){
+  const wl=document.getElementById('weapon-list');
+  const al=document.getElementById('armor-list');
+  wl.innerHTML='';al.innerHTML='';
+  Object.values(WEAPONS).forEach(w=>{
+    const ok=isUnlocked(w.id);
+    wl.innerHTML+=`<div class="card ${GS.run.weaponId===w.id?'selected':''}" onclick="${ok?('selWeapon(\''+w.id+'\')'):('alert(\'アンロックが必要です\')')}">
+      <div class="row" style="justify-content:space-between">
+        <div><div class="card-title">${w.name}</div><div class="card-sub">${w.desc}</div></div>
+        ${ok?'<span class="badge badge-amber">攻撃+'+w.atk+'</span>':'<span class="badge badge-gray">未解放</span>'}
+      </div></div>`;
+  });
+  Object.values(ARMORS).forEach(a=>{
+    const ok=isUnlocked(a.id);
+    al.innerHTML+=`<div class="card ${GS.run.armorId===a.id?'selected':''}" onclick="${ok?('selArmor(\''+a.id+'\')'):('alert(\'アンロックが必要です\')')}">
+      <div class="row" style="justify-content:space-between">
+        <div><div class="card-title">${a.name}</div><div class="card-sub">${a.desc}</div></div>
+        ${ok?'<span class="badge badge-blue">防御+'+a.def+(a.hp?' HP+'+a.hp:'')+'</span>':'<span class="badge badge-gray">未解放</span>'}
+      </div></div>`;
+  });
+  checkEquipDone();
+}
+function selWeapon(id){GS.run.weaponId=id;renderEquip()}
+function selArmor(id){GS.run.armorId=id;renderEquip()}
+function checkEquipDone(){document.getElementById('btn-to-skill').disabled=!(GS.run.weaponId&&GS.run.armorId);}
+function renderSkills(){
+  const el=document.getElementById('skill-list');el.innerHTML='';
+  GS.run.skills=GS.run.skills||[];
+  Object.values(SKILLS).forEach(s=>{
+    const ok=isUnlocked(s.id);
+    const sel=GS.run.skills.includes(s.id);
+    el.innerHTML+=`<div class="skill-card ${sel?'selected':''}" onclick="${ok?('toggleSkill(\''+s.id+'\')'):('alert(\'アンロックが必要です\')')}">
+      <div class="skill-name">${s.name} ${ok?'':'🔒'}</div>
+      <div class="skill-desc">${s.desc}</div></div>`;
+  });
+  document.getElementById('skill-count').textContent=GS.run.skills.length;
+  document.getElementById('btn-to-dungeon').disabled=GS.run.skills.length!==2;
+}
+function toggleSkill(id){
+  const idx=GS.run.skills.indexOf(id);
+  if(idx>=0){GS.run.skills.splice(idx,1)}
+  else if(GS.run.skills.length<2){GS.run.skills.push(id)}
+  renderSkills();
+}
+function startRun(){
+  const c=CHARS[GS.run.charId];
+  const w=WEAPONS[GS.run.weaponId];
+  const a=ARMORS[GS.run.armorId];
+  GS.run.hp=c.hp+a.hp;GS.run.maxHp=c.hp+a.hp;
+  GS.run.atk=c.atk+w.atk;GS.run.def=c.def+a.def;
+  GS.run.type=c.type;GS.run.icon=c.icon;GS.run.name=c.name;
+  GS.run.room=0;GS.run.kills=0;GS.run.runSouls=0;GS.run.cursed=false;
+  renderDungeon();goTo('s-dungeon');
+}
+function renderDungeon(){
+  const rg=document.getElementById('room-grid');rg.innerHTML='';
+  for(let i=0;i<10;i++){
+    const t=ROOM_TYPES[i];
+    let label=i<GS.run.room?'✓':i===GS.run.room?'●':t==='boss'?'B':'?';
+    let cls='room '+(i<GS.run.room?'cleared':i===GS.run.room?'current':i>GS.run.room?'locked':'');
+    if(t==='boss'&&i>=GS.run.room) cls+=' boss';
+    rg.innerHTML+=`<div class="${cls}">${label}</div>`;
+  }
+  document.getElementById('room-num').textContent=GS.run.room+1;
+  document.getElementById('run-souls').textContent=GS.run.runSouls;
+  document.getElementById('d-hp').textContent=GS.run.hp+'/'+GS.run.maxHp;
+  document.getElementById('d-atk').textContent=GS.run.atk;
+  document.getElementById('d-def').textContent=GS.run.def;
+}
+function enterRoom(){
+  const t=ROOM_TYPES[GS.run.room];
+  if(t==='battle'||t==='boss'){
+    const pool=t==='boss'?BOSSES:ENEMIES;
+    const e=JSON.parse(JSON.stringify(pool[Math.floor(Math.random()*pool.length)]));
+    startBattle(e,t==='boss');
+  } else if(t==='treasure'){showChoice('treasure')}
+  else if(t==='rest'){showChoice('rest')}
+}
+function startBattle(enemy,isBoss){
+  bState={heroHp:GS.run.hp,heroMaxHp:GS.run.maxHp,enemyHp:enemy.hp,enemyMaxHp:enemy.hp,enemy,isBoss,turn:0,over:false,curseStacks:0};
+  document.getElementById('battle-title').textContent=isBoss?'ボス戦':'戦闘';
+  document.getElementById('b-hero-name').textContent=GS.run.name;
+  document.getElementById('b-souls').textContent=GS.run.runSouls;
+  document.getElementById('hero-sprite').textContent=GS.run.icon;
+  document.getElementById('enemy-sprite').textContent=enemy.icon;
+  document.getElementById('b-enemy-name').textContent=enemy.name;
+  document.getElementById('battle-result').style.display='none';
+  document.getElementById('battle-log').innerHTML='';
+  renderSkillBtns();updateBattleUI();goTo('s-battle');
+  addLog('戦闘開始！');
+  setTimeout(()=>autoBattleTick(),800);
+}
+function renderSkillBtns(){
+  const el=document.getElementById('skill-btns');el.innerHTML='';
+  GS.run.skills.forEach(sk=>{const s=SKILLS[sk];el.innerHTML+=`<span class="badge badge-purple">${s.name}</span>`;});
+}
+function addLog(msg){
+  const lg=document.getElementById('battle-log');
+  lg.innerHTML=`<p>${msg}</p>`+lg.innerHTML;
+  if(lg.children.length>8)lg.removeChild(lg.lastChild);
+}
+function showDmg(targetId,val,isHeal){
+  const area=document.getElementById('battle-area');
+  const el=document.createElement('div');
+  el.className='dmg-pop'+(isHeal?' heal':'');
+  el.textContent=(isHeal?'+':'-')+val;
+  const tgt=document.getElementById(targetId);
+  const rect=tgt.getBoundingClientRect();
+  const aRect=area.getBoundingClientRect();
+  el.style.left=(rect.left-aRect.left+rect.width/2-16)+'px';
+  el.style.top=(rect.top-aRect.top-10)+'px';
+  area.appendChild(el);
+  setTimeout(()=>el.remove(),850);
+}
+function animAttack(spriteId,onHit){
+  const el=document.getElementById(spriteId);
+  el.classList.add('attack');
+  setTimeout(()=>{el.classList.remove('attack');onHit()},300);
+}
+function animShake(spriteId){
+  const el=document.getElementById(spriteId);
+  el.classList.add('shake');
+  setTimeout(()=>el.classList.remove('shake'),300);
+}
+function updateBattleUI(){
+  const hPct=Math.max(0,bState.heroHp/bState.heroMaxHp*100);
+  const ePct=Math.max(0,bState.enemyHp/bState.enemyMaxHp*100);
+  document.getElementById('b-hero-hp').style.width=hPct+'%';
+  document.getElementById('b-enemy-hp').style.width=ePct+'%';
+  document.getElementById('b-hero-hp-text').textContent=Math.max(0,bState.heroHp)+'/'+bState.heroMaxHp;
+  document.getElementById('b-enemy-hp-text').textContent=Math.max(0,bState.enemyHp)+'/'+bState.enemyMaxHp;
+}
+function autoBattleTick(){
+  if(bState.over) return;
+  bState.turn++;
+  let heroAtk=GS.run.atk;
+  const hasRage=GS.run.skills.includes('rage');
+  const hasCrit=GS.run.skills.includes('crit');
+  const hasRegen=GS.run.skills.includes('regen');
+  const hasShield=GS.run.skills.includes('shield');
+  const hasCurse=GS.run.skills.includes('curse');
+  const hasSoul=GS.run.skills.includes('soul');
+  if(hasRage&&bState.heroHp<bState.heroMaxHp*0.5) heroAtk=Math.floor(heroAtk*1.3);
+  const isCrit=hasCrit?(Math.random()<0.35):(Math.random()<0.15);
+  let rawDmg=heroAtk+(isCrit?Math.floor(heroAtk*0.5):0);
+  const enemyDef=Math.max(0,bState.enemy.def-(isCrit?2:0));
+  const heroDmg=Math.max(1,rawDmg-enemyDef);
+  animAttack('hero-sprite',()=>{
+    animShake('enemy-sprite');
+    bState.enemyHp-=heroDmg;
+    if(hasCurse) bState.curseStacks=1;
+    showDmg('enemy-sprite',heroDmg,false);
+    addLog((isCrit?'クリティカル！':'')+'敵に'+heroDmg+'ダメージ');
+    updateBattleUI();
+    if(bState.enemyHp<=0){endBattle(true,hasSoul);return;}
+    setTimeout(()=>{
+      if(bState.over) return;
+      const heroShield=hasShield?4:0;
+      const dmgToHero=Math.max(1,bState.enemy.atk-GS.run.def-heroShield);
+      animAttack('enemy-sprite',()=>{
+        animShake('hero-sprite');
+        bState.heroHp-=dmgToHero;
+        showDmg('hero-sprite',dmgToHero,false);
+        addLog(bState.enemy.name+'から'+dmgToHero+'ダメージ');
+        if(hasCurse&&bState.curseStacks>0){bState.enemyHp-=3;addLog('呪いの刃が3ダメージ');}
+        if(hasRegen){
+          const heal=Math.max(1,Math.floor(bState.heroMaxHp*0.05));
+          bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+heal);
+          showDmg('hero-sprite',heal,true);
+          addLog('暗黒回生: +'+heal+'HP');
+        }
+        updateBattleUI();
+        if(bState.heroHp<=0){endBattle(false,false);return;}
+        if(bState.enemyHp<=0){endBattle(true,hasSoul);return;}
+        setTimeout(()=>autoBattleTick(),900);
+      });
+    },600);
+  });
+}
+function endBattle(won,hasSoul){
+  bState.over=true;
+  const resEl=document.getElementById('battle-result');
+  resEl.style.display='block';
+  if(won){
+    const souls=bState.enemy.souls;
+    GS.run.runSouls+=souls;GS.run.kills++;
+    GS.run.hp=bState.heroHp+(hasSoul?10:0);
+    if(hasSoul) addLog('魂喰い: HP+10');
+    document.getElementById('b-souls').textContent=GS.run.runSouls;
+    addLog(bState.enemy.name+'を撃破！ 魂の欠片+'+souls);
+    GS.run.room++;
+    if(bState.isBoss){
+      GS.souls+=GS.run.runSouls;save();
+      resEl.innerHTML=`<div class="row"><button class="btn btn-primary" onclick="endRun(true)">ボスを倒した！結果へ</button></div>`;
+    } else {
+      resEl.innerHTML=`<div class="row"><button class="btn btn-primary" onclick="goTo('s-dungeon');renderDungeon()">次の部屋へ</button></div>`;
+    }
+  } else {
+    const partial=Math.floor(GS.run.runSouls*0.5);
+    GS.souls+=partial;save();
+    addLog('戦闘不能... 魂の欠片'+partial+'個を回収');
+    resEl.innerHTML=`<div class="row"><button class="btn" onclick="endRun(false)">倒れた... 結果へ</button></div>`;
+  }
+}
+function endRun(won){
+  document.getElementById('result-icon').textContent=won?'✦':'💀';
+  document.getElementById('result-title').textContent=won?'探索成功':'戦闘不能';
+  document.getElementById('result-sub').textContent=won?'奈落の深部で光を見た':'暗闇の中に沈んでいく...';
+  document.getElementById('r-kills').textContent=GS.run.kills;
+  document.getElementById('r-souls').textContent=GS.run.runSouls;
+  goTo('s-result');
+}
+function showChoice(type){
+  const cl=document.getElementById('choice-list');cl.innerHTML='';
+  if(type==='treasure'){
+    document.getElementById('choice-desc').textContent='宝の間 — 一つを選べ';
+    const opts=[
+      {label:'攻撃+5',fn:()=>{GS.run.atk+=5;addChoiceResult('攻撃力が上がった！')}},
+      {label:'防御+4',fn:()=>{GS.run.def+=4;addChoiceResult('防御力が上がった！')}},
+      {label:'HP+20回復',fn:()=>{GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+20);addChoiceResult('HPを20回復した！')}},
+    ];
+    opts.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div>`;d.onclick=o.fn;cl.appendChild(d);});
+  } else if(type==='rest'){
+    document.getElementById('choice-desc').textContent='休息の間 — 焚き火の前で';
+    const opts=[
+      {label:'HP全回復',fn:()=>{GS.run.hp=GS.run.maxHp;addChoiceResult('完全に回復した')}},
+      {label:'最大HP+15',fn:()=>{GS.run.maxHp+=15;GS.run.hp+=15;addChoiceResult('最大HPが増えた！')}},
+    ];
+    opts.forEach(o=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-title">${o.label}</div>`;d.onclick=o.fn;cl.appendChild(d);});
+  }
+  goTo('s-choice');
+}
+function addChoiceResult(msg){
+  GS.run.room++;
+  const cl=document.getElementById('choice-list');
+  cl.innerHTML=`<div class="card"><div class="card-title">${msg}</div></div>
+  <div style="margin-top:10px"><button class="btn btn-primary" onclick="renderDungeon();goTo('s-dungeon')">次の部屋へ</button></div>`;
+}
+document.getElementById('soul-count').textContent=GS.souls;
+</script>
+</body>
+</html>
