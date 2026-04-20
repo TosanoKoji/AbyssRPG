@@ -344,7 +344,7 @@
       "id": "holyspear",
       "name": "聖槍",
       "icon": "✨",
-      "atk": 12,
+      "atk": 20,
       "mp": 0,
       "crit": 5,
       "desc": "光を宿す槍。会心+5%",
@@ -359,7 +359,8 @@
       "atk": 30,
       "mp": 0,
       "crit": 5,
-      "desc": "魂を吸う伝説の刀。侍装備時に反撃確率2倍",
+      "atkMult": 1.3,
+      "desc": "魂を吸う伝説の刀。ATK×1.3。侍装備時に反撃確率2倍",
       "anim": "slash",
       "special": "samuraiDoubleCounter",
       "unlockCost": 3000,
@@ -440,18 +441,6 @@
       "special": "angeltrumpetEffect",
       "unlockCost": 600
     },
-    "buki": {
-      "id": "buki",
-      "name": "ぶき",
-      "icon": "🗡️",
-      "atk": 10,
-      "mp": 0,
-      "crit": 0,
-      "desc": "ATK×1.1。忍者装備時、毒付与率が2倍になる",
-      "anim": "slash",
-      "special": "bukiEffect",
-      "unlockCost": 300
-    },
     "railgun": {
       "id": "railgun",
       "name": "電磁砲",
@@ -478,7 +467,7 @@
     },
     "kunai": {
       "id": "kunai",
-      "name": "クナイ",
+      "name": "ぶき",
       "icon": "🔪",
       "atk": 10,
       "mp": 0,
@@ -511,6 +500,32 @@
       "anim": "pierce",
       "special": "dragonSpearEffect",
       "unlockCost": 800
+    },
+    "steel_sword": {
+      "id": "steel_sword",
+      "name": "鋼の剣",
+      "icon": "🗡️",
+      "atk": 30,
+      "hp": 100,
+      "mp": 0,
+      "crit": 8,
+      "desc": "ATK+30、会心+8%、HP+100",
+      "anim": "slash",
+      "unlockCost": 150,
+      "lvReq": 50
+    },
+    "beast_spear": {
+      "id": "beast_spear",
+      "name": "獣の槍",
+      "icon": "🏹",
+      "atk": 70,
+      "hp": 200,
+      "mp": 0,
+      "crit": 10,
+      "desc": "ATK+70、会心+10%、HP+200",
+      "anim": "pierce",
+      "unlockCost": 500,
+      "lvReq": 120
     }
   },
   "armors": {
@@ -663,6 +678,42 @@
       "desc": "DEF×0.9・ATK×1.2。盗賊装備時、幻影の攻撃力上昇値が2倍",
       "special": "dirtyMantleEffect",
       "unlockCost": 500
+    },
+    "steel_armor": {
+      "id": "steel_armor",
+      "name": "鋼の鎧",
+      "icon": "🛡️",
+      "def": 25,
+      "dodge": 5,
+      "mp": 50,
+      "hp": 0,
+      "desc": "DEF+25、回避+5%、MP+50",
+      "unlockCost": 150,
+      "lvReq": 50
+    },
+    "full_armor": {
+      "id": "full_armor",
+      "name": "甲冑",
+      "icon": "⚔️",
+      "def": 80,
+      "dodge": 8,
+      "mp": 70,
+      "hp": 0,
+      "desc": "DEF+80、回避+8%、MP+70",
+      "unlockCost": 500,
+      "lvReq": 120
+    },
+    "dodge_cloth": {
+      "id": "dodge_cloth",
+      "name": "みかわしのふく",
+      "icon": "💃",
+      "def": 15,
+      "dodge": 10,
+      "hp": 0,
+      "mp": 0,
+      "desc": "DEF+15、回避+10%",
+      "unlockCost": 50,
+      "lvReq": 15
     }
   },
   "accessories": {
@@ -692,11 +743,11 @@
       "id": "charm_souls",
       "name": "魂喰いの護符",
       "icon": "🪶",
-      "desc": "敵撃破時5%の確率で魂+5追加",
-      "kind": "onKill",
+      "desc": "10%の確率で魂が2倍になる",
+      "kind": "onKillSoulMult",
       "effect": {
-        "bonusSouls": 5,
-        "chance": 0.05
+        "chance": 0.1,
+        "soulsMult": 2
       },
       "unlockCost": 0
     },
@@ -908,7 +959,7 @@
       "id": "mo_disk",
       "name": "MOディスク",
       "icon": "💿",
-      "desc": "全パラメータ×1.1。地獄の創造主の全回復＆必殺を封じる",
+      "desc": "悪しきものについての情報が収められているらしい",
       "kind": "statMult",
       "effect": {
         "atkMult": 1.1,
@@ -917,6 +968,19 @@
         "mpMult": 1.1
       },
       "secret": true
+    },
+    "muffler": {
+      "id": "muffler",
+      "name": "マフラー",
+      "icon": "🧣",
+      "desc": "防御+5、毎ターンHP10回復",
+      "kind": "muffler",
+      "effect": {
+        "defBonus": 5,
+        "hpRegenPerTurn": 10
+      },
+      "unlockCost": 50,
+      "lvReq": 15
     }
   },
   "activeSkills": {
@@ -1309,7 +1373,7 @@
       "name": "リミッター解除",
       "icon": "⚙️",
       "initial": false,
-      "desc": "5ターンに一回、最大HPの1/10を消費して3ターン攻撃力を2倍・会心率100%にする（現在HPが最大値の半分以下の場合は発動しない）"
+      "desc": "5ターンに一回、最大HPの1/10を消費して3ターン攻撃力を5倍・会心率100%にする（現在HPが最大値の半分以下の場合は発動しない）"
     },
     "you_reactor": {
       "id": "you_reactor",
@@ -1968,7 +2032,7 @@
     {
       "id": 6,
       "name": "地上",
-      "sub": "光の平原",
+      "sub": "かつて栄えた地",
       "icon": "🌅",
       "color": "#facc15",
       "soulsMult": 4.5,
@@ -2990,7 +3054,7 @@
       {
         "id": "paladin",
         "label": "聖騎士",
-        "cost": 30,
+        "cost": 300,
         "sub": "超高耐久・装飾品2枠",
         "lvReq": 5
       },
@@ -3122,61 +3186,64 @@
         "id": "chainsaw",
         "label": "チェーンソー",
         "cost": 500,
-        "sub": "ATK×1.3 会心-10% 大神:5%即死"
+        "sub": "ATK×1.3 会心-10% 大神:5%即死",
+        "charReq": "god"
       },
       {
         "id": "fundoshi",
         "label": "褌",
         "cost": 200,
-        "sub": "回避+10% 防御-50% 忍者:会心+30%"
+        "sub": "回避+10% 防御-50% 忍者:会心+30%",
+        "charReq": "ninja"
       },
       {
         "id": "necronomicon",
         "label": "ネクロノミコン",
         "cost": 600,
-        "sub": "ATK×1.1 回避+10% 死霊:MP/5加算"
+        "sub": "ATK×1.1 回避+10% 死霊:MP/5加算",
+        "charReq": "necromancer"
       },
       {
         "id": "breakstaff",
         "label": "破壊の杖",
         "cost": 600,
-        "sub": "ATK×1.3 DEF×0.9 魔術師:10%で3倍+DEF0"
+        "sub": "ATK×1.3 DEF×0.9 魔術師:10%で3倍+DEF0",
+        "charReq": "mage"
       },
       {
         "id": "angeltrumpet",
         "label": "天使のラッパ",
         "cost": 600,
-        "sub": "ATK×1.1 MP+10% 天使:天の光"
-      },
-      {
-        "id": "buki",
-        "label": "ぶき",
-        "cost": 300,
-        "sub": "ATK×1.1 忍者:毒付与率2倍"
+        "sub": "ATK×1.1 MP+10% 天使:天の光",
+        "charReq": "angel"
       },
       {
         "id": "railgun",
         "label": "電磁砲",
         "cost": 800,
-        "sub": "ATK×1.4 会心+10% 未知:12T大ダメ"
+        "sub": "ATK×1.4 会心+10% 未知:12T大ダメ",
+        "charReq": "you"
       },
       {
         "id": "holyshield",
         "label": "聖なる盾",
         "cost": 600,
-        "sub": "DEF×1.2 回避-10% 聖:10Tにdef×5"
+        "sub": "DEF×1.2 回避-10% 聖:10Tにdef×5",
+        "charReq": "paladin"
       },
       {
         "id": "excalibur",
         "label": "エクスカリハー",
         "cost": 500,
-        "sub": "ATK×1.3 DEF×0.9 戦士:会心+20%/攻撃のたびHP-1%"
+        "sub": "ATK×1.3 DEF×0.9 戦士:会心+20%/攻撃のたびHP-1%",
+        "charReq": "warrior"
       },
       {
         "id": "kunai",
-        "label": "クナイ",
+        "label": "ぶき",
         "cost": 300,
-        "sub": "ATK×1.1 DEF×0.8 忍者:10%で3回攻撃"
+        "sub": "ATK×1.1 DEF×0.8 忍者:10%で3回攻撃",
+        "charReq": "ninja"
       },
       {
         "id": "death_dagger",
@@ -3188,43 +3255,85 @@
         "id": "dragon_spear",
         "label": "龍槍ナンタラ",
         "cost": 800,
-        "sub": "ATK×1.5 DEF×1.2 聖騎士:全集中10%"
+        "sub": "ATK×1.5 DEF×1.2 聖騎士:全集中10%",
+        "charReq": "paladin"
       },
       {
         "id": "genji_gauntlet",
         "label": "GENJIの小手",
         "cost": 700,
-        "sub": "ATK×1.3 MP×1.3 侍:見切り+10%"
+        "sub": "ATK×1.3 MP×1.3 侍:見切り+10%",
+        "charReq": "samurai"
       },
       {
         "id": "hagoromo",
         "label": "羽衣",
         "cost": 700,
-        "sub": "DEF×1.1 MP×1.3 大神:被弾時10%でCDゼロ"
+        "sub": "DEF×1.1 MP×1.3 大神:被弾時10%でCDゼロ",
+        "charReq": "god"
       },
       {
         "id": "angel_ring",
         "label": "天使の輪",
         "cost": 700,
-        "sub": "ATK×1.3 MP×1.2 天使:奇跡80%"
+        "sub": "ATK×1.3 MP×1.2 天使:奇跡80%",
+        "charReq": "angel"
       },
       {
         "id": "skull_helm",
         "label": "髑髏の兜",
         "cost": 700,
-        "sub": "DEF×1.4 MP×1.2 死霊:MP30%を攻撃力加算"
+        "sub": "DEF×1.4 MP×1.2 死霊:MP30%を攻撃力加算",
+        "charReq": "necromancer"
       },
       {
         "id": "ton_armor",
         "label": "1t装甲",
         "cost": 700,
-        "sub": "回避-20% DEF+20% 未知:5%被ダメゼロ"
+        "sub": "回避-20% DEF+20% 未知:5%被ダメゼロ",
+        "charReq": "you"
       },
       {
         "id": "dirty_mantle",
         "label": "汚れたマント",
         "cost": 500,
-        "sub": "DEF×0.9 ATK×1.2 盗賊:幻影値2倍"
+        "sub": "DEF×0.9 ATK×1.2 盗賊:幻影値2倍",
+        "charReq": "rogue"
+      },
+      {
+        "id": "steel_sword",
+        "label": "鋼の剣",
+        "cost": 150,
+        "sub": "ATK+30 会心+8% HP+100",
+        "lvReq": 50
+      },
+      {
+        "id": "beast_spear",
+        "label": "獣の槍",
+        "cost": 500,
+        "sub": "ATK+70 会心+10% HP+200",
+        "lvReq": 120
+      },
+      {
+        "id": "dodge_cloth",
+        "label": "みかわしのふく",
+        "cost": 50,
+        "sub": "DEF+15 回避+10%",
+        "lvReq": 15
+      },
+      {
+        "id": "steel_armor",
+        "label": "鋼の鎧",
+        "cost": 150,
+        "sub": "DEF+25 回避+5% MP+50",
+        "lvReq": 50
+      },
+      {
+        "id": "full_armor",
+        "label": "甲冑",
+        "cost": 500,
+        "sub": "DEF+80 回避+8% MP+70",
+        "lvReq": 120
       }
     ],
     "accessory": [
@@ -3245,6 +3354,13 @@
         "label": "魂喰いの護符",
         "cost": 0,
         "sub": "撃破時5%で魂+5 — デフォルト解放"
+      },
+      {
+        "id": "muffler",
+        "label": "マフラー",
+        "cost": 50,
+        "sub": "DEF+5 毎ターンHP+10",
+        "lvReq": 15
       },
       {
         "id": "hayabusa_feather",
@@ -3547,7 +3663,8 @@
         "cost": 0,
         "sub": "会心・回避才能A向上",
         "kind": "uniqueSkill",
-        "achReq": "ach_deep_complete"
+        "achReq": "ach_deep_complete",
+        "deepRequired": true
       }
     ]
   },
@@ -3771,7 +3888,8 @@
         "id": "katana"
       },
       "icon": "⚔️",
-      "desc": "侍で地下4階「虚無の深淵」クリア＋総Lv100でアンロックショップに日本刀が登場"
+      "desc": "侍で地下4階「虚無の深淵」クリア＋総Lv100でアンロックショップに日本刀が登場",
+      "charReq": "samurai"
     },
     {
       "id": "ach_floor2_clear",
@@ -3891,7 +4009,7 @@
       "title": "忍の道",
       "cond": {
         "kind": "floorClear",
-        "val": 5,
+        "val": 3,
         "charId": "ninja"
       },
       "reward": {
@@ -3899,7 +4017,8 @@
         "id": "ninja_deathblow"
       },
       "icon": "🥷",
-      "desc": "忍者で任意のステージを5回クリア"
+      "desc": "忍者で任意のステージを5回クリア",
+      "charReq": "ninja"
     },
     {
       "id": "ach_god_unlock",
@@ -3947,7 +4066,7 @@
     {
       "id": "ach_you_surface_special",
       "icon": "🤖",
-      "title": "捨てられた記憶",
+      "title": "命なき者で地上エリアに挑むと何かが起こる",
       "desc": "アンノウンで地上界に現れた謎の機械人形を倒す",
       "cond": {
         "kind": "specialBossKill",
@@ -3959,7 +4078,9 @@
         "id": "mo_disk",
         "secret": true
       },
-      "silent": true
+      "secretTitle": true,
+      "requiresAch": "ach_creator_hint",
+      "charReq": "you"
     },
     {
       "id": "ach_creator_hint",
@@ -4000,7 +4121,8 @@
         "id": "cool_necktie"
       },
       "icon": "🕳️",
-      "desc": "ディープダンジョン地下10階クリア"
+      "desc": "ディープダンジョン地下10階クリア",
+      "deepOnly": true
     },
     {
       "id": "ach_deep_floor15",
@@ -4014,7 +4136,8 @@
         "id": "super_thing"
       },
       "icon": "🕳️",
-      "desc": "ディープダンジョン地下15階クリア"
+      "desc": "ディープダンジョン地下15階クリア",
+      "deepOnly": true
     },
     {
       "id": "ach_deep_floor20",
@@ -4028,7 +4151,8 @@
         "id": "lead_dogi"
       },
       "icon": "🕳️",
-      "desc": "ディープダンジョン地下20階クリア"
+      "desc": "ディープダンジョン地下20階クリア",
+      "deepOnly": true
     },
     {
       "id": "ach_deep_floor25",
@@ -4042,7 +4166,8 @@
         "id": "hesobi"
       },
       "icon": "🕳️",
-      "desc": "ディープダンジョン地下25階クリア"
+      "desc": "ディープダンジョン地下25階クリア",
+      "deepOnly": true
     },
     {
       "id": "ach_deep_floor30",
@@ -4056,7 +4181,8 @@
         "id": "akashic_record"
       },
       "icon": "🕳️",
-      "desc": "ディープダンジョン地下30階クリア"
+      "desc": "ディープダンジョン地下30階クリア",
+      "deepOnly": true
     },
     {
       "id": "ach_deep_complete",
@@ -4070,7 +4196,8 @@
         "id": "traveler_enlighten"
       },
       "icon": "🌟",
-      "desc": "ディープダンジョン地下30階クリア — 旅人のユニークスキル「達観」が解放"
+      "desc": "ディープダンジョン地下30階クリア — 旅人のユニークスキル「達観」が解放",
+      "deepOnly": true
     }
   ]
 }

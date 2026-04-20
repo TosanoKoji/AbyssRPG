@@ -333,7 +333,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604181125</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604202056</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -573,8 +573,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
   <div style="display:none"><div id="d-hp"></div><div id="d-mp"></div><div id="d-accessory-info"></div></div>
 
   <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-    <button class="btn btn-primary" id="btn-enter-room">部屋に入る</button>
     <button class="btn" id="btn-retreat" style="font-size:13px;color:#888780">引き返す</button>
+    <button class="btn btn-primary" id="btn-enter-room">部屋に入る</button>
   </div>
 </div>
 
@@ -907,7 +907,7 @@ function calcLevel(){
 let CHARS, WEAPONS, ARMORS, ACCESSORIES, ACTIVE_SKILLS, PASSIVE_SKILLS, UNIQUE_SKILLS, ACHIEVEMENTS, FLOORS, UNLOCK_GROUPS, SYSTEM_UNLOCKS;
 // アクティブスキル実行関数（メタデータは data.json から読み込む）
 const SKILL_FNS={
-  slash:      bs=>{skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*2.5)-bs.enemy.def),'断罪の一刀');},
+  slash:      bs=>{skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*2.5)-bs.enemy.def),'断罪の一刀');if(bs.enemyHp>0){bs.stunTurns=(bs.stunTurns||0)+1;addLog('断罪の一刀：敵の次ターンを封じた！','log-skill');}},
   arcane:     bs=>{skillHitEnemy(bs,Math.floor(GS.run.atk*0.8)*3,'魔弾×3');},
   lifedrain:  bs=>{const dmg=Math.max(1,Math.floor(GS.run.atk*1.5)-bs.enemy.def);bs.heroHp=Math.min(bs.heroMaxHp,bs.heroHp+dmg);showDmg('hero-sprite',dmg,true,false,false);skillHitEnemy(bs,dmg,'生命吸収');},
   blaze:      bs=>{skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*4)-Math.floor(bs.enemy.def*0.5)),'地獄炎');},
@@ -926,6 +926,7 @@ function startCdTimer(){
   if(_cdTimer)return;
   _cdTimer=setInterval(()=>{
     if(!bState||bState.over){stopCdTimer();return;}
+    if(paused) return;
     const now=Date.now();
     const anyActive=Object.values(bState.skillCooldownEnd||{}).some(t=>now<t);
     if(anyActive)renderActiveBtns();
@@ -936,6 +937,7 @@ function stopCdTimer(){if(_cdTimer){clearInterval(_cdTimer);_cdTimer=null;}}
 let skillTab='active';
 let unlockTab='char';
 let paused=false;
+let _recentAchIds=[];
 let currentFloorId=1;
 
 // ─── 達成報酬チェック ─────────────────────────────────────
@@ -1099,6 +1101,12 @@ function renderAchievements(){
       if(a.silent) return;
       // hintOnly: 創造主に一度負けてから初めてこっそり表示。ach_you_surface_special達成済みなら非表示
       if(a.hintOnly&&(!GS.achStats.lostToCreator||GS.achDone.includes('ach_you_surface_special'))) return;
+      // requiresAch: 指定達成が完了するまで非表示
+      if(a.requiresAch&&!GS.achDone.includes(a.requiresAch)) return;
+      // deepOnly: ディープダンジョンに一度でも入るまで非表示
+      if(a.deepOnly&&!(GS.achStats.deepMaxFloor>0||( GS.achStats.deepCleared||[]).length>0)) return;
+      // charReq: 対応キャラ未取得なら非表示
+      if(a.charReq&&!isUnlocked(a.charReq)) return;
     }
     // 宇宙クリア前は旅人の「旅」スキル解放情報も非表示
     if(!done&&a.reward.type==='uniqueSkill'&&a.reward.id==='traveler_journey'&&!GS.unlockedUniqueSkills.includes('traveler_journey')) return;
@@ -1122,10 +1130,11 @@ function renderAchievements(){
     // 達成報酬としてのみ解放される項目は隠す（ワクワク感）
     const isSecretReward=(r.type==='unlockChar'||r.type==='unlockWeapon'||r.type==='unlockSystem'||(r.type==='unlockAccessory'&&r.secret)||r.type==='none')&&!done;
     const rewardDisplay=isSecretReward?'<span style="color:#5f5e5a">???（条件達成で解放）</span>':rewardText;
-    el.innerHTML+=`<div class="ach-card ${done?'done':''}">
+    const _isRecent=_recentAchIds.includes(a.id);
+    el.innerHTML+=`<div class="ach-card ${done?'done':''}" style="${_isRecent?'border:1.5px solid #facc15;box-shadow:0 0 10px rgba(250,204,21,.4);':''}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="flex:1">
-          <div class="ach-title-text">${a.icon} ${a.title} ${done?'<span class="badge badge-green">✓ 達成</span>':''}</div>
+          <div class="ach-title-text">${_isRecent?'⭐ ':''}${a.icon} ${(!done&&a.secretTitle)?'？？？':a.title} ${done?'<span class="badge badge-green">✓ 達成</span>':''}</div>
           <div class="ach-cond">${a.desc}</div>
           <div class="ach-prog">${done?rewardText:`${prog} / ${target} — 報酬: ${rewardDisplay}`}</div>
           ${!done?`<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${pct}%"></div></div>`:''}
@@ -1499,6 +1508,10 @@ function renderUnlock(){
       const usCharId=UNIQUE_SKILLS[u.id]?.charId;
       if(usCharId&&!isUnlocked(usCharId)) return;
     }
+    // deepRequired: ディープダンジョンに入るまで非表示
+    if(!done&&u.deepRequired&&!((GS.achStats.deepMaxFloor||0)>0||(GS.achStats.deepCleared||[]).length>0)) return;
+    // charReq: 対応キャラ未取得なら非表示
+    if(!done&&u.charReq&&!isUnlocked(u.charReq)) return;
     // キャラタブ: achReqが未達成かつ未解放のキャラはネタバレ防止のため非表示
     if(unlockTab==='char'&&u.achReq&&!GS.achDone.includes(u.achReq)&&!done) return;
     const lvOk=!u.lvReq||GS.totalLv>=u.lvReq;
@@ -1971,7 +1984,7 @@ function renderEquip(){
   const hasJourney=previewUniques.includes('traveler_journey');
   const accSlotBonus=(GS.systemUnlocked||[]).includes('acc_slot_up')?1:0;
   const accSlotBonus2=(GS.systemUnlocked||[]).includes('acc_slot_up2')?1:0;
-  const slots=hasJourney?6:(c?c.accSlots:1)+accSlotBonus+accSlotBonus2;
+  const slots=hasJourney?8:(c?c.accSlots:1)+accSlotBonus+accSlotBonus2;
   document.getElementById('acc-slots-label').textContent=slots;
   const _accSelCount=document.getElementById('acc-selected-count');
   if(_accSelCount) _accSelCount.textContent=(GS.run.accessories||[]).length?`(選択中 ${(GS.run.accessories||[]).length}/${slots})`:'';
@@ -2171,10 +2184,12 @@ function startRun(){
   GS.run.maxMp  = c.maxMp + (w.mp||0) + (a.mp||0) + Math.round((lb.mp||0)*8*charGm(cid,'mp'));
   GS.run.mp     = GS.run.maxMp;
   GS.run.crit   = c.crit + Math.round((lb.crit||0)*charGm(cid,'crit')) + (w.crit||0);
-  GS.run.dodge  = c.dodge + Math.round((lb.dodge||0)*charGm(cid,'dodge')) + (passives.includes('godspeed')?10:0);
+  GS.run.dodge  = c.dodge + (a.dodge||0) + Math.round((lb.dodge||0)*charGm(cid,'dodge')) + (passives.includes('godspeed')?10:0);
   GS.run.hdodge = c.hdodge + Math.round((lb.dodge||0)*1.5*charGm(cid,'dodge')) + (passives.includes('godspeed')?15:0);
   GS.run.dmgBonus  = passives.includes('demonblessing')?1.20:1.0;
   GS.run.defBonus  = passives.includes('demonblessing')?0.85:1.0;
+  // マフラー: DEF+5
+  if((accs||[]).includes('muffler')){GS.run.def+=5;}
   // statMult系アクセサリ: 鉢巻・バリア・猫のヒゲ・SSD
   accs.forEach(id=>{
     const acc=ACCESSORIES[id];if(!acc||acc.kind!=='statMult')return;
@@ -2214,10 +2229,16 @@ function startRun(){
     GS.run.maxMp = Math.floor(GS.run.maxMp * 1.1);
     GS.run.mp = GS.run.maxMp;
   }
-  // ぶき: ATK×1.1
-  if(GS.run.weaponId==='buki'){
+  // ぶき（元クナイ）: ATK×1.1
+  if(GS.run.weaponId==='kunai'){
     GS.run.atk = Math.floor(GS.run.atk * 1.1);
   }
+  // 日本刀: ATK×1.3
+  if(GS.run.weaponId==='katana'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.3);
+  }
+  // 武器HPボーナス（鋼の剣・獣の槍など）
+  if(w.hp){GS.run.maxHp+=w.hp;GS.run.hp=GS.run.maxHp;}
   // 電磁砲: ATK×1.4、会心+10%
   if(GS.run.weaponId==='railgun'){
     GS.run.atk = Math.floor(GS.run.atk * 1.4);
@@ -3373,6 +3394,12 @@ function autoBattleTick(){
   }
 
   bState.heroMp=Math.min(bState.heroMaxMp,bState.heroMp+3+(hasMpRecover?5:0));
+  // マフラー: 毎ターンHP+10
+  if((GS.run.accessories||[]).includes('muffler')&&bState.heroHp<bState.heroMaxHp){
+    const _mufRegen=Math.min(10,bState.heroMaxHp-bState.heroHp);
+    bState.heroHp+=_mufRegen;
+    showDmg('hero-sprite',_mufRegen,true,false,false);
+  }
   // 魂の収穫（敵撃破時MP+10）はendBattleで処理
 
   let heroAtk=Math.floor(GS.run.atk*(bState.warriorBraveMult||1));
@@ -3439,7 +3466,7 @@ function autoBattleTick(){
     if(bState.heroHp>bState.heroMaxHp*0.5&&bState.heroHp>_limCost){
       bState.heroHp-=_limCost;
       bState.limiterActive=3;
-      addLog(`⚙️ リミッター解除！ HP-${_limCost} → 3ターン攻撃力2倍`,'log-skill');
+      addLog(`⚙️ リミッター解除！ HP-${_limCost} → 3ターン攻撃力5倍`,'log-skill');
       showSkillFlash('rgba(251,191,36,.25)');
     }
   }
@@ -3452,7 +3479,7 @@ function autoBattleTick(){
   if((bState.phantomAtkBonus||0)>0) heroAtk=Math.floor(heroAtk*(1+bState.phantomAtkBonus/100));
   // リミッター解除: 発動中は攻撃2倍・会心100%
   const _limiterOn=(bState.limiterActive||0)>0;
-  if(_limiterOn) heroAtk=Math.floor(heroAtk*2);
+  if(_limiterOn) heroAtk=Math.floor(heroAtk*5);
   // 二刀流: 各攻撃を75%威力に調整
   const hasDual=(GS.run.uniqueSkills||[]).includes('ninja_dual');
   if(hasDual) heroAtk=Math.floor(heroAtk*0.75);
@@ -3935,12 +3962,12 @@ function endBattle(won){
     let souls=Math.floor((bState.enemy.souls||0)*sm*ribbonMult);
     const exp=Math.floor((bState.enemy.exp||(bState.isBoss?20:4))*em*growthExpMult*dumbbellMult);
 
-    // アクセサリ: onKill（魂喰いの護符）
+    // アクセサリ: onKillSoulMult（魂喰いの護符: 10%で魂2倍）
     (GS.run.accessories||[]).forEach(id=>{
-      const acc=ACCESSORIES[id];if(!acc||acc.kind!=='onKill')return;
-      if(acc.effect.bonusSouls&&Math.random()<acc.effect.chance){
-        souls+=acc.effect.bonusSouls;
-        addLog(`魂喰いの護符発動！ 魂+${acc.effect.bonusSouls}`,'log-heal');
+      const acc=ACCESSORIES[id];if(!acc)return;
+      if(acc.kind==='onKillSoulMult'&&Math.random()<(acc.effect.chance||0.1)){
+        souls=Math.floor(souls*(acc.effect.soulsMult||2));
+        addLog('魂喰いの護符発動！ 魂が2倍になった！','log-heal');
       }
     });
 
@@ -4180,6 +4207,7 @@ function endRun(won){
   }
 
   const newly=checkAchievements();save();
+  _recentAchIds=newly.map(a=>a.id);
 
   const _isDeepResult=floor&&floor.deepMode;
   document.getElementById('result-icon').textContent=won?(_isDeepResult?'🕳️':'✦'):'💀';
@@ -4189,15 +4217,27 @@ function endRun(won){
   document.getElementById('r-souls').textContent=GS.run.runSouls;
   document.getElementById('r-exp').textContent=GS.run.runExp||0;
 
-  // 達成報酬表示
+  // 達成報酬表示（一枠ずつタップで進む）
   const achEl=document.getElementById('result-ach');
+  achEl.style.display='none';
   if(newly.length){
-    achEl.style.display='block';
-    achEl.innerHTML=`<div style="background:#1a1500;border:0.5px solid #FCD34D;border-radius:10px;padding:10px 14px;font-size:13px;color:#FCD34D">
-      🏆 達成報酬解放！<br>
-      ${newly.map(a=>`<div style="font-size:12px;margin-top:4px;color:#e0ddd8">${a.icon} <strong>${a.title}</strong></div>`).join('')}
-    </div>`;
-  } else achEl.style.display='none';
+    let _achIdx=0;
+    function _showNextAch(){
+      if(_achIdx>=newly.length){achEl.style.display='none';return;}
+      const a=newly[_achIdx++];
+      achEl.style.display='block';
+      achEl.innerHTML=`<div style="background:#1a1500;border:0.5px solid #FCD34D;border-radius:10px;padding:12px 14px;font-size:13px;color:#FCD34D;cursor:pointer" id="_ach-tap">
+        🏆 達成報酬解放！ (${_achIdx}/${newly.length})<br>
+        <div style="font-size:14px;margin-top:6px;color:#e0ddd8">${a.icon} <strong>${a.title}</strong></div>
+        <div style="font-size:11px;color:#888780;margin-top:4px">${a.desc||''}</div>
+        <div id="_ach-tap-hint" style="font-size:10px;color:transparent;margin-top:8px;text-align:right">タップで次へ</div>
+      </div>`;
+      setTimeout(()=>{const h=document.getElementById('_ach-tap-hint');if(h)h.style.color='#705028';},1500);
+      const tapEl=document.getElementById('_ach-tap');
+      if(tapEl) tapEl.addEventListener('click',()=>{achEl.style.display='none';setTimeout(_showNextAch,200);},{once:true});
+    }
+    setTimeout(_showNextAch,400);
+  }
 
   goTo('s-result');
 }
