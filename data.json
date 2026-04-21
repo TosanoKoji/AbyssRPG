@@ -1828,7 +1828,8 @@
           "dodge": 8,
           "souls": 16,
           "exp": 24,
-          "kind": "normal"
+          "kind": "normal",
+          "imgId": "f4_karyuu"
         },
         {
           "id": "f4_knight",
@@ -1841,7 +1842,8 @@
           "dodge": 5,
           "souls": 18,
           "exp": 26,
-          "kind": "normal"
+          "kind": "normal",
+          "imgId": "f4_kishi"
         },
         {
           "id": "f4_soul",
@@ -1854,7 +1856,8 @@
           "dodge": 8,
           "souls": 17,
           "exp": 25,
-          "kind": "normal"
+          "kind": "normal",
+          "imgId": "f4_shuudatsu"
         },
         {
           "id": "f4_kyoku",
@@ -1867,7 +1870,8 @@
           "dodge": 5,
           "souls": 20,
           "exp": 28,
-          "kind": "normal"
+          "kind": "normal",
+          "imgId": "f4_banjin"
         },
         {
           "id": "f4_witch",
@@ -1880,7 +1884,8 @@
           "dodge": 8,
           "souls": 18,
           "exp": 27,
-          "kind": "normal"
+          "kind": "normal",
+          "imgId": "f4_majo"
         }
       ],
       "bosses": [
@@ -1958,7 +1963,8 @@
           "dodge": 5,
           "souls": 32,
           "exp": 46,
-          "kind": "normal"
+          "kind": "normal",
+          "imgId": "f5_mokushi"
         },
         {
           "id": "f5_kanshin",
@@ -1971,7 +1977,8 @@
           "dodge": 8,
           "souls": 30,
           "exp": 42,
-          "kind": "normal"
+          "kind": "normal",
+          "imgId": "f5_shinto"
         },
         {
           "id": "f5_ban",
@@ -1984,7 +1991,8 @@
           "dodge": 5,
           "souls": 35,
           "exp": 50,
-          "kind": "normal"
+          "kind": "normal",
+          "imgId": "f5_banpei"
         },
         {
           "id": "f5_megami",
