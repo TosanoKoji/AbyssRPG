@@ -551,6 +551,19 @@
       "anim": "pierce",
       "unlockCost": 500,
       "lvReq": 120
+    },
+    "nearsa_u14": {
+      "id": "nearsa_u14",
+      "name": "ニアルサU14",
+      "icon": "🔫",
+      "atk": 85,
+      "mp": 0,
+      "crit": 10,
+      "desc": "ATK×1.2・会心+10%。NECO装備時、「暴れ回る」の発動率が5%に上昇",
+      "anim": "pierce",
+      "special": "nearsaU14Effect",
+      "unlockCost": 0,
+      "unlockCond": "achievement"
     }
   },
   "armors": {
@@ -739,6 +752,18 @@
       "desc": "DEF+15、回避+10%",
       "unlockCost": 50,
       "lvReq": 15
+    },
+    "neco_furoshiki": {
+      "id": "neco_furoshiki",
+      "name": "猫の風呂敷",
+      "icon": "🎒",
+      "def": 0,
+      "hp": 0,
+      "mp": 0,
+      "desc": "DEF×1.1・HP×1.2。NECO装備時、「毛繕い」の回復量が最大値の15%に上昇",
+      "special": "necoFuroshikiEffect",
+      "unlockCost": 0,
+      "unlockCond": "achievement"
     }
   },
   "accessories": {

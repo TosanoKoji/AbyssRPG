@@ -334,7 +334,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211624</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211635</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2321,6 +2321,16 @@ function startRun(){
     GS.run.def = Math.max(0, Math.floor(GS.run.def * 0.9));
     GS.run.atk = Math.floor(GS.run.atk * 1.2);
   }
+  // ニアルサU14: ATK×1.2・会心+10%
+  if(GS.run.weaponId==='nearsa_u14'){
+    GS.run.atk = Math.floor(GS.run.atk * 1.2);
+  }
+  // 猫の風呂敷: DEF×1.1・HP×1.2
+  if(GS.run.armorId==='neco_furoshiki'){
+    GS.run.def = Math.floor(GS.run.def * 1.1);
+    GS.run.maxHp = Math.floor(GS.run.maxHp * 1.2);
+    GS.run.hp = GS.run.maxHp;
+  }
   // アクセサリ incomingDmgMult フラグ（ステキなネクタイ）
   GS.run.incomingDmgMult=1.0;
   (GS.run.accessories||[]).forEach(id=>{
@@ -3392,10 +3402,11 @@ function autoBattleTick(){
     showDmg('hero-sprite',_blessHeal,true,false,false);
     addLog(`✨ 天の恵み: HP+${_blessHeal}`,'log-heal');
   }
-  // 毛繕い（5ターンごとにHP・MP最大値の10%回復）
+  // 毛繕い（5ターンごとにHP・MP最大値の10%回復、NECO+猫の風呂敷で15%）
   if((GS.run.uniqueSkills||[]).includes('neco_grooming')&&bState.turn>0&&bState.turn%5===0){
-    const _gHp=Math.max(1,Math.floor(bState.heroMaxHp*0.1));
-    const _gMp=Math.max(1,Math.floor(bState.heroMaxMp*0.1));
+    const _gRate=(GS.run.charId==='neco'&&GS.run.armorId==='neco_furoshiki')?0.15:0.10;
+    const _gHp=Math.max(1,Math.floor(bState.heroMaxHp*_gRate));
+    const _gMp=Math.max(1,Math.floor(bState.heroMaxMp*_gRate));
     bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+_gHp);
     bState.heroMp=Math.min(bState.heroMaxMp,bState.heroMp+_gMp);
     showDmg('hero-sprite',_gHp,true,false,false);
@@ -3501,8 +3512,9 @@ function autoBattleTick(){
 
   // 断骨: 3%で4回攻撃（ただし最大HP10%ダメージ）
   const _dankotsu=(GS.run.uniqueSkills||[]).includes('samurai_dankotsu')&&Math.random()<0.03;
-  // 暴れ回る: 3%で攻撃力×0.8を8連撃
-  const _rampage=(GS.run.uniqueSkills||[]).includes('neco_rampage')&&Math.random()<0.03;
+  // 暴れ回る: 3%で攻撃力×0.8を8連撃（NECO+ニアルサU14で5%）
+  const _rampageRate=(GS.run.charId==='neco'&&GS.run.weaponId==='nearsa_u14')?0.05:0.03;
+  const _rampage=(GS.run.uniqueSkills||[]).includes('neco_rampage')&&Math.random()<_rampageRate;
 
   let rawDmg=heroAtk+(isCrit?Math.floor(heroAtk*0.5):0);
   if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
@@ -4099,14 +4111,16 @@ function endBattle(won){
           setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .6s';setTimeout(()=>el.remove(),600);},3500);
         },500);
       }
-      // NECO: ディープダンジョン地下10階クリアで解放
+      // NECO: ディープダンジョン地下10階クリアで解放（専用武具も同時解放）
       if(floor&&floor.deepMode&&GS.run.deepTargetFloor===10&&!GS.unlocked.includes('neco')){
         GS.unlocked.push('neco');
-        addLog('🐾 旅する猫 NECO が仲間になった！','log-heal');
+        if(!GS.unlocked.includes('nearsa_u14')) GS.unlocked.push('nearsa_u14');
+        if(!GS.unlocked.includes('neco_furoshiki')) GS.unlocked.push('neco_furoshiki');
+        addLog('🐾 旅する猫 NECO が仲間になった！（ニアルサU14・猫の風呂敷も解放）','log-heal');
         setTimeout(()=>{
           const el=document.createElement('div');
           el.style.cssText='position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:2px solid #fb923c;border-radius:16px;padding:20px 28px;font-size:15px;color:#fed7aa;z-index:9999;text-align:center;pointer-events:none;animation:achPop .4s ease-out';
-          el.innerHTML=`🐾 NECO が仲間になった！<br><span style="font-size:13px;color:#888780">兄弟を探す旅する猫が加わりました</span>`;
+          el.innerHTML=`🐾 NECO が仲間になった！<br><span style="font-size:13px;color:#888780">ニアルサU14・猫の風呂敷も解放されました</span>`;
           document.body.appendChild(el);
           setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .6s';setTimeout(()=>el.remove(),600);},3500);
         },500);
