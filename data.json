@@ -280,6 +280,31 @@
         "crit": "D",
         "dodge": "D"
       }
+    },
+    "neco": {
+      "id": "neco",
+      "name": "NECO",
+      "icon": "🐾",
+      "hp": 85,
+      "atk": 26,
+      "def": 5,
+      "mp": 95,
+      "maxMp": 95,
+      "crit": 15,
+      "dodge": 22,
+      "hdodge": 32,
+      "activeSlots": 3,
+      "accSlots": 1,
+      "desc": "兄弟を探し旅する猫。二丁拳銃を構える風来坊",
+      "unlockCond": "achievement",
+      "lvGrowth": {
+        "hp": "B",
+        "atk": "S",
+        "def": "B",
+        "mp": "A",
+        "crit": "A",
+        "dodge": "S"
+      }
     }
   },
   "weapons": {
@@ -1422,6 +1447,30 @@
       "icon": "🔮",
       "initial": false,
       "desc": "会心と回避の成長才能がAに向上する"
+    },
+    "neco_dualguns": {
+      "id": "neco_dualguns",
+      "charId": "neco",
+      "name": "二丁拳銃",
+      "icon": "🔫",
+      "initial": true,
+      "desc": "通常攻撃が常に4回（各攻撃力×0.6）"
+    },
+    "neco_grooming": {
+      "id": "neco_grooming",
+      "charId": "neco",
+      "name": "毛繕い",
+      "icon": "🐾",
+      "initial": true,
+      "desc": "5ターンごとにHPとMPが最大値の10%回復"
+    },
+    "neco_rampage": {
+      "id": "neco_rampage",
+      "charId": "neco",
+      "name": "暴れ回る",
+      "icon": "💢",
+      "initial": true,
+      "desc": "通常攻撃時3%で攻撃力×0.8の8連撃を繰り出す"
     }
   },
   "floors": [

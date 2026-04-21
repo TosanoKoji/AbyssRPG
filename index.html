@@ -334,7 +334,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211548</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211624</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -717,11 +717,13 @@ function saveSettings(){ localStorage.setItem('abyss_settings', JSON.stringify(S
 // 旅取得後の旅人はtraveler2.pngを使用
 function charImgId(id){
   if(id==='traveler'&&GS.unlockedUniqueSkills.includes('traveler_journey')) return 'traveler2';
+  if(id==='neco') return 'uu';
   return id;
 }
 // バトル中用（run.uniqueSkillsで判定）
 function charImgIdBattle(id){
   if(id==='traveler'&&(GS.run.uniqueSkills||[]).includes('traveler_journey')) return 'traveler2';
+  if(id==='neco') return 'uu';
   return id;
 }
 function renderIcon(category, id, emoji, sizePx=28){
@@ -3390,6 +3392,15 @@ function autoBattleTick(){
     showDmg('hero-sprite',_blessHeal,true,false,false);
     addLog(`✨ 天の恵み: HP+${_blessHeal}`,'log-heal');
   }
+  // 毛繕い（5ターンごとにHP・MP最大値の10%回復）
+  if((GS.run.uniqueSkills||[]).includes('neco_grooming')&&bState.turn>0&&bState.turn%5===0){
+    const _gHp=Math.max(1,Math.floor(bState.heroMaxHp*0.1));
+    const _gMp=Math.max(1,Math.floor(bState.heroMaxMp*0.1));
+    bState.heroHp=Math.min(bState.heroMaxHp,bState.heroHp+_gHp);
+    bState.heroMp=Math.min(bState.heroMaxMp,bState.heroMp+_gMp);
+    showDmg('hero-sprite',_gHp,true,false,false);
+    addLog(`🐾 毛繕い: HP+${_gHp} MP+${_gMp}`,'log-heal');
+  }
 
   bState.heroMp=Math.min(bState.heroMaxMp,bState.heroMp+3+(hasMpRecover?5:0));
   // マフラー: 毎ターンHP+10
@@ -3481,11 +3492,17 @@ function autoBattleTick(){
   // 二刀流: 各攻撃を75%威力に調整
   const hasDual=(GS.run.uniqueSkills||[]).includes('ninja_dual');
   if(hasDual) heroAtk=Math.floor(heroAtk*0.75);
+  // 二丁拳銃: 通常攻撃を60%威力・4回に
+  const hasDualguns=(GS.run.uniqueSkills||[]).includes('neco_dualguns');
+  const _origAtkForRampage=heroAtk;
+  if(hasDualguns) heroAtk=Math.floor(heroAtk*0.6);
   const critChance=_limiterOn?1.0:(GS.run.crit+(hasCritUp?20:0))/100;
   const isCrit=shadowbladeActive||Math.random()<critChance;
 
   // 断骨: 3%で4回攻撃（ただし最大HP10%ダメージ）
   const _dankotsu=(GS.run.uniqueSkills||[]).includes('samurai_dankotsu')&&Math.random()<0.03;
+  // 暴れ回る: 3%で攻撃力×0.8を8連撃
+  const _rampage=(GS.run.uniqueSkills||[]).includes('neco_rampage')&&Math.random()<0.03;
 
   let rawDmg=heroAtk+(isCrit?Math.floor(heroAtk*0.5):0);
   if(isCrit && GS.run.weaponId === 'axe') rawDmg += 15; // 呪われた斧 特殊効果
@@ -3636,6 +3653,35 @@ function autoBattleTick(){
         if(isCrit3)showCritFlash();
         addLog((isCrit3?'💥会心！':'')+'🔪 クナイ 3撃目！ '+heroDmg3+'ダメージ',isCrit3?'log-crit':'log-skill');
         applyVampiric(heroDmg3,bState);
+      }
+    }
+    // 二丁拳銃: 追加3撃（計4撃）
+    if(!bState.over&&bState.enemyHp>0&&hasDualguns){
+      for(let _dg=1;_dg<4;_dg++){
+        if(bState.enemyHp<=0) break;
+        const isCritD=Math.random()<critChance;
+        let rawDmgD=heroAtk+(isCritD?Math.floor(heroAtk*0.5):0);
+        if(isCritD&&GS.run.weaponId==='axe') rawDmgD+=15;
+        const heroDmgD=randVar(Math.max(1,rawDmgD-bState.enemy.def));
+        bState.enemyHp-=heroDmgD;
+        showDmg('enemy-sprite',heroDmgD,false,false,isCritD);
+        if(isCritD)showCritFlash();
+        addLog((isCritD?'💥会心！':'')+`🔫 二丁拳銃 ${_dg+1}撃目 ${heroDmgD}ダメージ`,isCritD?'log-crit':'log-enemy-dmg');
+        applyVampiric(heroDmgD,bState);
+      }
+    }
+    // 暴れ回る: 攻撃力×0.8の8連撃
+    if(_rampage&&!bState.over&&bState.enemyHp>0){
+      const _rAtk=Math.floor(_origAtkForRampage*0.8);
+      addLog('💢 暴れ回る発動！ 8連撃！','log-skill');
+      showSkillFlash('rgba(251,100,36,.3)');
+      for(let _r=0;_r<8;_r++){
+        if(bState.enemyHp<=0) break;
+        const _rDmg=randVar(Math.max(1,_rAtk-bState.enemy.def));
+        bState.enemyHp-=_rDmg;
+        showDmg('enemy-sprite',_rDmg,false,false,false);
+        addLog(`💢 ${_r+1}撃目: ${_rDmg}ダメージ`,'log-crit');
+        applyVampiric(_rDmg,bState);
       }
     }
 
@@ -4049,6 +4095,18 @@ function endBattle(won){
           const el=document.createElement('div');
           el.style.cssText='position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:2px solid #facc15;border-radius:16px;padding:20px 28px;font-size:15px;color:#fef9c3;z-index:9999;text-align:center;pointer-events:none;animation:achPop .4s ease-out';
           el.innerHTML=`👼 天使が降臨した！<br><span style="font-size:13px;color:#888780">新キャラクター「天使」が解放されました</span>`;
+          document.body.appendChild(el);
+          setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .6s';setTimeout(()=>el.remove(),600);},3500);
+        },500);
+      }
+      // NECO: ディープダンジョン地下10階クリアで解放
+      if(floor&&floor.deepMode&&GS.run.deepTargetFloor===10&&!GS.unlocked.includes('neco')){
+        GS.unlocked.push('neco');
+        addLog('🐾 旅する猫 NECO が仲間になった！','log-heal');
+        setTimeout(()=>{
+          const el=document.createElement('div');
+          el.style.cssText='position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:2px solid #fb923c;border-radius:16px;padding:20px 28px;font-size:15px;color:#fed7aa;z-index:9999;text-align:center;pointer-events:none;animation:achPop .4s ease-out';
+          el.innerHTML=`🐾 NECO が仲間になった！<br><span style="font-size:13px;color:#888780">兄弟を探す旅する猫が加わりました</span>`;
           document.body.appendChild(el);
           setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .6s';setTimeout(()=>el.remove(),600);},3500);
         },500);
