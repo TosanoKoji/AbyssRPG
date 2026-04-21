@@ -334,7 +334,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211745</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211822</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -462,6 +462,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
       <button id="lv-mult-10"  class="btn lv-mult-btn"             style="padding:5px 10px;font-size:12px">×10</button>
       <button id="lv-mult-100" class="btn lv-mult-btn"             style="padding:5px 10px;font-size:12px">×100</button>
       <button id="lv-mult-1000" class="btn lv-mult-btn"            style="padding:5px 10px;font-size:12px;display:none">×1000</button>
+      <button id="lv-mult-10000" class="btn lv-mult-btn"           style="padding:5px 10px;font-size:12px;display:none">×10000</button>
     </div>
   </div>
 </div>
@@ -1382,6 +1383,9 @@ function renderLevel(){
   // ×1000ボタン: ディープダンジョン解放後に表示
   const btn1000=document.getElementById('lv-mult-1000');
   if(btn1000) btn1000.style.display=GS.clearedFloors.includes(9)?'':'none';
+  // ×10000ボタン: NECO解放（ディープダンジョンF10クリア）後に表示
+  const btn10000=document.getElementById('lv-mult-10000');
+  if(btn10000) btn10000.style.display=GS.unlocked.includes('neco')?'':'none';
   const list=document.getElementById('lv-stat-list');list.innerHTML='';
   LV_STATS.forEach(s=>{
     const cur=GS.lvBonus[s.key]||0;
@@ -1420,7 +1424,7 @@ function renderLevel(){
 let lvMult=1; // 強化倍率（×1/×10/×100）
 function setLvMult(n){
   lvMult=n;
-  [1,10,100,1000].forEach(v=>{
+  [1,10,100,1000,10000].forEach(v=>{
     const btn=document.getElementById('lv-mult-'+v);
     if(btn) btn.classList.toggle('active-mult',v===n);
   });
@@ -4509,6 +4513,8 @@ function initButtons(){
   if(btnMult100) btnMult100.addEventListener('click',()=>setLvMult(100));
   const btnMult1000=document.getElementById('lv-mult-1000');
   if(btnMult1000) btnMult1000.addEventListener('click',()=>setLvMult(1000));
+  const btnMult10000=document.getElementById('lv-mult-10000');
+  if(btnMult10000) btnMult10000.addEventListener('click',()=>setLvMult(10000));
 
   // 達成報酬画面
   const btnAchieveBack=document.getElementById('btn-achieve-back');
