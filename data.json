@@ -2554,7 +2554,8 @@
             "dodge": 8,
             "souls": 5000,
             "exp": 8000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f3b_ryu"
           }
         },
         {
@@ -2570,7 +2571,8 @@
             "dodge": 8,
             "souls": 6500,
             "exp": 10500,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f1b_hasha"
           }
         },
         {
@@ -2586,7 +2588,8 @@
             "dodge": 8,
             "souls": 8500,
             "exp": 13500,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f4b_shihai"
           }
         },
         {
@@ -2602,7 +2605,8 @@
             "dodge": 8,
             "souls": 11000,
             "exp": 18000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f9b_souzou"
           }
         },
         {
@@ -2618,7 +2622,8 @@
             "dodge": 10,
             "souls": 15000,
             "exp": 25000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "db_f10"
           }
         },
         {
@@ -2634,7 +2639,8 @@
             "dodge": 8,
             "souls": 20000,
             "exp": 33000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f2b_queen"
           }
         },
         {
@@ -2650,7 +2656,8 @@
             "dodge": 8,
             "souls": 27000,
             "exp": 44000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f3b_haou"
           }
         },
         {
@@ -2666,7 +2673,8 @@
             "dodge": 8,
             "souls": 36000,
             "exp": 58000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f6b_ou"
           }
         },
         {
@@ -2682,7 +2690,8 @@
             "dodge": 8,
             "souls": 48000,
             "exp": 78000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f8b_shin"
           }
         },
         {
@@ -2698,7 +2707,8 @@
             "dodge": 10,
             "souls": 65000,
             "exp": 105000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "db_f15"
           }
         },
         {
@@ -2714,7 +2724,8 @@
             "dodge": 8,
             "souls": 85000,
             "exp": 140000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f5b_kami"
           }
         },
         {
@@ -2730,7 +2741,8 @@
             "dodge": 8,
             "souls": 110000,
             "exp": 180000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f7b_kou"
           }
         },
         {
@@ -2746,7 +2758,8 @@
             "dodge": 8,
             "souls": 145000,
             "exp": 235000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f2b_ou"
           }
         },
         {
@@ -2762,7 +2775,8 @@
             "dodge": 8,
             "souls": 190000,
             "exp": 310000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f5b_souzou"
           }
         },
         {
@@ -2778,7 +2792,8 @@
             "dodge": 10,
             "souls": 250000,
             "exp": 400000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "db_f20"
           }
         },
         {
@@ -2794,7 +2809,8 @@
             "dodge": 8,
             "souls": 330000,
             "exp": 530000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f4b_shin"
           }
         },
         {
@@ -2810,7 +2826,8 @@
             "dodge": 8,
             "souls": 435000,
             "exp": 700000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f8b_bigbang"
           }
         },
         {
@@ -2826,7 +2843,8 @@
             "dodge": 8,
             "souls": 575000,
             "exp": 925000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f7b_roc"
           }
         },
         {
@@ -2842,7 +2860,8 @@
             "dodge": 8,
             "souls": 760000,
             "exp": 1220000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f1b_ban"
           }
         },
         {
@@ -2858,7 +2877,8 @@
             "dodge": 10,
             "souls": 1000000,
             "exp": 1600000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "db_f25"
           }
         },
         {
@@ -2874,7 +2894,8 @@
             "dodge": 8,
             "souls": 1320000,
             "exp": 2120000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f5c_robo"
           }
         },
         {
@@ -2890,7 +2911,8 @@
             "dodge": 8,
             "souls": 1740000,
             "exp": 2800000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f6b_tenshi"
           }
         },
         {
@@ -2906,7 +2928,8 @@
             "dodge": 8,
             "souls": 2300000,
             "exp": 3700000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f9b_souzou"
           }
         },
         {
@@ -2922,7 +2945,8 @@
             "dodge": 8,
             "souls": 3040000,
             "exp": 4900000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "f3b_haou"
           }
         },
         {
@@ -2938,7 +2962,8 @@
             "dodge": 10,
             "souls": 4000000,
             "exp": 6400000,
-            "kind": "boss"
+            "kind": "boss",
+            "imgId": "db_f30"
           }
         }
       ]

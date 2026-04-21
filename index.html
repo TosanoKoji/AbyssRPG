@@ -65,6 +65,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .battle-area.boss-png #enemy-side-wrap{flex:1;width:auto;max-width:58%}
 .battle-area.boss-png #enemy-sprite{height:100%;display:flex;align-items:center;justify-content:center}
 .battle-area.boss-png #enemy-sprite img{height:160px;width:auto;max-width:100%;object-fit:contain;border-radius:4px}
+.battle-area.deep-boss #enemy-sprite img{filter:hue-rotate(250deg) saturate(.8) brightness(.82) contrast(1.12) drop-shadow(0 0 10px rgba(124,58,237,.55))}
 .fighter{display:inline-block;transition:transform .15s}
 
 /* 攻撃アニメーション（武器別） */
@@ -333,7 +334,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211404</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211542</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1275,8 +1276,10 @@ function showDeepFloorPicker(floor){
 // ─── ラン状態リセット（s-charへ遷移するたびに必ず呼ぶ） ──────
 function resetRunState(){
   const prevFloorId = GS.run.floorId || currentFloorId || 1;
+  const prevDeepTarget = GS.run.deepTargetFloor || 0;
   GS.run = {
     floorId: prevFloorId,
+    deepTargetFloor: prevDeepTarget,
     activeSkills: [],
     passiveSkills: [],
     accessories: []
@@ -2762,6 +2765,9 @@ function startBattle(enemy,isBoss){
     // ボスPNGモードクラス
     if(isBoss&&SETTINGS.iconMode==='png') _battleAreaEl.classList.add('boss-png');
     else _battleAreaEl.classList.remove('boss-png');
+    // ディープダンジョン: ボス画像に深淵フィルター
+    if(isBoss&&_floorId==='deep') _battleAreaEl.classList.add('deep-boss');
+    else _battleAreaEl.classList.remove('deep-boss');
   }
   const _hs=document.getElementById('hero-sprite');if(_hs)_hs.innerHTML=renderIcon('chars',charImgIdBattle(GS.run.charId),GS.run.icon,90);
   const _ess=document.getElementById('enemy-sprite');
