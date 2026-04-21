@@ -333,7 +333,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604202056</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211404</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -912,9 +912,9 @@ const SKILL_FNS={
   lifedrain:  bs=>{const dmg=Math.max(1,Math.floor(GS.run.atk*1.5)-bs.enemy.def);bs.heroHp=Math.min(bs.heroMaxHp,bs.heroHp+dmg);showDmg('hero-sprite',dmg,true,false,false);skillHitEnemy(bs,dmg,'生命吸収');},
   blaze:      bs=>{skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*4)-Math.floor(bs.enemy.def*0.5)),'地獄炎');},
   shadowstep: bs=>{bs.dodgeNext=true;skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*2)-bs.enemy.def),'影踏み');},
-  rallycry:   bs=>{const _rStacks=GS.run.companionBuff?6:3;bs.rageStacks=(bs.rageStacks||0)+_rStacks;addLog(`鬨の声！ ${_rStacks}ターン攻撃+50%`,'log-skill');showSkillFlash('rgba(251,191,36,.22)');updateBattleUI();renderActiveBtns();},
+  rallycry:   bs=>{bs.rageStacks=(bs.rageStacks||0)+3;addLog('鬨の声！ 3ターン攻撃+50%','log-skill');showSkillFlash('rgba(251,191,36,.22)');updateBattleUI();renderActiveBtns();},
   soulburst:  bs=>{const cost=Math.floor(bs.heroMaxHp*0.3);bs.heroHp=Math.max(1,bs.heroHp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*6)-bs.enemy.def),'魂の爆発');updateBattleUI();},
-  timestop:   bs=>{const _tStuns=GS.run.companionBuff?4:2;bs.stunTurns=(bs.stunTurns||0)+_tStuns;addLog(`時間停止！ 敵の攻撃を${_tStuns}回無効化`,'log-skill');showSkillFlash('rgba(96,165,250,.25)');renderActiveBtns();},
+  timestop:   bs=>{bs.stunTurns=(bs.stunTurns||0)+2;addLog('時間停止！ 敵の攻撃を2回無効化','log-skill');showSkillFlash('rgba(96,165,250,.25)');renderActiveBtns();},
   divinewrath:bs=>{skillHitEnemy(bs,Math.floor(GS.run.atk*5),'天罰');},
   apocalypse: bs=>{const cost=Math.floor(bs.heroMaxMp*0.5);bs.heroMp=Math.max(0,bs.heroMp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(bs.enemyHp*0.3)),'終焉');updateBattleUI();}
 };
@@ -2973,17 +2973,6 @@ function useActiveSkill(id){
       s.fn(bState);
     }
   });
-  // 相棒（旅人）: companionBuff時スキル追加発動
-  if(!bState.over&&GS.run.companionBuff){
-    if(!bState.companionExtraUsed) bState.companionExtraUsed={};
-    if(!bState.companionExtraUsed[id]){
-      bState.companionExtraUsed[id]=true;
-      addLog(`🤝 相棒の絆！ ${s.name}追加発動！`,'log-skill');
-      showSkillFlash('rgba(167,139,250,.25)');
-      s.fn(bState);
-      if(bState.over) return;
-    }
-  }
   // 魔力過負荷: 10%でCDゼロ
   if((GS.run.uniqueSkills||[]).includes('mage_overload')&&Math.random()<0.1){
     bState.skillCooldownEnd[id]=0;

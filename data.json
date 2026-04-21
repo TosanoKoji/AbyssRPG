@@ -387,7 +387,7 @@
       "atk": 80,
       "mp": 0,
       "crit": 10,
-      "desc": "旅人装備時: ATK×1.2・スキル効果+20%・スキル追加発動1回・効果時間2倍",
+      "desc": "旅人装備時: ATK×1.2・スキル効果+20%",
       "anim": "slash",
       "special": "companionEffect",
       "unlockCost": 50000,
