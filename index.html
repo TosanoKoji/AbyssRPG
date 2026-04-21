@@ -334,7 +334,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211822</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211844</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2089,7 +2089,7 @@ function renderSkills(){
   const passiveBonus=(GS.systemUnlocked||[]).includes('passive_slot_up')?1:0;
   const passiveBonus2=(GS.systemUnlocked||[]).includes('passive_slot_up2')?1:0;
   const slots=hasJourney?6:(c?c.activeSlots:3)+activeBonus+activeBonus2;
-  const passiveSlots=hasJourney?6:2+passiveBonus+passiveBonus2;
+  const passiveSlots=hasJourney?6:(c&&c.passiveSlots?c.passiveSlots:2)+passiveBonus+passiveBonus2;
   document.getElementById('skill-screen-sub').textContent=`アクティブ最大${slots}枠 / パッシブ最大${passiveSlots}枠`;
   document.getElementById('active-skill-max').textContent=slots;
   const ael=document.getElementById('active-skill-list');ael.innerHTML='';
@@ -2143,7 +2143,8 @@ function togglePassiveSkill(id){
   );
   const passiveBonus=(GS.systemUnlocked||[]).includes('passive_slot_up')?1:0;
   const passiveBonus2=(GS.systemUnlocked||[]).includes('passive_slot_up2')?1:0;
-  const slots=hasJourney?6:2+passiveBonus+passiveBonus2;
+  const _ch=CHARS[GS.run.charId];
+  const slots=hasJourney?6:(_ch&&_ch.passiveSlots?_ch.passiveSlots:2)+passiveBonus+passiveBonus2;
   const idx=GS.run.passiveSkills.indexOf(id);
   if(idx>=0)GS.run.passiveSkills.splice(idx,1);
   else if(GS.run.passiveSkills.length<slots)GS.run.passiveSkills.push(id);

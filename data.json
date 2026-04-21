@@ -293,8 +293,9 @@
       "crit": 15,
       "dodge": 22,
       "hdodge": 32,
-      "activeSlots": 6,
-      "accSlots": 5,
+      "activeSlots": 4,
+      "accSlots": 2,
+      "passiveSlots": 3,
       "desc": "兄弟を探し旅する猫。二丁拳銃を構える風来坊",
       "unlockCond": "achievement",
       "lvGrowth": {
