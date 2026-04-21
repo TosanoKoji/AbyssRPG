@@ -334,7 +334,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211844</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211903</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2785,8 +2785,10 @@ function startBattle(enemy,isBoss){
     // ボスPNGモードクラス
     if(isBoss&&SETTINGS.iconMode==='png') _battleAreaEl.classList.add('boss-png');
     else _battleAreaEl.classList.remove('boss-png');
-    // ディープダンジョン: ボス画像に深淵フィルター
-    if(isBoss&&_floorId==='deep') _battleAreaEl.classList.add('deep-boss');
+    // ディープダンジョン: ボス画像に深淵フィルター（10/15/20/25/30階の新規画像はフィルターなし）
+    const _newDeepBossFloors=[10,15,20,25,30];
+    const _deepTargetForFilter=GS.run.deepTargetFloor||0;
+    if(isBoss&&_floorId==='deep'&&!_newDeepBossFloors.includes(_deepTargetForFilter)) _battleAreaEl.classList.add('deep-boss');
     else _battleAreaEl.classList.remove('deep-boss');
   }
   const _hs=document.getElementById('hero-sprite');if(_hs)_hs.innerHTML=renderIcon('chars',charImgIdBattle(GS.run.charId),GS.run.icon,90);
