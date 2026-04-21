@@ -334,7 +334,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211542</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211548</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -1965,11 +1965,13 @@ function quickStartRun() {
   if(!lr.charId||!lr.weaponId||!lr.armorId){showInlineAlert('前回の装備データが不完全です');return;}
   if(!isUnlocked(lr.charId)||!isUnlocked(lr.weaponId)||!isUnlocked(lr.armorId)){showInlineAlert('前回の装備がアンロックされていません');return;}
   // キャラ・装備・スキルを引き継ぎ、フロアは現在選択中のものをそのまま使う
+  const prevDeepTarget = GS.run.deepTargetFloor || lr.deepTargetFloor || 0;
   GS.run = {
     charId: lr.charId,
     weaponId: lr.weaponId,
     armorId: lr.armorId,
     floorId: currentFloorId || lr.floorId || 1,
+    deepTargetFloor: prevDeepTarget,
     accessories: Array.isArray(lr.accessories) ? [...lr.accessories] : [],
     activeSkills: Array.isArray(lr.activeSkills) ? [...lr.activeSkills] : [],
     passiveSkills: Array.isArray(lr.passiveSkills) ? [...lr.passiveSkills] : []
@@ -2171,6 +2173,7 @@ function startRun(){
       weaponId: GS.run.weaponId,
       armorId: GS.run.armorId,
       floorId: GS.run.floorId || currentFloorId || 1,
+      deepTargetFloor: GS.run.deepTargetFloor || 0,
       accessories: [...accs],
       activeSkills: [...(GS.run.activeSkills||[])],
       passiveSkills: [...passives]
