@@ -337,7 +337,7 @@ button,.btn,.card,.active-btn,.lv-mult-btn,.skill-card,.floor-card{touch-action:
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604232109</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604232125</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -4204,6 +4204,11 @@ function endBattle(won){
           setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .6s';setTimeout(()=>el.remove(),600);},3500);
         },800);
       }
+      // いたずらなハチワレ初撃破: エンディング発動フラグ
+      if(floor&&floor.deepMode&&(GS.run.deepTargetFloor||0)===30&&!GS.achStats.endingShown){
+        GS.achStats.endingShown=true;
+        GS.run._deepEnding=true;
+      }
       // ボスキル記録
       const cid=GS.run.charId;
       GS.achStats.bossKills=GS.achStats.bossKills||{};
@@ -4211,7 +4216,8 @@ function endBattle(won){
       GS.souls+=GS.run.runSouls;GS.exp+=GS.run.runExp;
       checkAchievements();save();
       const bossWinRow=document.createElement('div');bossWinRow.className='row';
-      const bossWinBtn=document.createElement('button');bossWinBtn.className='btn btn-primary';bossWinBtn.textContent='ボスを倒した！結果へ';
+      const bossWinBtn=document.createElement('button');bossWinBtn.className='btn btn-primary';
+      bossWinBtn.textContent=GS.run._deepEnding?'結末を見る...':'ボスを倒した！結果へ';
       bossWinBtn.addEventListener('click',()=>endRun(true));
       bossWinRow.appendChild(bossWinBtn);resEl.innerHTML='';resEl.appendChild(bossWinRow);
     } else {
@@ -4307,6 +4313,36 @@ function retreatRun(){
   goTo('s-result');
 }
 
+// ─── エンディング表示（いたずらなハチワレ初撃破時） ──────
+function showDeepEnding(onComplete){
+  const show=(text,minShowMs,done)=>{
+    const el=document.createElement('div');
+    el.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:10000;opacity:0;transition:opacity .6s';
+    const box=document.createElement('div');
+    box.style.cssText='background:#1a1a2e;border:2px solid #fb923c;border-radius:16px;padding:28px 36px;font-size:18px;color:#fed7aa;text-align:center;max-width:85%;line-height:1.6;box-shadow:0 0 30px rgba(251,146,60,.4);animation:achPop .6s ease-out';
+    box.innerHTML=text;
+    const hint=document.createElement('div');
+    hint.style.cssText='font-size:11px;color:transparent;margin-top:14px;transition:color .4s';
+    hint.textContent='タップで閉じる';
+    box.appendChild(hint);
+    el.appendChild(box);
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{el.style.opacity='1';});
+    let ready=false;
+    setTimeout(()=>{ready=true;hint.style.color='#888780';},minShowMs);
+    el.addEventListener('click',()=>{
+      if(!ready) return;
+      el.style.opacity='0';
+      setTimeout(()=>{el.remove();done&&done();},600);
+    });
+  };
+  show('🐾 猫の兄弟は和解した',2000,()=>{
+    show('✨ これで本当にクリアです。<br>お疲れ様でした',3000,()=>{
+      onComplete&&onComplete();
+    });
+  });
+}
+
 function endRun(won){
   const floor=FLOORS.find(f=>f.id===(GS.run.floorId||1));
   const cid=GS.run.charId;
@@ -4345,6 +4381,13 @@ function endRun(won){
 
   const newly=checkAchievements();save();
   _recentAchIds=newly.map(a=>a.id);
+
+  // いたずらなハチワレ初撃破: エンディング演出→タイトルへ
+  if(won&&GS.run._deepEnding){
+    GS.run._deepEnding=false;
+    showDeepEnding(()=>{ goTo('s-title'); });
+    return;
+  }
 
   const _isDeepResult=floor&&floor.deepMode;
   document.getElementById('result-icon').textContent=won?(_isDeepResult?'🕳️':'✦'):'💀';
