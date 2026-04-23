@@ -1121,10 +1121,10 @@
       "name": "終焉",
       "icon": "🌑",
       "mpCost": 0,
-      "desc": "最大MPの半分を消費して敵残HP30%分ダメージ",
+      "desc": "最大MPの2/3を消費して敵現HP20%分ダメージ",
       "lvReq": 100,
       "unlockCost": 80,
-      "cooldown": 5
+      "cooldown": 60
     }
   },
   "passiveSkills": {

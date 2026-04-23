@@ -2,11 +2,12 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ABYSS</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0ddd8;min-height:100vh}
+body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0ddd8;min-height:100vh;touch-action:manipulation;-webkit-touch-callout:none;-webkit-text-size-adjust:100%}
+button,.btn,.card,.active-btn,.lv-mult-btn,.skill-card,.floor-card{touch-action:manipulation}
 #game{max-width:520px;margin:0 auto;padding:16px;padding-bottom:max(60px,calc(env(safe-area-inset-bottom,0px) + 40px))}
 .screen{display:none}.screen.active{display:block}
 .title{font-size:22px;font-weight:500;margin-bottom:4px}
@@ -66,6 +67,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
 .battle-area.boss-png #enemy-sprite{height:100%;display:flex;align-items:center;justify-content:center}
 .battle-area.boss-png #enemy-sprite img{height:160px;width:auto;max-width:100%;object-fit:contain;border-radius:4px}
 .battle-area.deep-boss #enemy-sprite img{filter:hue-rotate(250deg) saturate(.8) brightness(.82) contrast(1.12) drop-shadow(0 0 10px rgba(124,58,237,.55))}
+.new-mark{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px rgba(239,68,68,.8);margin-left:5px;vertical-align:middle;animation:newPulse 1.6s ease-in-out infinite}
+@keyframes newPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.25)}}
 .fighter{display:inline-block;transition:transform .15s}
 
 /* 攻撃アニメーション（武器別） */
@@ -334,7 +337,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604211903</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604232106</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -463,6 +466,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
       <button id="lv-mult-100" class="btn lv-mult-btn"             style="padding:5px 10px;font-size:12px">×100</button>
       <button id="lv-mult-1000" class="btn lv-mult-btn"            style="padding:5px 10px;font-size:12px;display:none">×1000</button>
       <button id="lv-mult-10000" class="btn lv-mult-btn"           style="padding:5px 10px;font-size:12px;display:none">×10000</button>
+      <button id="lv-mult-100000" class="btn lv-mult-btn"          style="padding:5px 10px;font-size:12px;display:none">×100000</button>
     </div>
   </div>
 </div>
@@ -674,6 +678,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#1a1a1f;color:#e0
     <button class="lib-tab"        id="ltab-equip">装備</button>
     <button class="lib-tab"        id="ltab-skill">スキル</button>
     <button class="lib-tab"        id="ltab-enemy">敵</button>
+    <button class="lib-tab"        id="ltab-enemyDeep">敵Deep</button>
   </div>
   <div id="library-list"></div>
   <hr class="divider">
@@ -785,6 +790,8 @@ const GS={
   deepLevel: parseInt(localStorage.getItem('abyss_deeplevel')||'6'),
   // フレーバーテキスト表示済みフロアID
   seenFlavorFloors: JSON.parse(localStorage.getItem('abyss_flavor')||'[]'),
+  // 新規獲得アイテム通知（id配列・画面遷移で消える）
+  newItems: JSON.parse(localStorage.getItem('abyss_newitems')||'[]'),
   // {souls, floorId, roomIdx, isBoss, bossId, bossHpRatio}
   run:{}
 };
@@ -806,8 +813,31 @@ function save(){
   localStorage.setItem('abyss_charmem',  JSON.stringify(GS.charMemory));
   localStorage.setItem('abyss_deeplevel',GS.deepLevel||6);
   localStorage.setItem('abyss_flavor',JSON.stringify(GS.seenFlavorFloors||[]));
+  localStorage.setItem('abyss_newitems',JSON.stringify(GS.newItems||[]));
 }
 function isUnlocked(id){return GS.unlocked.includes(id);}
+
+// ─── 新規獲得アイテム通知 ───────────────────────────────
+function markNew(id){
+  if(!id) return;
+  GS.newItems=GS.newItems||[];
+  if(!GS.newItems.includes(id)){ GS.newItems.push(id); save(); }
+}
+function isNew(id){ return (GS.newItems||[]).includes(id); }
+function newMarkHtml(id){ return isNew(id)?'<span class="new-mark" title="NEW"></span>':''; }
+// 画面から離れる時、その画面で表示されていた新規アイテムマークを消す
+function clearSeenNewItems(screenId){
+  if(!GS.newItems||!GS.newItems.length) return;
+  let check;
+  if(screenId==='s-char') check=id=>!!((window.CHARS&&CHARS[id])||(window.UNIQUE_SKILLS&&UNIQUE_SKILLS[id]));
+  else if(screenId==='s-equip') check=id=>!!((window.WEAPONS&&WEAPONS[id])||(window.ARMORS&&ARMORS[id])||(window.ACCESSORIES&&ACCESSORIES[id]));
+  else if(screenId==='s-skill') check=id=>!!((window.ACTIVE_SKILLS&&ACTIVE_SKILLS[id])||(window.PASSIVE_SKILLS&&PASSIVE_SKILLS[id])||(window.UNIQUE_SKILLS&&UNIQUE_SKILLS[id]));
+  else if(screenId==='s-library'||screenId==='s-unlock') check=()=>true;
+  else return;
+  const before=GS.newItems.length;
+  GS.newItems=GS.newItems.filter(id=>!check(id));
+  if(GS.newItems.length!==before) save();
+}
 
 // キャラカードに前回装備のプレビューを表示するHTML生成
 function renderCharMemoryPreview(cid){
@@ -920,7 +950,7 @@ const SKILL_FNS={
   soulburst:  bs=>{const cost=Math.floor(bs.heroMaxHp*0.3);bs.heroHp=Math.max(1,bs.heroHp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(GS.run.atk*6)-bs.enemy.def),'魂の爆発');updateBattleUI();},
   timestop:   bs=>{bs.stunTurns=(bs.stunTurns||0)+2;addLog('時間停止！ 敵の攻撃を2回無効化','log-skill');showSkillFlash('rgba(96,165,250,.25)');renderActiveBtns();},
   divinewrath:bs=>{skillHitEnemy(bs,Math.floor(GS.run.atk*5),'天罰');},
-  apocalypse: bs=>{const cost=Math.floor(bs.heroMaxMp*0.5);bs.heroMp=Math.max(0,bs.heroMp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(bs.enemyHp*0.3)),'終焉');updateBattleUI();}
+  apocalypse: bs=>{const cost=Math.floor(bs.heroMaxMp*2/3);bs.heroMp=Math.max(0,bs.heroMp-cost);skillHitEnemy(bs,Math.max(1,Math.floor(bs.enemyHp*0.2)),'終焉');updateBattleUI();}
 };
 
 
@@ -985,21 +1015,21 @@ function checkAchievements(){
       GS.achDone.push(a.id);
       const r=a.reward;
       if(r.type==='uniqueSkill'){
-        if(!GS.unlockedUniqueSkills.includes(r.id)) GS.unlockedUniqueSkills.push(r.id);
+        if(!GS.unlockedUniqueSkills.includes(r.id)){ GS.unlockedUniqueSkills.push(r.id); markNew(r.id); }
       } else if(r.type==='unlockSkill'||r.type==='unlockItem'){
-        if(r.id!=='未定'&&!GS.unlocked.includes(r.id)) GS.unlocked.push(r.id);
+        if(r.id!=='未定'&&!GS.unlocked.includes(r.id)){ GS.unlocked.push(r.id); markNew(r.id); }
       } else if(r.type==='unlockWeapon'){
         // 購入コストが0の武器（鉄アレイ等）は自動解放、コストありはショップ登場のみ
         const wDef=WEAPONS[r.id];
         const shopEntry=UNLOCK_GROUPS.equip.find(e=>e.id===r.id);
         if(r.id!=='未定'&&!GS.unlocked.includes(r.id)){
-          if(!shopEntry||shopEntry.cost===0) GS.unlocked.push(r.id);
+          if(!shopEntry||shopEntry.cost===0){ GS.unlocked.push(r.id); markNew(r.id); }
           // コストありはショップに登場させるだけ（achDoneに入るのでachReqチェックが通る）
         }
       } else if(r.type==='unlockChar'){
         // キャラはアンロックショップに登場させるだけ（自動解放はしない）
       } else if(r.type==='unlockAccessory'){
-        if(!GS.unlocked.includes(r.id)) GS.unlocked.push(r.id);
+        if(!GS.unlocked.includes(r.id)){ GS.unlocked.push(r.id); markNew(r.id); }
       } else if(r.type==='unlockSystem'){
         // システム開放もショップに登場させるだけ
       }
@@ -1052,6 +1082,9 @@ function getAchProgress(a){
 
 // ─── 画面遷移 ─────────────────────────────────────────────
 function goTo(id){
+  // 画面を離れる前に、その画面で表示されていた新規アイテムマークをクリア
+  const _prev=document.querySelector('.screen.active');
+  if(_prev&&_prev.id!==id) clearSeenNewItems(_prev.id);
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'instant'});
@@ -1063,12 +1096,24 @@ function goTo(id){
   if(id==='s-char')    {resetRunState();renderChars();}
   if(id==='s-equip')   renderEquip();
   if(id==='s-skill')   renderSkills();
-  if(id==='s-library') {libTab='char';['char','equip','skill','enemy'].forEach(t=>document.getElementById('ltab-'+t).classList.toggle('active',t==='char'));renderLibrary();}
+  if(id==='s-library') {libTab='char';['char','equip','skill','enemy','enemyDeep'].forEach(t=>{const _el=document.getElementById('ltab-'+t);if(_el)_el.classList.toggle('active',t==='char');});renderLibrary();}
 }
 function renderTitle(){
   document.getElementById('soul-count').textContent=GS.souls;
   document.getElementById('exp-count').textContent=GS.exp;
   document.getElementById('totallv-title').textContent=GS.totalLv;
+  // 新規獲得バッジ: 探索する／ライブラリボタン
+  const _newCount=(GS.newItems||[]).length;
+  const _exploreBtn=document.getElementById('btn-title-explore');
+  if(_exploreBtn){
+    const _prev=_exploreBtn.querySelector('.new-mark'); if(_prev) _prev.remove();
+    if(_newCount>0){ const m=document.createElement('span'); m.className='new-mark'; _exploreBtn.appendChild(m); }
+  }
+  const _libBtn=document.getElementById('btn-title-library');
+  if(_libBtn){
+    const _prev=_libBtn.querySelector('.new-mark'); if(_prev) _prev.remove();
+    if(_newCount>0){ const m=document.createElement('span'); m.className='new-mark'; _libBtn.appendChild(m); }
+  }
   // 未受取達成報酬通知
   const newAch=ACHIEVEMENTS.filter(a=>!GS.achDone.includes(a.id)&&getAchProgress(a)>=(a.cond.val||1));
   const bar=document.getElementById('title-ach-bar');
@@ -1386,6 +1431,9 @@ function renderLevel(){
   // ×10000ボタン: NECO解放（ディープダンジョンF10クリア）後に表示
   const btn10000=document.getElementById('lv-mult-10000');
   if(btn10000) btn10000.style.display=GS.unlocked.includes('neco')?'':'none';
+  // ×100000ボタン: ディープダンジョンF20クリアで表示
+  const btn100000=document.getElementById('lv-mult-100000');
+  if(btn100000) btn100000.style.display=((GS.achStats.deepCleared||[]).includes(20))?'':'none';
   const list=document.getElementById('lv-stat-list');list.innerHTML='';
   LV_STATS.forEach(s=>{
     const cur=GS.lvBonus[s.key]||0;
@@ -1424,7 +1472,7 @@ function renderLevel(){
 let lvMult=1; // 強化倍率（×1/×10/×100）
 function setLvMult(n){
   lvMult=n;
-  [1,10,100,1000,10000].forEach(v=>{
+  [1,10,100,1000,10000,100000].forEach(v=>{
     const btn=document.getElementById('lv-mult-'+v);
     if(btn) btn.classList.toggle('active-mult',v===n);
   });
@@ -1634,8 +1682,9 @@ function renderUniqueBadges(){
 let libTab='char';
 function switchLibTab(tab){
   libTab=tab;
-  ['char','equip','skill','enemy'].forEach(t=>{
-    document.getElementById('ltab-'+t).classList.toggle('active',t===tab);
+  ['char','equip','skill','enemy','enemyDeep'].forEach(t=>{
+    const _el=document.getElementById('ltab-'+t);
+    if(_el) _el.classList.toggle('active',t===tab);
   });
   renderLibrary();
 }
@@ -1649,7 +1698,7 @@ function renderLibrary(){
       );
       const _lg=effectiveLvGrowth(c.id)||{hp:'B',atk:'B',def:'B',mp:'B',crit:'B',dodge:'B'};
       const _charInfoHtml=`
-        <div class="lib-card-title">${SETTINGS.iconMode==='png'?'':renderIcon('chars',c.id,c.icon,18)+' '}${c.name}</div>
+        <div class="lib-card-title">${SETTINGS.iconMode==='png'?'':renderIcon('chars',c.id,c.icon,18)+' '}${c.name}${newMarkHtml(c.id)}</div>
         <div class="lib-card-desc">${c.desc}</div>
         <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
           <span class="badge badge-red">HP ${c.hp+Math.round((lb.hp||0)*10*charGm(c.id,'hp'))}</span>
@@ -1705,7 +1754,7 @@ function renderLibrary(){
         params=`<span class="badge badge-orange">装飾品</span>`;
       }
       el.innerHTML+=`<div class="lib-card">
-        <div class="lib-card-title">${e.icon||'🔸'} ${e.name} <span class="badge ${kindBadge}" style="font-size:9px">${kindLabel}</span></div>
+        <div class="lib-card-title">${e.icon||'🔸'} ${e.name}${newMarkHtml(e.id)} <span class="badge ${kindBadge}" style="font-size:9px">${kindLabel}</span></div>
         <div style="margin:4px 0;display:flex;gap:4px;flex-wrap:wrap">${params}</div>
         <div class="lib-card-desc">${e.desc}</div>
         ${e.special?`<div style="font-size:10px;color:#FCD34D;margin-top:3px">✨ 特殊効果: ${WEAPONS[e.id]?.special||e.special}</div>`:''}
@@ -1719,7 +1768,7 @@ function renderLibrary(){
     ];
     allSkills.forEach(s=>{
       el.innerHTML+=`<div class="lib-card">
-        <div class="lib-card-title">${s.icon} ${s.name}
+        <div class="lib-card-title">${s.icon} ${s.name}${newMarkHtml(s.id)}
           <span class="badge ${s.kind==='active'?'badge-purple':'badge-green'}" style="font-size:9px">${s.kind==='active'?'アクティブ':'パッシブ'}</span>
           ${s.kind==='active'?`<span class="badge badge-gray" style="font-size:9px">MP ${s.mpCost}</span>`:''}
         </div>
@@ -1727,12 +1776,19 @@ function renderLibrary(){
       </div>`;
     });
     if(!el.innerHTML) el.innerHTML='<div style="color:#5f5e5a;font-size:12px;padding:10px">アンロック済みスキルがありません</div>';
-  } else if(libTab==='enemy'){
+  } else if(libTab==='enemy'||libTab==='enemyDeep'){
     const encountered=GS.encounterLog||[];
-    const allEnemies=FLOORS.flatMap(f=>[...f.enemies,...f.bosses]);
+    const _isDeepTab=libTab==='enemyDeep';
+    const _sourceFloors=FLOORS.filter(f=>_isDeepTab?f.deepMode:!f.deepMode);
+    const allEnemies=_sourceFloors.flatMap(f=>{
+      const _normal=f.enemies||[];
+      const _bosses=f.bosses||[];
+      const _levelBosses=(f.levels||[]).map(lv=>lv.boss).filter(Boolean);
+      return [..._normal,..._bosses,..._levelBosses];
+    });
     const seen=allEnemies.filter(e=>encountered.includes(e.id||e.name));
     if(!seen.length){
-      el.innerHTML='<div style="color:#5f5e5a;font-size:12px;padding:10px">まだ接敵した敵がいません。ダンジョンを探索しましょう。</div>';
+      el.innerHTML='<div style="color:#5f5e5a;font-size:12px;padding:10px">'+(_isDeepTab?'ディープダンジョンでまだ接敵した敵がいません。':'まだ接敵した敵がいません。ダンジョンを探索しましょう。')+'</div>';
       return;
     }
     // 頻度ラベル変換
@@ -1742,7 +1798,10 @@ function renderLibrary(){
       if(chance>=0.1) return '稀に';
       return '極稀に';
     };
-    const allBossNames=new Set(FLOORS.flatMap(f=>f.bosses.map(b=>b.id||b.name)));
+    const allBossNames=new Set(FLOORS.flatMap(f=>[
+      ...(f.bosses||[]).map(b=>b.id||b.name),
+      ...(f.levels||[]).map(lv=>lv.boss?.id||lv.boss?.name).filter(Boolean)
+    ]));
     seen.forEach(e=>{
       const isBoss=allBossNames.has(e.id||e.name);
       const specialsHtml=(e.specials||[]).map(sp=>
@@ -1871,7 +1930,7 @@ function renderChars(){
       <div class="row" style="gap:12px">
         <div style="line-height:1">${renderIcon('chars', charImgId(c.id), c.icon, 60)}</div>
         <div style="flex:1">
-          <div class="card-title">${c.name}${GS.charMemory[c.id]?` <span style="font-size:9px;color:#4ade80;border:0.5px solid #4ade80;border-radius:4px;padding:1px 5px;vertical-align:middle">記憶あり</span>`:''}
+          <div class="card-title">${c.name}${newMarkHtml(c.id)}${GS.charMemory[c.id]?` <span style="font-size:9px;color:#4ade80;border:0.5px solid #4ade80;border-radius:4px;padding:1px 5px;vertical-align:middle">記憶あり</span>`:''}
           </div>
           <div class="card-sub">${c.desc}</div>
           ${renderCharMemoryPreview(c.id)}
@@ -2007,7 +2066,7 @@ function renderEquip(){
     _wd.className=`card ${GS.run.weaponId===w.id?'selected':''} ${ok?'':'locked'}`;
     _wd.innerHTML=`
       <div class="row" style="justify-content:space-between">
-        <div><div class="card-title">${w.icon||'🗡️'} ${w.name}</div><div class="card-sub">${w.desc}</div></div>
+        <div><div class="card-title">${w.icon||'🗡️'} ${w.name}${newMarkHtml(w.id)}</div><div class="card-sub">${w.desc}</div></div>
         ${ok
           ? w.special==='dumbbellEffect'
             ? `<span class="badge badge-amber">ATK×1/3 EXP×1.2</span>`
@@ -2025,7 +2084,7 @@ function renderEquip(){
     _ad.className=`card ${GS.run.armorId===a.id?'selected':''} ${ok?'':'locked'}`;
     _ad.innerHTML=`
       <div class="row" style="justify-content:space-between">
-        <div><div class="card-title">${a.icon||'🛡'} ${a.name}</div><div class="card-sub">${a.desc}</div></div>
+        <div><div class="card-title">${a.icon||'🛡'} ${a.name}${newMarkHtml(a.id)}</div><div class="card-sub">${a.desc}</div></div>
         ${ok ? a.special==='fundoshiEffect'
             ? `<span class="badge badge-blue">回避+10% 防御-50%</span>`
             : `<span class="badge badge-blue">防御+${a.def}${a.hp?` HP+${a.hp}`:''}${a.mp?` MP+${a.mp}`:''}</span>`
@@ -2045,7 +2104,7 @@ function renderEquip(){
     _acd.className=`card ${sel?'selected':''} ${ok?'':'locked'}`;
     _acd.innerHTML=`
       <div class="row" style="justify-content:space-between">
-        <div><div class="card-title">${acc.icon} ${acc.name}</div><div class="card-sub">${acc.desc}</div></div>
+        <div><div class="card-title">${acc.icon} ${acc.name}${newMarkHtml(acc.id)}</div><div class="card-sub">${acc.desc}</div></div>
         ${ok?`<span class="badge badge-orange">装飾品</span>`:'<span class="badge badge-red" style="font-weight:bold;">未解放</span>'}
       </div>`;
     if(ok) _acd.addEventListener('click',()=>selAccessory(acc.id,slots));
@@ -2097,7 +2156,7 @@ function renderSkills(){
     const ok=isUnlocked(s.id),sel=GS.run.activeSkills.includes(s.id);
     const div=document.createElement('div');
     div.className=`skill-card ${sel?'selected':''} ${ok?'':'locked'}`;
-    div.innerHTML=`<div class="skill-name" style="${ok?'':'color:#F09595'}">${s.icon} ${s.name}${ok?'':' <span style="color:#E24B4A;font-size:10px;font-weight:bold;">未解放</span>'}</div>
+    div.innerHTML=`<div class="skill-name" style="${ok?'':'color:#F09595'}">${s.icon} ${s.name}${newMarkHtml(s.id)}${ok?'':' <span style="color:#E24B4A;font-size:10px;font-weight:bold;">未解放</span>'}</div>
       <div class="skill-desc">${s.desc}</div>
       <div style="font-size:10px;color:#8b7cf8;margin-top:3px">MP ${s.mpCost}</div>`;
     div.onclick=ok?()=>toggleActiveSkill(s.id):null;
@@ -2113,7 +2172,7 @@ function renderSkills(){
     const _pd=document.createElement('div');
     _pd.className=`skill-card ${sel?'selected':''} ${ok?'':'locked'}`;
     _pd.innerHTML=`
-      <div class="skill-name" style="${ok?'':'color:#F09595'}">${s.icon} ${s.name}${ok?'':' <span style="color:#E24B4A;font-size:10px;font-weight:bold;">未解放</span>'}</div>
+      <div class="skill-name" style="${ok?'':'color:#F09595'}">${s.icon} ${s.name}${newMarkHtml(s.id)}${ok?'':' <span style="color:#E24B4A;font-size:10px;font-weight:bold;">未解放</span>'}</div>
       <div class="skill-desc">${s.desc}</div>`;
     if(ok) _pd.addEventListener('click',()=>togglePassiveSkill(s.id));
     pel.appendChild(_pd);
@@ -2918,7 +2977,7 @@ function renderActiveBtns(){
   (GS.run.activeSkills||[]).forEach(id=>{
     const s=ACTIVE_SKILLS[id];
     const baseCostDisp=Math.max(0,s.mpCost-(GS.run.nextSkillDiscount||0));
-    const displayCost=id==='apocalypse'?Math.floor((bState.heroMaxMp||GS.run.maxMp)*0.5):Math.max(0,Math.floor(baseCostDisp*(1-earringDisc)));
+    const displayCost=id==='apocalypse'?Math.floor((bState.heroMaxMp||GS.run.maxMp)*2/3):Math.max(0,Math.floor(baseCostDisp*(1-earringDisc)));
     const cost=displayCost;
     const cdEnd=(bState.skillCooldownEnd||{})[id]||0;
     const cdRemain=Math.max(0,cdEnd-now);
@@ -2935,7 +2994,7 @@ function renderActiveBtns(){
     else cls+=' cd-no-mp';
     btn.className=cls;
     btn.disabled=!canUse;
-    const costLabel=id==='apocalypse'?displayCost+'(半分)':cost;
+    const costLabel=id==='apocalypse'?displayCost+'(2/3)':cost;
     if(onCooldown){
       btn.innerHTML=`<span class="sk-name">${s.icon} ${s.name}</span><div class="cd-bar"><div class="cd-fill" style="width:${cdPct.toFixed(1)}%"></div></div><span class="sk-desc">${s.desc}</span>`;
     } else {
@@ -3751,10 +3810,11 @@ function autoBattleTick(){
       showSkillFlash(hasMoDisk?'rgba(74,158,255,.3)':'rgba(239,68,68,.5)');
       updateBattleUI();renderActiveBtns();
       showCreatorReviveEvent(hasMoDisk,()=>{
+        // 第2ラウンド共通: 背景をfloor9boss2.pngに差し替え
+        const _bgImgEl=document.getElementById('battle-bg-img-el');
+        if(_bgImgEl){const _s2='assets/back/floor9boss2.png';const _p2=new Image();_p2.onload=()=>{_bgImgEl.src=_s2;};_p2.onerror=()=>{};_p2.src=_s2;}
         if(hasMoDisk){
           addLog('💿 MOディスクが地獄の創造主の全回復と即死を封印！','log-skill');
-          const _bgImgEl=document.getElementById('battle-bg-img-el');
-          if(_bgImgEl){const _s2='assets/back/floor9boss2.png';const _p2=new Image();_p2.onload=()=>{_bgImgEl.src=_s2;};_p2.onerror=()=>{};_p2.src=_s2;}
           addLog('🌑 地獄の創造主が再起動... 第2ラウンド開始！','log-hero-dmg');
           updateBattleUI();renderActiveBtns();
         } else {
@@ -4108,7 +4168,7 @@ function endBattle(won){
       }
       // 天使：地下5階クリアで突然解放（達成報酬ではない）
       if(fid===5&&!GS.unlocked.includes('angel')){
-        GS.unlocked.push('angel');
+        GS.unlocked.push('angel'); markNew('angel');
         addLog('✨ 天使が降臨した！ 新しいキャラクターが解放されました','log-heal');
         setTimeout(()=>{
           const el=document.createElement('div');
@@ -4120,9 +4180,9 @@ function endBattle(won){
       }
       // NECO: ディープダンジョン地下10階クリアで解放（専用武具も同時解放）
       if(floor&&floor.deepMode&&GS.run.deepTargetFloor===10&&!GS.unlocked.includes('neco')){
-        GS.unlocked.push('neco');
-        if(!GS.unlocked.includes('nearsa_u14')) GS.unlocked.push('nearsa_u14');
-        if(!GS.unlocked.includes('neco_furoshiki')) GS.unlocked.push('neco_furoshiki');
+        GS.unlocked.push('neco'); markNew('neco');
+        if(!GS.unlocked.includes('nearsa_u14')){ GS.unlocked.push('nearsa_u14'); markNew('nearsa_u14'); }
+        if(!GS.unlocked.includes('neco_furoshiki')){ GS.unlocked.push('neco_furoshiki'); markNew('neco_furoshiki'); }
         addLog('🐾 旅する猫 NECO が仲間になった！（ニアルサU14・猫の風呂敷も解放）','log-heal');
         setTimeout(()=>{
           const el=document.createElement('div');
@@ -4134,7 +4194,7 @@ function endBattle(won){
       }
       // 宇宙クリアで旅人の「旅」スキル解放
       if(fid===8&&!GS.unlockedUniqueSkills.includes('traveler_journey')){
-        GS.unlockedUniqueSkills.push('traveler_journey');
+        GS.unlockedUniqueSkills.push('traveler_journey'); markNew('traveler_journey');
         addLog('🌍 旅の力が目覚めた！ 旅人のユニークスキル「旅」が解放されました','log-heal');
         setTimeout(()=>{
           const el=document.createElement('div');
@@ -4518,6 +4578,8 @@ function initButtons(){
   if(btnMult1000) btnMult1000.addEventListener('click',()=>setLvMult(1000));
   const btnMult10000=document.getElementById('lv-mult-10000');
   if(btnMult10000) btnMult10000.addEventListener('click',()=>setLvMult(10000));
+  const btnMult100000=document.getElementById('lv-mult-100000');
+  if(btnMult100000) btnMult100000.addEventListener('click',()=>setLvMult(100000));
 
   // 達成報酬画面
   const btnAchieveBack=document.getElementById('btn-achieve-back');
@@ -4556,7 +4618,7 @@ function initButtons(){
   // ライブラリ画面
   const btnLibraryBack=document.getElementById('btn-library-back');
   if(btnLibraryBack) btnLibraryBack.addEventListener('click',()=>goTo('s-title'));
-  ['char','equip','skill','enemy'].forEach(t=>{
+  ['char','equip','skill','enemy','enemyDeep'].forEach(t=>{
     const el=document.getElementById('ltab-'+t);
     if(el) el.addEventListener('click',()=>switchLibTab(t));
   });
