@@ -337,7 +337,7 @@ button,.btn,.card,.active-btn,.lv-mult-btn,.skill-card,.floor-card{touch-action:
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604232106</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604232109</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -3810,11 +3810,11 @@ function autoBattleTick(){
       showSkillFlash(hasMoDisk?'rgba(74,158,255,.3)':'rgba(239,68,68,.5)');
       updateBattleUI();renderActiveBtns();
       showCreatorReviveEvent(hasMoDisk,()=>{
-        // 第2ラウンド共通: 背景をfloor9boss2.pngに差し替え
-        const _bgImgEl=document.getElementById('battle-bg-img-el');
-        if(_bgImgEl){const _s2='assets/back/floor9boss2.png';const _p2=new Image();_p2.onload=()=>{_bgImgEl.src=_s2;};_p2.onerror=()=>{};_p2.src=_s2;}
         if(hasMoDisk){
           addLog('💿 MOディスクが地獄の創造主の全回復と即死を封印！','log-skill');
+          // 第2ラウンド突入時のみ背景をfloor9boss2.pngに差し替え
+          const _bgImgEl=document.getElementById('battle-bg-img-el');
+          if(_bgImgEl){const _s2='assets/back/floor9boss2.png';const _p2=new Image();_p2.onload=()=>{_bgImgEl.src=_s2;};_p2.onerror=()=>{};_p2.src=_s2;}
           addLog('🌑 地獄の創造主が再起動... 第2ラウンド開始！','log-hero-dmg');
           updateBattleUI();renderActiveBtns();
         } else {
