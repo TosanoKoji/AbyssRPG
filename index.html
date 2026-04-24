@@ -337,7 +337,7 @@ button,.btn,.card,.active-btn,.lv-mult-btn,.skill-card,.floor-card{touch-action:
     <button id="btn-title-settings" style="position:absolute;top:4px;right:0;background:transparent;border:none;color:#3a3a38;font-size:22px;padding:8px;cursor:pointer;line-height:1;transition:color .15s" title="設定" onmouseover="this.style.color='#888780'" onmouseout="this.style.color='#3a3a38'">⚙</button>
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604232125</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604241842</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -678,7 +678,7 @@ button,.btn,.card,.active-btn,.lv-mult-btn,.skill-card,.floor-card{touch-action:
     <button class="lib-tab"        id="ltab-equip">装備</button>
     <button class="lib-tab"        id="ltab-skill">スキル</button>
     <button class="lib-tab"        id="ltab-enemy">敵</button>
-    <button class="lib-tab"        id="ltab-enemyDeep">敵Deep</button>
+    <button class="lib-tab"        id="ltab-enemyDeep" style="display:none">敵Deep</button>
   </div>
   <div id="library-list"></div>
   <hr class="divider">
@@ -1689,6 +1689,13 @@ function switchLibTab(tab){
   renderLibrary();
 }
 function renderLibrary(){
+  // 敵Deepタブ: ディープダンジョンで1階でもクリアしていれば表示
+  const _deepTabBtn=document.getElementById('ltab-enemyDeep');
+  if(_deepTabBtn){
+    const _deepClearedAny=(GS.achStats.deepCleared||[]).length>0;
+    _deepTabBtn.style.display=_deepClearedAny?'':'none';
+    if(!_deepClearedAny&&libTab==='enemyDeep'){ libTab='enemy'; }
+  }
   const el=document.getElementById('library-list');el.innerHTML='';
   if(libTab==='char'){
     Object.values(CHARS).filter(c=>isUnlocked(c.id)).forEach(c=>{
@@ -1762,15 +1769,25 @@ function renderLibrary(){
     });
     if(!el.innerHTML) el.innerHTML='<div style="color:#5f5e5a;font-size:12px;padding:10px">アンロック済み装備がありません</div>';
   } else if(libTab==='skill'){
+    const _uqList=Object.values(UNIQUE_SKILLS||{}).filter(u=>
+      (u.initial&&GS.unlocked.includes(u.charId))||
+      (GS.unlockedUniqueSkills||[]).includes(u.id)||
+      GS.unlocked.includes(u.id)
+    );
     const allSkills=[
       ...Object.values(ACTIVE_SKILLS).filter(s=>isUnlocked(s.id)).map(s=>({...s,kind:'active'})),
-      ...Object.values(PASSIVE_SKILLS).filter(s=>isUnlocked(s.id)).map(s=>({...s,kind:'passive'}))
+      ...Object.values(PASSIVE_SKILLS).filter(s=>isUnlocked(s.id)).map(s=>({...s,kind:'passive'})),
+      ..._uqList.map(u=>({...u,kind:'unique'}))
     ];
     allSkills.forEach(s=>{
+      const _kindLabel=s.kind==='active'?'アクティブ':(s.kind==='passive'?'パッシブ':'ユニーク');
+      const _kindBadge=s.kind==='active'?'badge-purple':(s.kind==='passive'?'badge-green':'badge-gold');
+      const _charName=s.kind==='unique'&&s.charId&&CHARS[s.charId]?CHARS[s.charId].name:'';
       el.innerHTML+=`<div class="lib-card">
         <div class="lib-card-title">${s.icon} ${s.name}${newMarkHtml(s.id)}
-          <span class="badge ${s.kind==='active'?'badge-purple':'badge-green'}" style="font-size:9px">${s.kind==='active'?'アクティブ':'パッシブ'}</span>
+          <span class="badge ${_kindBadge}" style="font-size:9px">${_kindLabel}</span>
           ${s.kind==='active'?`<span class="badge badge-gray" style="font-size:9px">MP ${s.mpCost}</span>`:''}
+          ${_charName?`<span class="badge badge-gray" style="font-size:9px">${_charName}専用</span>`:''}
         </div>
         <div class="lib-card-desc">${s.desc}</div>
       </div>`;
@@ -3108,6 +3125,34 @@ function applyVampiric(dmg,bs){
 /* ─── 敵消滅（死亡アニメーション→endBattle） ─── */
 function defeatEnemy(){
   if(bState.dyingTriggered||bState.over) return;
+  // 地獄の創造主: 覚醒前に致命ダメージ／スキル一撃死を受けたら必ず覚醒フローへ
+  // （MOディスクなしは必殺で必ず死亡するため、HPは絶対0にならない）
+  if(bState.isBoss&&bState.enemy.halfHpRevive&&!bState.creatorRevived){
+    bState.creatorRevived=true;
+    const _hasMoDisk=(GS.run.accessories||[]).includes('mo_disk');
+    if(_hasMoDisk){
+      bState.enemyHp=Math.floor(bState.enemyMaxHp*0.5);
+      bState.creatorRound2=true;
+    } else {
+      bState.enemyHp=bState.enemyMaxHp;
+      bState.creatorDeathblowPending=true;
+    }
+    showSkillFlash(_hasMoDisk?'rgba(74,158,255,.3)':'rgba(239,68,68,.5)');
+    updateBattleUI();renderActiveBtns();
+    showCreatorReviveEvent(_hasMoDisk,()=>{
+      if(_hasMoDisk){
+        addLog('💿 MOディスクが地獄の創造主の全回復と即死を封印！','log-skill');
+        const _bgImgEl=document.getElementById('battle-bg-img-el');
+        if(_bgImgEl){const _s2='assets/back/floor9boss2.png';const _p2=new Image();_p2.onload=()=>{_bgImgEl.src=_s2;};_p2.onerror=()=>{};_p2.src=_s2;}
+        addLog('🌑 地獄の創造主が再起動... 第2ラウンド開始！','log-hero-dmg');
+        updateBattleUI();renderActiveBtns();
+      } else {
+        addLog('🌑 地獄の創造主がHP全回復！ 次のターン必殺が来る！','log-hero-dmg');
+      }
+      setTimeout(()=>autoBattleTick(),800);
+    });
+    return;
+  }
   bState.dyingTriggered=true;
   const el=document.getElementById('enemy-sprite');
   if(el) el.classList.add('enemy-dying');
@@ -3440,8 +3485,8 @@ function autoBattleTick(){
       if(bState.enemyHp<=0){defeatEnemy();return;}
     }
   }
-  // 呪いの刻印（ターン毎に敵HP削る）0.5%
-  if(passives.includes('cursedmark')){
+  // 呪いの刻印（3ターンごとに敵HP削る）0.5%
+  if(passives.includes('cursedmark')&&bState.turn>0&&bState.turn%3===0){
     const curseDmg=Math.max(1,Math.floor(bState.enemyMaxHp*0.005));
     bState.enemyHp-=curseDmg;
     addLog(`呪いの刻印: ${curseDmg}ダメージ`,'log-skill');
@@ -4103,7 +4148,14 @@ function endBattle(won){
     GS.run.runSouls+=souls;GS.run.kills++;
     GS.run.runExp=(GS.run.runExp||0)+exp;
     GS.run.hp=Math.max(1,bState.heroHp);GS.run.mp=bState.heroMp;
-    if(passives.includes('souleat')){GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+10);addLog('魂喰い: HP+10','log-heal');triggerPassiveBadge('souleat');}
+    if(passives.includes('souleat')){
+      const _seHp=Math.max(1,Math.floor(GS.run.maxHp*0.2));
+      const _seMp=Math.max(1,Math.floor(GS.run.maxMp*0.2));
+      GS.run.hp=Math.min(GS.run.maxHp,GS.run.hp+_seHp);
+      GS.run.mp=Math.min(GS.run.maxMp,GS.run.mp+_seMp);
+      addLog(`魂喰い: HP+${_seHp} MP+${_seMp}`,'log-heal');
+      triggerPassiveBadge('souleat');
+    }
     // 魂の収穫: 敵撃破後 最大MP+8%（ステージ内、ディープは+3%/階）
     if((GS.run.uniqueSkills||[]).includes('necro_soulharvest')){
       const _shRate=deepFloorScaleBonus(0.08,0.03);

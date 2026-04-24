@@ -1041,7 +1041,7 @@
       "icon": "⚔",
       "mpCost": 20,
       "desc": "攻撃×2.5の斬撃ダメージ",
-      "cooldown": 5
+      "cooldown": 8
     },
     "arcane": {
       "id": "arcane",
@@ -1049,7 +1049,7 @@
       "icon": "✦",
       "mpCost": 30,
       "desc": "3連続魔法ダメージ（防御無視）",
-      "cooldown": 5
+      "cooldown": 10
     },
     "lifedrain": {
       "id": "lifedrain",
@@ -1057,7 +1057,7 @@
       "icon": "🩸",
       "mpCost": 25,
       "desc": "ダメージ＆同量HP吸収",
-      "cooldown": 5
+      "cooldown": 6
     },
     "blaze": {
       "id": "blaze",
@@ -1066,7 +1066,7 @@
       "mpCost": 35,
       "desc": "攻撃×4の爆発ダメージ",
       "unlockCost": 18,
-      "cooldown": 5
+      "cooldown": 9
     },
     "shadowstep": {
       "id": "shadowstep",
@@ -1075,7 +1075,7 @@
       "mpCost": 20,
       "desc": "次の敵攻撃を回避＋反撃×2",
       "unlockCost": 18,
-      "cooldown": 5
+      "cooldown": 10
     },
     "rallycry": {
       "id": "rallycry",
@@ -1084,7 +1084,7 @@
       "mpCost": 15,
       "desc": "3ターン攻撃+50%バフ",
       "unlockCost": 20,
-      "cooldown": 5
+      "cooldown": 10
     },
     "soulburst": {
       "id": "soulburst",
@@ -1094,7 +1094,7 @@
       "desc": "最大HPの30%を消費して攻撃×6",
       "lvReq": 15,
       "unlockCost": 35,
-      "cooldown": 5
+      "cooldown": 15
     },
     "timestop": {
       "id": "timestop",
@@ -1104,7 +1104,7 @@
       "desc": "敵の次の攻撃を2回無効化",
       "lvReq": 30,
       "unlockCost": 40,
-      "cooldown": 5
+      "cooldown": 15
     },
     "divinewrath": {
       "id": "divinewrath",
@@ -1114,7 +1114,7 @@
       "desc": "防御無視で攻撃×5の光ダメージ",
       "lvReq": 60,
       "unlockCost": 55,
-      "cooldown": 5
+      "cooldown": 20
     },
     "apocalypse": {
       "id": "apocalypse",
@@ -1124,7 +1124,7 @@
       "desc": "最大MPの2/3を消費して敵現HP20%分ダメージ",
       "lvReq": 100,
       "unlockCost": 80,
-      "cooldown": 60
+      "cooldown": 30
     }
   },
   "passiveSkills": {
@@ -1164,14 +1164,14 @@
       "id": "souleat",
       "name": "魂喰い",
       "icon": "👁",
-      "desc": "敵撃破時HP+10",
+      "desc": "敵撃破時、最大HPと最大MPの20%を回復",
       "unlockCost": 20
     },
     "cursedmark": {
       "id": "cursedmark",
       "name": "呪いの刻印",
       "icon": "🩸",
-      "desc": "毎ターン敵に最大HPの0.5%の呪いダメージ",
+      "desc": "3ターンに1回、敵に最大HPの0.5%の呪いダメージ",
       "lvReq": 30,
       "unlockCost": 30
     },
@@ -3817,10 +3817,10 @@
       },
       "reward": {
         "type": "unlockItem",
-        "id": "未定"
+        "id": "excalibur"
       },
       "icon": "⚔",
-      "desc": "戦士でボスを10回撃破"
+      "desc": "戦士でボスを10回撃破でエクスカリハーが解放"
     },
     {
       "id": "ach_m_floor3",
@@ -3950,10 +3950,10 @@
       },
       "reward": {
         "type": "unlockItem",
-        "id": "未定"
+        "id": "muffler"
       },
       "icon": "🌑",
-      "desc": "合計50回ランを完了"
+      "desc": "合計50回ランを完了でマフラーが解放"
     },
     {
       "id": "ach_kill100",
