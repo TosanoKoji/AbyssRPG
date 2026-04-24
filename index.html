@@ -324,7 +324,7 @@ button,.btn,.card,.active-btn,.lv-mult-btn,.skill-card,.floor-card{touch-action:
   <div class="title-hero">
     <div class="title-logo">ABYSS</div>
     <div class="title-sub-text">ダークファンタジーRPG</div>
-    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604241845</div>
+    <div style="font-size:10px;color:#3a3a38;letter-spacing:1px;margin-bottom:4px">ver.202604242010</div>
     <div class="title-stats-bar">
       <div class="title-stat-item">
         <div class="title-stat-label">💠 魂の欠片</div>
@@ -2011,9 +2011,12 @@ function renderEquip(){
     const ok=isUnlocked(w.id);
     const _wd=document.createElement('div');
     _wd.className=`card ${GS.run.weaponId===w.id?'selected':''} ${ok?'':'locked'}`;
+    const _wIcon=ok?(w.icon||'🗡️'):'❔';
+    const _wName=ok?`${w.name}${newMarkHtml(w.id)}`:'？？？';
+    const _wDesc=ok?w.desc:'未解放の武器';
     _wd.innerHTML=`
       <div class="row" style="justify-content:space-between">
-        <div><div class="card-title">${w.icon||'🗡️'} ${w.name}${newMarkHtml(w.id)}</div><div class="card-sub">${w.desc}</div></div>
+        <div><div class="card-title">${_wIcon} ${_wName}</div><div class="card-sub">${_wDesc}</div></div>
         ${ok
           ? w.special==='dumbbellEffect'
             ? `<span class="badge badge-amber">ATK×1/3 EXP×1.2</span>`
@@ -2029,9 +2032,12 @@ function renderEquip(){
     const ok=isUnlocked(a.id);
     const _ad=document.createElement('div');
     _ad.className=`card ${GS.run.armorId===a.id?'selected':''} ${ok?'':'locked'}`;
+    const _aIcon=ok?(a.icon||'🛡'):'❔';
+    const _aName=ok?`${a.name}${newMarkHtml(a.id)}`:'？？？';
+    const _aDesc=ok?a.desc:'未解放の防具';
     _ad.innerHTML=`
       <div class="row" style="justify-content:space-between">
-        <div><div class="card-title">${a.icon||'🛡'} ${a.name}${newMarkHtml(a.id)}</div><div class="card-sub">${a.desc}</div></div>
+        <div><div class="card-title">${_aIcon} ${_aName}</div><div class="card-sub">${_aDesc}</div></div>
         ${ok ? a.special==='fundoshiEffect'
             ? `<span class="badge badge-blue">回避+10% 防御-50%</span>`
             : `<span class="badge badge-blue">防御+${a.def}${a.hp?` HP+${a.hp}`:''}${a.mp?` MP+${a.mp}`:''}</span>`
@@ -2049,9 +2055,12 @@ function renderEquip(){
     const sel=(GS.run.accessories||[]).includes(acc.id);
     const _acd=document.createElement('div');
     _acd.className=`card ${sel?'selected':''} ${ok?'':'locked'}`;
+    const _accIcon=ok?acc.icon:'❔';
+    const _accName=ok?`${acc.name}${newMarkHtml(acc.id)}`:'？？？';
+    const _accDesc=ok?acc.desc:'未解放の装飾品';
     _acd.innerHTML=`
       <div class="row" style="justify-content:space-between">
-        <div><div class="card-title">${acc.icon} ${acc.name}${newMarkHtml(acc.id)}</div><div class="card-sub">${acc.desc}</div></div>
+        <div><div class="card-title">${_accIcon} ${_accName}</div><div class="card-sub">${_accDesc}</div></div>
         ${ok?`<span class="badge badge-orange">装飾品</span>`:'<span class="badge badge-red" style="font-weight:bold;">未解放</span>'}
       </div>`;
     if(ok) _acd.addEventListener('click',()=>selAccessory(acc.id,slots));
@@ -2103,13 +2112,18 @@ function renderSkills(){
     const ok=isUnlocked(s.id),sel=GS.run.activeSkills.includes(s.id);
     const div=document.createElement('div');
     div.className=`skill-card ${sel?'selected':''} ${ok?'':'locked'}`;
-    div.innerHTML=`<div class="skill-name" style="${ok?'':'color:#F09595'}">${s.icon} ${s.name}${newMarkHtml(s.id)}${ok?'':' <span style="color:#E24B4A;font-size:10px;font-weight:bold;">未解放</span>'}</div>
-      <div class="skill-desc">${s.desc}</div>
-      <div style="font-size:10px;color:#8b7cf8;margin-top:3px">MP ${s.mpCost}</div>`;
+    const _sIcon=ok?s.icon:'❔';
+    const _sName=ok?`${s.name}${newMarkHtml(s.id)}`:'？？？';
+    const _sDesc=ok?s.desc:'未解放のスキル';
+    div.innerHTML=`<div class="skill-name" style="${ok?'':'color:#F09595'}">${_sIcon} ${_sName}${ok?'':' <span style="color:#E24B4A;font-size:10px;font-weight:bold;">未解放</span>'}</div>
+      <div class="skill-desc">${_sDesc}</div>
+      ${ok?`<div style="font-size:10px;color:#8b7cf8;margin-top:3px">MP ${s.mpCost}</div>`:''}`;
     div.onclick=ok?()=>toggleActiveSkill(s.id):null;
-    div.addEventListener('mouseenter',e=>showSkillTooltip(e,s));
-    div.addEventListener('mousemove', e=>moveSkillTooltip(e));
-    div.addEventListener('mouseleave',hideSkillTooltip);
+    if(ok){
+      div.addEventListener('mouseenter',e=>showSkillTooltip(e,s));
+      div.addEventListener('mousemove', e=>moveSkillTooltip(e));
+      div.addEventListener('mouseleave',hideSkillTooltip);
+    }
     ael.appendChild(div);
   });
   document.getElementById('active-skill-count').textContent=GS.run.activeSkills.length;
@@ -2118,9 +2132,12 @@ function renderSkills(){
     const ok=isUnlocked(s.id),sel=GS.run.passiveSkills.includes(s.id);
     const _pd=document.createElement('div');
     _pd.className=`skill-card ${sel?'selected':''} ${ok?'':'locked'}`;
+    const _sIcon=ok?s.icon:'❔';
+    const _sName=ok?`${s.name}${newMarkHtml(s.id)}`:'？？？';
+    const _sDesc=ok?s.desc:'未解放のスキル';
     _pd.innerHTML=`
-      <div class="skill-name" style="${ok?'':'color:#F09595'}">${s.icon} ${s.name}${newMarkHtml(s.id)}${ok?'':' <span style="color:#E24B4A;font-size:10px;font-weight:bold;">未解放</span>'}</div>
-      <div class="skill-desc">${s.desc}</div>`;
+      <div class="skill-name" style="${ok?'':'color:#F09595'}">${_sIcon} ${_sName}${ok?'':' <span style="color:#E24B4A;font-size:10px;font-weight:bold;">未解放</span>'}</div>
+      <div class="skill-desc">${_sDesc}</div>`;
     if(ok) _pd.addEventListener('click',()=>togglePassiveSkill(s.id));
     pel.appendChild(_pd);
   });
